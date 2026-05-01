@@ -103,6 +103,12 @@ const HeroSection = () => {
                   Explore Colleges
                 </button>
               </Link>
+
+              <Link to="/field">
+            <button className="bg-gradient-to-r from-primary to-primary-dark text-white px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 w-full sm:w-auto">
+              <span>Courses After 12th</span>
+            </button>
+            </Link>
             </div>
           </div>
 
