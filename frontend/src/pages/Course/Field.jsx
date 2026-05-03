@@ -9,15 +9,15 @@ import after12Img from "../../assets/images/after12img.png";
 
 const fields = [
   { icon: <FaCog />, color: "bg-[#F3E8FF] text-[#6D28D9]", name: "Engineering &\nTechnology", desc: "Build the future with\ninnovation and technology.", link: "/field/engineering" },
-  { icon: <FaHeartbeat />, color: "bg-[#CCFBF1] text-[#0D9488]", name: "Medical &\nHealth", desc: "Serve society and improve\nlives through healthcare." },
-  { icon: <FaBriefcase />, color: "bg-[#FFEDD5] text-[#EA580C]", name: "Commerce &\nManagement", desc: "Lead businesses and\ndrive economic growth." },
-  { icon: <FaPalette />, color: "bg-[#FCE7F3] text-[#DB2777]", name: "Arts &\nHumanities", desc: "Explore creativity, culture\nand human expression." },
-  { icon: <FaFlask />, color: "bg-[#DBEAFE] text-[#2563EB]", name: "Science", desc: "Discover, learn and\nexpand the boundaries\nof knowledge." },
-  { icon: <FaBalanceScale />, color: "bg-[#EDE9FE] text-[#6D28D9]", name: "Law", desc: "Uphold justice and\nbuild a career in legal\nprofession." },
-  { icon: <FaPencilAlt />, color: "bg-[#FCE7F3] text-[#DB2777]", name: "Design", desc: "Turn ideas into reality\nwith creativity and\nimagination." },
-  { icon: <FaConciergeBell />, color: "bg-[#FEF3C7] text-[#D97706]", name: "Hospitality", desc: "Create memorable\nexperiences and build\na global career." },
-  { icon: <FaDesktop />, color: "bg-[#CCFBF1] text-[#0D9488]", name: "IT &\nComputer", desc: "Shape the digital world\nwith skills and\ntechnology." },
-  { icon: <FaGraduationCap />, color: "bg-[#EDE9FE] text-[#6D28D9]", name: "Education", desc: "Inspire minds and\nshape the future\nthrough teaching." },
+  { icon: <FaHeartbeat />, color: "bg-[#CCFBF1] text-[#0D9488]", name: "Medical &\nHealth", desc: "Serve society and improve\nlives through healthcare.", link: "/field/medical" },
+  { icon: <FaBriefcase />, color: "bg-[#FFEDD5] text-[#EA580C]", name: "Commerce &\nManagement", desc: "Lead businesses and\ndrive economic growth.", link: "/field/commerce" },
+  { icon: <FaPalette />, color: "bg-[#FCE7F3] text-[#DB2777]", name: "Arts &\nHumanities", desc: "Explore creativity, culture\nand human expression.", link: "/field/arts" },
+  { icon: <FaFlask />, color: "bg-[#DBEAFE] text-[#2563EB]", name: "Science", desc: "Discover, learn and\nexpand the boundaries\nof knowledge.", link: "/field/science" },
+  { icon: <FaBalanceScale />, color: "bg-[#EDE9FE] text-[#6D28D9]", name: "Law", desc: "Uphold justice and\nbuild a career in legal\nprofession.", link: "/field/law" },
+  { icon: <FaPencilAlt />, color: "bg-[#FCE7F3] text-[#DB2777]", name: "Design", desc: "Turn ideas into reality\nwith creativity and\nimagination.", link: "/field/design" },
+  { icon: <FaConciergeBell />, color: "bg-[#FEF3C7] text-[#D97706]", name: "Hospitality", desc: "Create memorable\nexperiences and build\na global career.", link: "/field/hospitality" },
+  { icon: <FaDesktop />, color: "bg-[#CCFBF1] text-[#0D9488]", name: "IT &\nComputer", desc: "Shape the digital world\nwith skills and\ntechnology.", link: "/field/it-computer" },
+  { icon: <FaGraduationCap />, color: "bg-[#EDE9FE] text-[#6D28D9]", name: "Education", desc: "Inspire minds and\nshape the future\nthrough teaching.", link: "/field/education" },
 ];
 
 const FieldCard = ({ icon, color, name, desc, link }) => (
