@@ -18,7 +18,7 @@ class SiteController extends Controller
      */
     public function beforeAction($action)
     {            
-        if ($action->id === 'api-contact') {
+        if (in_array($action->id, ['api-contact', 'api-course-detail', 'api-field-detail'])) {
             $this->enableCsrfValidation = false;
         }
         return parent::beforeAction($action);
@@ -34,7 +34,7 @@ class SiteController extends Controller
                 'class' => \yii\filters\Cors::class,
                 'cors' => [
                     'Origin' => ['http://localhost:5173', 'http://127.0.0.1:5173'],
-                    'Access-Control-Request-Method' => ['POST', 'OPTIONS'],
+                    'Access-Control-Request-Method' => ['GET', 'POST', 'OPTIONS'],
                     'Access-Control-Request-Headers' => ['*'],
                 ],
             ],
@@ -166,5 +166,101 @@ class SiteController extends Controller
 
         Yii::$app->response->statusCode = 400;
         return ['status' => 'error', 'message' => 'Failed to send message.', 'errors' => $model->errors];
+    }
+
+    /**
+     * Handles API course detail fetching.
+     *
+     * @return Response|array
+     */
+    public function actionApiCourseDetail()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        
+        $name = Yii::$app->request->get('name', 'Computer Science Engineering');
+        
+        $specialization = Yii::$app->db->createCommand("SELECT * FROM specializations WHERE name = :name", [':name' => $name])->queryOne();
+        
+        if (!$specialization) {
+            Yii::$app->response->statusCode = 404;
+            return ['status' => 'error', 'message' => 'Specialization not found'];
+        }
+        
+        $details = Yii::$app->db->createCommand("SELECT * FROM specialization_details WHERE specialization_id = :id", [':id' => $specialization['id']])->queryOne();
+        
+        $courses = Yii::$app->db->createCommand("SELECT * FROM courses WHERE specialization_id = :id AND is_status = 1", [':id' => $specialization['id']])->queryAll();
+        
+        $universities = [];
+        if (!empty($courses)) {
+            $courseIds = array_column($courses, 'id');
+            $namedParams = [];
+            $paramBindings = [];
+            foreach ($courseIds as $i => $id) {
+                $key = ':cid' . $i;
+                $namedParams[] = $key;
+                $paramBindings[$key] = $id;
+            }
+            $placeholders = implode(',', $namedParams);
+            $sql = "SELECT DISTINCT c.* FROM colleges c 
+                    JOIN college_courses cc ON c.id = cc.college_id 
+                    WHERE cc.course_id IN ($placeholders) AND c.is_status = 1";
+            $universities = Yii::$app->db->createCommand($sql, $paramBindings)->queryAll();
+        }
+        
+        // Ensure eligibility is decoded if it's stored as JSON string
+        if ($details && !empty($details['eligibility'])) {
+            $eligibilityDecoded = json_decode($details['eligibility'], true);
+            if (json_last_error() === JSON_ERROR_NONE) {
+                $details['eligibility'] = $eligibilityDecoded;
+            }
+        }
+        
+        $field = Yii::$app->db->createCommand("SELECT * FROM fields WHERE id = :id", [':id' => $specialization['field_id']])->queryOne();
+        
+        return [
+            'status' => 'success',
+            'data' => [
+                'specialization' => $specialization,
+                'field' => $field,
+                'details' => $details,
+                'courses' => $courses,
+                'universities' => $universities
+            ]
+        ];
+    }
+
+    /**
+     * Returns a field's details and all its specializations.
+     *
+     * @return Response|array
+     */
+    public function actionApiFieldDetail()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $fieldName = Yii::$app->request->get('field', '');
+
+        $field = Yii::$app->db->createCommand(
+            "SELECT * FROM fields WHERE name = :name AND is_status = 1",
+            [':name' => $fieldName]
+        )->queryOne();
+
+        if (!$field) {
+            Yii::$app->response->statusCode = 404;
+            return ['status' => 'error', 'message' => 'Field not found'];
+        }
+
+        $specializations = Yii::$app->db->createCommand(
+            "SELECT * FROM specializations WHERE field_id = :fid AND is_status = 1",
+            [':fid' => $field['id']]
+        )->queryAll();
+
+        return [
+            'status' => 'success',
+            'data' => [
+                'field' => $field,
+                'specializations' => $specializations
+            ]
+        ];
     }
 }
