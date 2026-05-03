@@ -9,85 +9,29 @@ import Course from "../pages/Course/Course";
 import About from "../pages/About/About";
 import VerifyOtp from "../pages/Auth/VerifyOtp";
 import Field from "../pages/Course/Field";
-import EngAndTech from "../pages/Course/FieldCards/EngAndTech";
+import FieldDetail from "../pages/Course/FieldCards/FieldDetail";
 import CourseDetail from "../pages/Course/CourseDetail";
-
-
 
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <MainLayout>
-            <Home />
-          </MainLayout>
-        }
-      />
-      <Route
-  path="/colleges"
-  element={
-    <MainLayout>
-      <CollegeList />
-    </MainLayout>
-  }
-/>
- <Route
-        path="/contact"
-        element={
-          <MainLayout>
-            <Contact />
-          </MainLayout>
-        }
-      />
-       <Route
-        path="/course"
-        element={
-          <MainLayout>
-            <Course />
-          </MainLayout>
-        }
-      />
-       <Route
-        path="/field"
-        element={
-          <MainLayout>
-            <Field />
-          </MainLayout>
-        }
-      />
-       <Route
-        path="/field/engineering"
-        element={
-          <MainLayout>
-            <EngAndTech />
-          </MainLayout>
-        }
-      />
-       <Route
-        path="/about"
-        element={
-          <MainLayout>
-            <About />
-          </MainLayout>
-        }
-      />
-       <Route
-        path="/course/computer-science-engineering"
-        element={
-          <MainLayout>
-            <CourseDetail />
-          </MainLayout>
-        }
-      />
-      
-       <Route path="/login" element={<Login />} />
-
+      <Route path="/" element={<MainLayout><Home /></MainLayout>} />
+      <Route path="/colleges" element={<MainLayout><CollegeList /></MainLayout>} />
+      <Route path="/contact" element={<MainLayout><Contact /></MainLayout>} />
+      <Route path="/course" element={<MainLayout><Course /></MainLayout>} />
+      <Route path="/about" element={<MainLayout><About /></MainLayout>} />
+      <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/verify-otp" element={<VerifyOtp />} />
 
-      
+      {/* Fields page */}
+      <Route path="/field" element={<MainLayout><Field /></MainLayout>} />
+
+      {/* Dynamic field detail page — handles all 10 fields */}
+      <Route path="/field/:fieldSlug" element={<MainLayout><FieldDetail /></MainLayout>} />
+
+      {/* Dynamic course/specialization detail page — handles all specializations */}
+      <Route path="/course/:specializationSlug" element={<MainLayout><CourseDetail /></MainLayout>} />
     </Routes>
   );
 };
