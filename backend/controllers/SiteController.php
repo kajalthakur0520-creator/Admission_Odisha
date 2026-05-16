@@ -18,7 +18,7 @@ class SiteController extends Controller
      */
     public function beforeAction($action)
     {            
-        if (in_array($action->id, ['api-contact', 'api-course-detail', 'api-field-detail', 'api-colleges', 'api-college-detail'])) {
+        if (in_array($action->id, ['api-contact', 'api-course-detail', 'api-field-detail', 'api-colleges', 'api-college-detail', 'api-college-course-specializations', 'api-submit-enquiry'])) {
             $this->enableCsrfValidation = false;
         }
         return parent::beforeAction($action);
@@ -33,9 +33,17 @@ class SiteController extends Controller
             'corsFilter' => [
                 'class' => \yii\filters\Cors::class,
                 'cors' => [
-                    'Origin' => ['http://localhost:5173', 'http://127.0.0.1:5173'],
-                    'Access-Control-Request-Method' => ['GET', 'POST', 'OPTIONS'],
+                    // Allow common development ports
+                    'Origin' => [
+                        'http://localhost:5173', 
+                        'http://127.0.0.1:5173',
+                        'http://localhost:3000',
+                        'http://localhost:4173',
+                    ],
+                    'Access-Control-Request-Method' => ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'],
                     'Access-Control-Request-Headers' => ['*'],
+                    'Access-Control-Allow-Credentials' => true,
+                    'Access-Control-Max-Age' => 86400,
                 ],
             ],
             'access' => [
@@ -355,5 +363,45 @@ class SiteController extends Controller
                 'specializations' => $specializations
             ]
         ];
+    }
+    /**
+     * Handles API enquiry submission from the floating popup.
+     *
+     * @return Response|array
+     */
+    public function actionApiSubmitEnquiry()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        $requestData = Yii::$app->request->getBodyParams();
+        
+        $fullName = isset($requestData['fullName']) ? $requestData['fullName'] : '';
+        $phone = isset($requestData['phone']) ? $requestData['phone'] : '';
+        $courses = isset($requestData['courses']) ? $requestData['courses'] : '';
+        $colleges = isset($requestData['colleges']) ? $requestData['colleges'] : '';
+        $location = isset($requestData['location']) ? $requestData['location'] : '';
+        $guidance = isset($requestData['guidance']) ? $requestData['guidance'] : 'yes';
+
+        if (empty($fullName) || empty($phone)) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'Name and Phone are required.'];
+        }
+
+        try {
+            Yii::$app->db->createCommand()->insert('enquiries', [
+                'full_name' => $fullName,
+                'phone' => $phone,
+                'courses' => $courses,
+                'colleges' => $colleges,
+                'location' => $location,
+                'guidance' => $guidance,
+                'created_at' => date('Y-m-d H:i:s'),
+            ])->execute();
+
+            return ['status' => 'success', 'message' => 'Enquiry submitted successfully.'];
+        } catch (\Exception $e) {
+            Yii::$app->response->statusCode = 500;
+            return ['status' => 'error', 'message' => 'Failed to save enquiry.'];
+        }
     }
 }

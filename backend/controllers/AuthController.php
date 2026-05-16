@@ -74,7 +74,13 @@ class AuthController extends Controller
 
         return [
             "status" => "success",
-            "message" => "Registration successful"
+            "token" => $token,
+            "user" => [
+                "id" => $user['id'],
+                "name" => $user['name'],
+                "email" => $user['email'],
+                "is_admin" => (int)$user['is_admin']
+            ]
         ];
     }
 
@@ -311,7 +317,12 @@ Yii::$app->db->createCommand()->insert('user_login', [
             "status" => "success",
             "message" => "OTP verified successfully",
             "token" => $token,
-            "user" => $user
+            "user" => [
+                "id" => $user['id'],
+                "name" => $user['name'],
+                "email" => $user['email'],
+                "is_admin" => (int)$user['is_admin']
+            ]
         ];
     }
 
