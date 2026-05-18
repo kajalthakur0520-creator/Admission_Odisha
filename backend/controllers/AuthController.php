@@ -32,20 +32,15 @@ class AuthController extends Controller
     // =========================
     public function actionRegister()
     {
-        $data = json_decode(file_get_contents("php://input"), true);
+        $data = json_decode(Yii::$app->request->getRawBody(), true);
 
-        $name = $data['name'] ?? '';
-        $email = $data['email'] ?? '';
-        $phone = $data['phone'] ?? '';
-        $password = $data['password'] ?? '';
-        $city = $data['city'] ?? '';
+        if (!$data || !isset($data['email']) || !isset($data['password'])) {
+            return ["status" => "error", "message" => "Required fields missing"];
+        }
 
-        // CHECK EMAIL EXISTS
-        $existingUser = Yii::$app->db->createCommand(
-            "SELECT * FROM users WHERE email = :email"
-        )
-        ->bindValue(':email', $email)
-        ->queryOne();
+        $existing = Yii::$app->db->createCommand("
+            SELECT * FROM users WHERE email = :email
+        ")->bindValue(':email', $data['email'])->queryOne();
 
         if ($existingUser) {
             return [
@@ -59,12 +54,11 @@ class AuthController extends Controller
 
         // INSERT USER
         Yii::$app->db->createCommand()->insert('users', [
-            'name' => $name,
-            'email' => $email,
-            'phone' => $phone,
-            'password' => $hashedPassword,
-            'city' => $city,
-
+            'name' => $data['name'] ?? null,
+            'email' => $data['email'],
+            'phone' => $data['phone'] ?? null,
+            'password' => password_hash($data['password'], PASSWORD_DEFAULT),
+            'city' => $data['city'] ?? null,
             'created_at' => date('Y-m-d H:i:s'),
             'created_by' => null,
             'updated_at' => null,
