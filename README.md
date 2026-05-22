@@ -38,7 +38,7 @@ The backend should now be running at `http://localhost:8080`.
 cd frontend
 npm install
 ```
-- Create a `.env` file in the `frontend` directory:
+- Create a `.env.local` file in the `frontend` directory:
 ```env
 VITE_API_BASE_URL=http://localhost:8080/index.php
 ```
