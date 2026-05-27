@@ -297,7 +297,7 @@ const Navbar = () => {
         )}
 
         {/* Animation */}
-        <style jsx>{`
+        <style>{`
           @keyframes slideDown {
             from {
               opacity: 0;

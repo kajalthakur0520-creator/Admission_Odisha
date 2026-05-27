@@ -20,6 +20,10 @@ export default function CourseDetail() {
     const [enquired, setEnquired] = useState(false);
 
     useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [courseSlug]);
+
+    useEffect(() => {
         const fetchCourse = async () => {
             try {
                 setLoading(true);

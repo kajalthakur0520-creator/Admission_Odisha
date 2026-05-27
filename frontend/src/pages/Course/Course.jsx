@@ -222,11 +222,11 @@ const Course = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {popularCourses.map((c, i) => {
-            const CardWrapper = c.t === "B.Tech" ? Link : "div";
+            const slug = c.t.toLowerCase().replace(/\./g, "");
             return (
-              <CardWrapper 
+              <Link 
                 key={i} 
-                to={c.t === "B.Tech" ? "/course-detail/btech" : undefined}
+                to={`/course-detail/${slug}`}
                 className="group bg-white p-5 rounded-2xl shadow-sm hover:shadow-md transition-all duration-500 hover:-translate-y-2 border border-gray-100 block"
               >
                 <div className={`${c.bg} w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
@@ -244,7 +244,7 @@ const Course = () => {
                     Details <ChevronRight size={14} />
                   </span>
                 </div>
-              </CardWrapper>
+              </Link>
             );
           })}
         </div>
