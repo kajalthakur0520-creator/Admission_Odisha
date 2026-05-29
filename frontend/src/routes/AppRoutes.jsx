@@ -6,6 +6,7 @@ import Contact from "../pages/Contact/Contact";
 import Login from "../pages/Auth/Login";
 import Register from "../pages/Auth/Register";
 import Course from "../pages/Course/Course";
+import AllCourses from "../pages/Course/AllCourses";
 import About from "../pages/About/About";
 import VerifyOtp from "../pages/Auth/VerifyOtp";
 import Field from "../pages/Course/Field";
@@ -75,22 +76,11 @@ const AppRoutes = () => {
         }
       />
       <Route path="/streams" element={<Navigate to="/field" replace />} />
-      <Route
-        path="/course"
-        element={
-          <MainLayout>
-            <Course />
-          </MainLayout>
-        }
-      />
-      <Route
-        path="/about"
-        element={
-          <MainLayout>
-            <About />
-          </MainLayout>
-        }
-      />
+
+      <Route path="/course" element={<MainLayout><Course /></MainLayout>} />
+      <Route path="/courses" element={<MainLayout><AllCourses /></MainLayout>} />
+      <Route path="/about" element={<MainLayout><About /></MainLayout>} />
+
 
       <Route
         path="/register"
