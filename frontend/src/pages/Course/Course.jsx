@@ -73,6 +73,14 @@ const Course = () => {
 
   const handleSearch = () => courseSectionRef.current?.scrollIntoView({ behavior: "smooth" });
 
+  // Get only first 6 fields for desktop and first 4 for mobile
+  const desktopFields = fields.slice(0, 6);
+  const mobileFields = fields.slice(0, 4);
+  
+  // Get only first 4 popular courses for mobile
+  const mobilePopularCourses = popularCourses.slice(0, 4);
+  const desktopPopularCourses = filteredCourses;
+
   return (
     <div className="bg-[#F8F8FC] min-h-screen font-sans pb-16">
 
@@ -210,7 +218,7 @@ const Course = () => {
         </div>
       </section>
 
-      {/* STREAMS */}
+      {/* STREAMS - Mobile: 4 cards, Desktop: 6 cards */}
       <section className="max-w-[1280px] mx-auto py-14 px-4 sm:px-6">
         <div className="flex items-center justify-between mb-7">
           <div>
@@ -223,8 +231,26 @@ const Course = () => {
             </button>
           </Link>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-3">
-          {fields.map((f, i) => (
+        
+        {/* Mobile View (4 cards) */}
+        <div className="grid grid-cols-2 sm:hidden gap-3">
+          {mobileFields.map((f, i) => (
+            <Link key={i} to={f.link || "#"} className="block">
+              <div className="group bg-white p-4 rounded-2xl shadow-sm hover:shadow-md border border-gray-100 text-center cursor-pointer hover:-translate-y-1 transition-all duration-300 h-full flex flex-col justify-center items-center">
+                <div className={`${f.color} w-11 h-11 mx-auto mb-2 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-xl`}>
+                  {f.icon}
+                </div>
+                <h4 className="font-bold text-[11px] text-[#071B52] leading-tight whitespace-pre-line">
+                  {f.name}
+                </h4>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* Desktop View (6 cards) */}
+        <div className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {desktopFields.map((f, i) => (
             <Link key={i} to={f.link || "#"} className="block">
               <div className="group bg-white p-4 rounded-2xl shadow-sm hover:shadow-md border border-gray-100 text-center cursor-pointer hover:-translate-y-1 transition-all duration-300 h-full flex flex-col justify-center items-center">
                 <div className={`${f.color} w-11 h-11 mx-auto mb-2 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-xl`}>
@@ -245,9 +271,7 @@ const Course = () => {
           <div>
             <h2 className="text-2xl font-bold text-[#071B52]">Popular Courses</h2>
             <p className="text-gray-400 text-xs mt-1">
-              {filteredCourses.length === popularCourses.length
-                ? "Most sought-after courses by students"
-                : `Showing ${filteredCourses.length} result${filteredCourses.length !== 1 ? "s" : ""}`}
+              Most sought-after courses by students
             </p>
           </div>
           <Link to="/courses">
@@ -257,19 +281,45 @@ const Course = () => {
           </Link>
         </div>
 
-        {filteredCourses.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
-            <Search size={38} className="mx-auto mb-3 opacity-25" />
-            <p className="text-sm font-medium">No courses match your search.</p>
-            <button
-              onClick={() => { setSearchQuery(""); setSelectedCategory("All Categories"); setSelectedDegree("All Degrees"); setSelectedStream("All Streams"); }}
-              className="mt-3 text-xs text-indigo-600 underline">
-              Clear filters
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {filteredCourses.map((c, i) => {
+        {/* Mobile View - 4 courses */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:hidden">
+          {mobilePopularCourses.map((c, i) => {
+            const Icon = iconMap[c.ic];
+            const slug = c.t.toLowerCase().replace(/\./g, "");
+            return (
+              <Link key={i} to={`/course-detail/${slug}`} className="group bg-white p-5 rounded-2xl shadow-sm hover:shadow-md border border-gray-100 hover:-translate-y-1 transition-all duration-300 cursor-pointer block">
+                <div className={`${c.bg} w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
+                  <span className={c.c}><Icon size={22} /></span>
+                </div>
+                <h4 className="text-lg font-bold text-[#071B52]">{c.t}</h4>
+                <p className="text-xs text-gray-400 mb-3">{c.sub}</p>
+                <div className="space-y-1.5 mb-4">
+                  <p className="text-xs font-medium text-gray-600 bg-gray-50 px-2.5 py-1.5 rounded-lg">{c.dur} Program</p>
+                  <p className="text-xs font-medium text-gray-600 bg-gray-50 px-2.5 py-1.5 rounded-lg">{c.s}</p>
+                </div>
+                <div className="flex justify-between items-center pt-3 border-t border-gray-100">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase">Colleges</span>
+                  <span className="text-indigo-600 font-bold text-xs flex items-center gap-1">Details <ChevronRight size={13} /></span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Desktop/Tablet View - All filtered courses */}
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {filteredCourses.length === 0 ? (
+            <div className="col-span-full text-center py-16 text-gray-400">
+              <Search size={38} className="mx-auto mb-3 opacity-25" />
+              <p className="text-sm font-medium">No courses match your search.</p>
+              <button
+                onClick={() => { setSearchQuery(""); setSelectedCategory("All Categories"); setSelectedDegree("All Degrees"); setSelectedStream("All Streams"); }}
+                className="mt-3 text-xs text-indigo-600 underline">
+                Clear filters
+              </button>
+            </div>
+          ) : (
+            filteredCourses.map((c, i) => {
               const Icon = iconMap[c.ic];
               const slug = c.t.toLowerCase().replace(/\./g, "");
               return (
@@ -289,9 +339,9 @@ const Course = () => {
                   </div>
                 </Link>
               );
-            })}
-          </div>
-        )}
+            })
+          )}
+        </div>
       </section>
 
       {/* WHY CHOOSE US */}

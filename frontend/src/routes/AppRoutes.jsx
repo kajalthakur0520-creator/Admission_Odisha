@@ -92,8 +92,14 @@ const AppRoutes = () => {
       />
 
       {/* Auth routes */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/verify-otp" element={<VerifyOtp />} />
+<Route
+  path="/login"
+  element={
+    <MainLayout>
+      <Login />
+    </MainLayout>
+  }
+/>      <Route path="/verify-otp" element={<VerifyOtp />} />
 
       {/* Fields */}
       <Route

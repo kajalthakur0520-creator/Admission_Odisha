@@ -2,16 +2,11 @@ import React, { useState, useEffect } from "react";
 import API_BASE from "../../config/api";
 import { Link } from "react-router-dom";
 
-import login_img from "../../assets/images/login_img.png";
+import login_img from "../../assets/images/loginnn.png";
 import { MdEmail, MdSecurity } from "react-icons/md";
 import { RiLockPasswordLine } from "react-icons/ri";
 import { HiOutlineUserCircle } from "react-icons/hi2";
-import {
-  FaGoogle,
-  FaFacebookF,
-  FaEye,
-  FaEyeSlash,
-} from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -182,35 +177,35 @@ const Login = () => {
           />
         </div>
 
-        {/* Right Login */}
-        <div className="p-8 md:p-10">
-
+        {/* Right Login - Adjusted with better spacing */}
+        <div className="p-8 md:p-10 lg:p-12">
+          
           {/* Top Icon */}
-          <div className="flex justify-center mb-3">
-            <HiOutlineUserCircle className="text-primary text-2xl" />
+          <div className="flex justify-center mb-4">
+            <HiOutlineUserCircle className="text-primary text-3xl" />
           </div>
 
           {/* Title */}
-          <div className="mb-6 text-center">
+          <div className="mb-8 text-center">
             <h2 className="text-2xl font-bold text-gray-800">
               Welcome Back
             </h2>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 mt-1">
               Login to your account
             </p>
           </div>
 
           {/* Form */}
-          <form className="space-y-4" onSubmit={handleLogin}>
+          <form className="space-y-5" onSubmit={handleLogin}>
 
             {/* Email */}
             <div>
-              <label className="text-sm text-gray-600 block mb-1">
+              <label className="text-sm text-gray-600 block mb-1.5">
                 Email Address
               </label>
 
-              <div className="flex items-center border border-gray-200 rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-primary">
-                <MdEmail className="text-gray-400 mr-2" />
+              <div className="flex items-center border border-gray-200 rounded-md px-3 py-2.5 focus-within:ring-2 focus-within:ring-primary">
+                <MdEmail className="text-gray-400 mr-2 text-lg" />
                 <input
                   type="email"
                   placeholder="Enter your email"
@@ -224,13 +219,13 @@ const Login = () => {
 
             {/* Password */}
             <div>
-              <label className="text-sm text-gray-600 block mb-1">
+              <label className="text-sm text-gray-600 block mb-1.5">
                 Password
               </label>
 
-              <div className="flex items-center border border-gray-200 rounded-md px-3 py-2 focus-within:ring-2 focus-within:ring-primary">
+              <div className="flex items-center border border-gray-200 rounded-md px-3 py-2.5 focus-within:ring-2 focus-within:ring-primary">
 
-                <RiLockPasswordLine className="text-gray-400 mr-2" />
+                <RiLockPasswordLine className="text-gray-400 mr-2 text-lg" />
 
                 <input
                   type={showPassword ? "text" : "password"}
@@ -243,7 +238,7 @@ const Login = () => {
 
                 <span
                   onClick={() => setShowPassword(!showPassword)}
-                  className="text-gray-500 cursor-pointer"
+                  className="text-gray-500 cursor-pointer hover:text-primary transition"
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </span>
@@ -259,44 +254,24 @@ const Login = () => {
             {/* Login Button */}
             <button
               disabled={loading}
-              className="w-full bg-primary text-white py-2 rounded-md font-semibold hover:opacity-90 transition mt-4 disabled:opacity-50"
+              className="w-full bg-primary text-white py-2.5 rounded-md font-semibold hover:opacity-90 transition mt-6 disabled:opacity-50"
             >
               {loading ? "Logging in..." : "Login"}
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="text-center text-sm text-gray-400 my-6">
-            or continue with
+          {/* Register - Direct link without divider */}
+          <div className="mt-8 text-center">
+            <p className="text-sm text-gray-500">
+              Don't have an account?{" "}
+              <Link
+                to="/register"
+                className="text-primary font-medium hover:underline"
+              >
+                Register
+              </Link>
+            </p>
           </div>
-
-          {/* Social Login */}
-          <div className="flex gap-3">
-
-            {/* Google */}
-            <button className="flex items-center justify-center gap-2 border w-full py-2 rounded-md hover:bg-gray-50 transition text-sm">
-              <FaGoogle className="text-[#DB4437]" />
-              Google
-            </button>
-
-            {/* Facebook */}
-            <button className="flex items-center justify-center gap-2 border w-full py-2 rounded-md hover:bg-gray-50 transition text-sm">
-              <FaFacebookF className="text-[#1877F2]" />
-              Facebook
-            </button>
-
-          </div>
-
-          {/* Register */}
-          <p className="text-center text-sm text-gray-500 mt-6">
-            Don't have an account?{" "}
-            <Link
-              to="/register"
-              className="text-primary font-medium hover:underline"
-            >
-              Register
-            </Link>
-          </p>
 
         </div>
       </div>
@@ -305,3 +280,4 @@ const Login = () => {
 };
 
 export default Login;
+

@@ -1,34 +1,38 @@
 import React from "react";
 import { FaUsers, FaUniversity, FaBookOpen, FaShieldAlt } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
-const statsData = [
-  {
-    id: 1,
-    icon: <FaUsers />,
-    title: "Growing",
-    subtitle: "Student Community",
-  },
-  {
-    id: 2,
-    icon: <FaUniversity />,
-    title: "Expanding",
-    subtitle: "College Network",
-  },
-  {
-    id: 3,
-    icon: <FaBookOpen />,
-    title: "Diverse",
-    subtitle: "Course Catalog",
-  },
-  {
-    id: 4,
-    icon: <FaShieldAlt />,
-    title: "100%",
-    subtitle: "Trusted",
-  },
-];
+ 
+
 
 const StatsSection = () => {
+  const { t } = useTranslation();
+  const statsData = [
+    {
+      id: 1,
+      icon: <FaUsers />,
+      title: t("stats1Title"),
+      subtitle: t("stats1Subtitle"),
+    },
+    {
+      id: 2,
+      icon: <FaUniversity />,
+      title: t("stats2Title"),
+      subtitle: t("stats2Subtitle"),
+    },
+    {
+      id: 3,
+      icon: <FaBookOpen />,
+      title: t("stats3Title"),
+      subtitle: t("stats3Subtitle"),
+    },
+    {
+      id: 4,
+      icon: <FaShieldAlt />,
+      title: t("stats4Title"),
+      subtitle: t("stats4Subtitle"),
+    },
+  ];
   return (
     <section className="pb-14 bg-[#FAFAFD]">
       <div className="max-w-[1280px] mx-auto px-6">

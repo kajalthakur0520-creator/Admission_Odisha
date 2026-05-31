@@ -458,22 +458,6 @@ const CollegeDetail = () => {
                 </div>
               </div>
             </div>
-
-            {/* Need Guidance Card */}
-            <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm">
-              <h3 className="font-bold text-[#071B52] mb-4 px-2">Need Guidance?</h3>
-              <div className="bg-indigo-50 rounded-2xl p-6 relative overflow-hidden">
-                <p className="text-xs text-indigo-800 font-medium relative z-10">Get free counseling and find the right career path with our expert advisors.</p>
-                {/* ✅ Talk to Expert — opens enquiry form */}
-                <button
-                  onClick={openEnquiry}
-                  className="mt-4 bg-indigo-600 text-white px-6 py-2 rounded-lg text-xs font-bold relative z-10 hover:bg-indigo-700 transition"
-                >
-                  Talk to Expert
-                </button>
-                <HelpCircle size={80} className="absolute -bottom-4 -right-4 text-indigo-200/50" />
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -482,5 +466,3 @@ const CollegeDetail = () => {
 };
 
 export default CollegeDetail;
-
-

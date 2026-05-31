@@ -39,18 +39,17 @@ class AuthController extends Controller
         }
 
         $existing = Yii::$app->db->createCommand("
-            SELECT * FROM users WHERE email = :email
-        ")->bindValue(':email', $data['email'])->queryOne();
+    SELECT * FROM users WHERE email = :email
+")->bindValue(':email', $data['email'])->queryOne();
 
-        if ($existingUser) {
-            return [
-                "status" => "error",
-                "message" => "Email already registered"
-            ];
-        }
+if ($existing) {
+    return [
+        "status" => "error",
+        "message" => "Email already registered"
+    ];
+}
 
         // HASH PASSWORD
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
         // INSERT USER
         Yii::$app->db->createCommand()->insert('users', [

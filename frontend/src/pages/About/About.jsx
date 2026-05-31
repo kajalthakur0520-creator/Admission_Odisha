@@ -71,7 +71,7 @@ const About = () => {
     { t: "Verified Information", ic: <ShieldCheck size={20} />, c: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10", d: "All colleges and courses are verified and updated regularly", link: "/verified-info" },
     { t: "Easy Process", ic: <Zap size={20} />, c: "text-[#14B8A6]", bg: "bg-[#14B8A6]/10", d: "Simple steps to search, apply and get admission", link: "/how-it-works" },
     { t: "Expert Support", ic: <Headphones size={20} />, c: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10", d: "Our counselors are always ready to help you", link: "/contact" },
-    { t: "Secure Platform", ic: <ShieldCheck size={20} />, c: "text-[#3B82F6]", bg: "bg-[#3B82F6]/10", d: "Your data is safe with 100% privacy", link: "/privacy" },
+    { t: "Secure Platform", ic: <ShieldCheck size={20} />, c: "text-[#3B82F6]", bg: "bg-[#3B82F6]/10", d: "Your information remains secure and completely private.", link: "/privacy" },
     { t: "Timely Updates", ic: <Bell size={20} />, c: "text-[#EC4899]", bg: "bg-[#EC4899]/10", d: "Stay informed with important deadlines", link: "/alerts" },
   ];
 
@@ -245,7 +245,7 @@ const About = () => {
       {/* 5. FEATURES GRID - Premium Look */}
       <section className="max-w-[1280px] mx-auto px-4 sm:px-6 mb-16">
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#071B52] text-center mb-10">
-          Our Premium Features
+          What Makes Us Different
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
