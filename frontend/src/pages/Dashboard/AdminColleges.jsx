@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import API_BASE from "../../config/api";
 import { FaSearch, FaEye, FaEdit, FaTrash } from "react-icons/fa";
+import AddCollegeModel from "../../components/admin/AddCollegeModel";
 
 const ROW_OPTIONS = [5, 10, 15, 20];
-
 function parseCourses(courses) {
   if (!courses) return [];
   if (Array.isArray(courses)) return courses;
@@ -52,6 +52,7 @@ function getPaginationItems(page, totalPages) {
 }
 
 export default function AdminColleges() {
+  const [showAddModal, setShowAddModal] = useState(false);
   const [colleges, setColleges] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [availableUniversities, setAvailableUniversities] = useState([]);
@@ -181,11 +182,21 @@ export default function AdminColleges() {
         </div>
 
         <button
+          onClick={() => setShowAddModal(true)}
           type="button"
           className="inline-flex items-center justify-center rounded-2xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-blue-200 hover:bg-blue-700 transition"
         >
           + Add College
         </button>
+        {showAddModal && (
+          <AddCollegeModel
+            onClose={() => setShowAddModal(false)}
+            onCreated={() => {
+              setShowAddModal(false);
+              fetchColleges();
+            }}
+          />
+        )}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">

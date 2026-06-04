@@ -5,22 +5,20 @@ import en from "./locales/en.json";
 import hi from "./locales/hi.json";
 import od from "./locales/od.json";
 
-i18n
-  .use(initReactI18next)
-  .init({
-    resources: {
-      en: { translation: en },
-      hi: { translation: hi },
-      od: { translation: od }
-    },
+i18n.use(initReactI18next).init({
+  resources: {
+    en: { translation: en },
+    hi: { translation: hi },
+    od: { translation: od },
+  },
 
-    lng: localStorage.getItem("language") || "en",
+  lng: localStorage.getItem("language") || "en",
 
-    fallbackLng: "en",
+  fallbackLng: "en",
 
-    interpolation: {
-      escapeValue: false
-    }
-  });
+  interpolation: {
+    escapeValue: false,
+  },
+});
 
 export default i18n;
