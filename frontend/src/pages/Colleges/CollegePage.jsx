@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Search, MapPin, Star, Heart, School, CheckCircle, GraduationCap, Filter, ChevronDown, ArrowRight } from 'lucide-react';
 import { ASSETS_BASE } from '../../config/api';
 import { AuthContext } from '../../context/AuthContext';
+import { useTranslation } from "react-i18next";
 
 // Import your images
 import kiit from "/src/assets/images/colleges/kiit.jpg";
@@ -13,6 +14,7 @@ import nit from "/src/assets/images/colleges/nit.jpg";
 import templeImg from "/src/assets/images/temple.png";
 
 const CollegePage = () => {
+  const { t } = useTranslation();
   const [allColleges, setAllColleges] = useState([]);
   const [visibleColleges, setVisibleColleges] = useState(8);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,7 +30,12 @@ const CollegePage = () => {
 
   const { wishlist, toggleWishlist } = useContext(AuthContext);
 
-  const words = ["Colleges", "Universities", "Institutions", "Dream Colleges"];
+  const words = [
+    t("collegeWordColleges"),
+    t("collegeWordUniversities"),
+    t("collegeWordInstitutions"),
+    t("collegeWordDreamColleges")
+  ];
 
   useEffect(() => {
     const fetchColleges = async () => {
@@ -49,7 +56,7 @@ const CollegePage = () => {
 
   useEffect(() => {
     const handleTyping = () => {
-      const currentWord = words[loopNum % words.length];
+      const currentWord = words[loopNum % words.length] || "";
       if (!isDeleting) {
         setDisplayText(currentWord.substring(0, displayText.length + 1));
         if (displayText === currentWord) {
@@ -66,7 +73,7 @@ const CollegePage = () => {
 
     const timer = setTimeout(handleTyping, 100);
     return () => clearTimeout(timer);
-  }, [displayText, isDeleting, loopNum]);
+  }, [displayText, isDeleting, loopNum, words]);
 
   useEffect(() => {
     setVisibleColleges(8);
@@ -93,25 +100,45 @@ const CollegePage = () => {
   };
 
   const stats = [
-    { label: "Trusted", sub: "Colleges", icon: <School size={28} />, color: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10" },
-    { label: "Across Various", sub: "Districts", icon: <MapPin size={28} />, color: "text-[#14B8A6]", bg: "bg-[#14B8A6]/10" },
-    { label: "Diverse", sub: "Courses", icon: <GraduationCap size={28} />, color: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10" },
-    { label: "Trusted", sub: "Platform", icon: <CheckCircle size={28} />, color: "text-[#3B82F6]", bg: "bg-[#3B82F6]/10" },
+    { label: t("aboutStatsTrusted"), sub: t("aboutStatsColleges"), icon: <School size={28} />, color: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10" },
+    { label: t("collegeStatsAcrossVarious"), sub: t("collegeStatsDistricts"), icon: <MapPin size={28} />, color: "text-[#14B8A6]", bg: "bg-[#14B8A6]/10" },
+    { label: t("aboutStatsDiverse"), sub: t("aboutStatsCourses"), icon: <GraduationCap size={28} />, color: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10" },
+    { label: t("collegeStatsTrustedPlatform"), sub: t("collegeStatsPlatform"), icon: <CheckCircle size={28} />, color: "text-[#3B82F6]", bg: "bg-[#3B82F6]/10" },
   ];
 
   const districts = [
-    "All Districts", "Bhubaneswar", "Cuttack", "Sambalpur", "Rourkela",
-    "Berhampur", "Puri", "Balasore", "Baripada", "Jharsuguda"
+    { value: "All Districts", labelKey: "districts.all" },
+    { value: "Bhubaneswar", labelKey: "districts.bhubaneswar" },
+    { value: "Cuttack", labelKey: "districts.cuttack" },
+    { value: "Sambalpur", labelKey: "districts.sambalpur" },
+    { value: "Rourkela", labelKey: "districts.rourkela" },
+    { value: "Berhampur", labelKey: "districts.berhampur" },
+    { value: "Puri", labelKey: "districts.puri" },
+    { value: "Balasore", labelKey: "districts.balasore" },
+    { value: "Baripada", labelKey: "districts.baripada" },
+    { value: "Jharsuguda", labelKey: "districts.jharsuguda" }
   ];
 
   const collegeTypes = [
-    "All Types", "Government", "Private", "Deemed University",
-    "Institute of National Importance", "Autonomous", "State University"
+    { value: "All Types", labelKey: "types.all" },
+    { value: "Government", labelKey: "types.government" },
+    { value: "Private", labelKey: "types.private" },
+    { value: "Deemed University", labelKey: "types.deemed" },
+    { value: "Institute of National Importance", labelKey: "types.importance" },
+    { value: "Autonomous", labelKey: "types.autonomous" },
+    { value: "State University", labelKey: "types.state" }
   ];
 
   const categories = [
-    "All Categories", "Engineering", "Medical", "Management", "Law",
-    "Pharmacy", "Science", "Arts", "Commerce"
+    { value: "All Categories", labelKey: "categories.all" },
+    { value: "Engineering", labelKey: "categories.engineering" },
+    { value: "Medical", labelKey: "categories.medical" },
+    { value: "Management", labelKey: "categories.management" },
+    { value: "Law", labelKey: "categories.law" },
+    { value: "Pharmacy", labelKey: "categories.pharmacy" },
+    { value: "Science", labelKey: "categories.science" },
+    { value: "Arts", labelKey: "categories.arts" },
+    { value: "Commerce", labelKey: "categories.commerce" }
   ];
 
   const handleGetStarted = () => {
@@ -131,9 +158,9 @@ const CollegePage = () => {
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-3">
           <div className="flex items-center gap-2 text-sm text-gray-500">
-            <Link to="/" className="hover:text-indigo-600 transition">Home</Link>
+            <Link to="/" className="hover:text-indigo-600 transition">{t("home")}</Link>
             <span className="text-gray-400">›</span>
-            <span className="text-indigo-600 font-medium">Colleges</span>
+            <span className="text-indigo-600 font-medium">{t("college")}</span>
           </div>
         </div>
       </div>
@@ -146,14 +173,14 @@ const CollegePage = () => {
             {/* Left Side - Animated Heading */}
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-[#071B52] leading-tight mb-4">
-                Find Your Perfect <br />
+                {t("collegeHeroTitle")} <br />
                 <span className="text-indigo-600">
                   {displayText}
                   <span className="animate-blink">|</span>
                 </span>
               </h1>
               <p className="text-[#5E6282] text-base md:text-lg mb-8">
-                Explore top universities and colleges across Odisha. Find the right college that matches your goals and dreams.
+                {t("collegeHeroDesc")}
               </p>
 
               {/* Search Box - Fixed */}
@@ -163,7 +190,7 @@ const CollegePage = () => {
                     <Search className="text-gray-400" size={20} />
                     <input
                       type="text"
-                      placeholder="Search for colleges..."
+                      placeholder={t("collegeSearchPlaceholder")}
                       value={searchQuery}
                       onChange={(e) => {
                         setSearchQuery(e.target.value);
@@ -197,7 +224,7 @@ const CollegePage = () => {
                           ))}
                         {allColleges.filter(c => c.name?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
                           <div className="px-4 py-3 text-xs text-gray-400 text-center">
-                            No colleges found
+                            {t("collegeNoCollegesFound")}
                           </div>
                         )}
                       </div>
@@ -211,7 +238,7 @@ const CollegePage = () => {
                       className="w-full px-2 py-3 outline-none text-gray-600 bg-transparent text-sm"
                     >
                       {districts.map(district => (
-                        <option key={district} value={district}>{district}</option>
+                        <option key={district.value} value={district.value}>{t(district.labelKey)}</option>
                       ))}
                     </select>
                   </div>
@@ -223,7 +250,7 @@ const CollegePage = () => {
                       className="w-full px-2 py-3 outline-none text-gray-600 bg-transparent text-sm"
                     >
                       {collegeTypes.map(type => (
-                        <option key={type} value={type}>{type}</option>
+                        <option key={type.value} value={type.value}>{t(type.labelKey)}</option>
                       ))}
                     </select>
                   </div>
@@ -235,7 +262,7 @@ const CollegePage = () => {
                       className="w-full px-2 py-3 outline-none text-gray-600 bg-transparent text-sm"
                     >
                       {categories.map(category => (
-                        <option key={category} value={category}>{category}</option>
+                        <option key={category.value} value={category.value}>{t(category.labelKey)}</option>
                       ))}
                     </select>
                   </div>
@@ -246,16 +273,25 @@ const CollegePage = () => {
                   className="w-full bg-[#4F46E5] text-white py-3 rounded-b-2xl font-semibold hover:bg-[#4338CA] transition-all duration-300 flex items-center justify-center gap-2"
                 >
                   <Search size={18} />
-                  <span>Search Colleges</span>
+                  <span>{t("collegeSearchButton")}</span>
                 </button>
               </div>
 
               {/* Quick Tags */}
               <div className="flex flex-wrap gap-2">
-                <span className="text-xs text-gray-400 font-medium">Popular:</span>
+                <span className="text-xs text-gray-400 font-medium">{t("collegePopularLabel")}</span>
                 {['Engineering', 'Medical', 'Management', 'Law', 'Pharmacy'].map(tag => (
-                  <span key={tag} className="text-xs px-3 py-1.5 bg-gray-100 rounded-full text-gray-600 cursor-pointer hover:bg-[#4F46E5]/10 hover:text-[#4F46E5] transition-colors duration-300">
-                    {tag} Colleges
+                  <span
+                    key={tag}
+                    onClick={() => {
+                      setSelectedCategory(tag);
+                      setTimeout(() => {
+                        collegeSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+                      }, 50);
+                    }}
+                    className="text-xs px-3 py-1.5 bg-gray-100 rounded-full text-gray-600 cursor-pointer hover:bg-[#4F46E5]/10 hover:text-[#4F46E5] transition-colors duration-300"
+                  >
+                    {t(`categories.${tag.toLowerCase()}`)} {t("college")}
                   </span>
                 ))}
               </div>
@@ -293,20 +329,40 @@ const CollegePage = () => {
         <div className="bg-white rounded-2xl p-4 border border-gray-100 flex flex-wrap items-center justify-between gap-3 shadow-sm">
           <div className="flex items-center gap-2 flex-wrap">
             <Filter size={18} className="text-gray-400" />
-            <span className="text-sm font-medium text-gray-600">Filter by:</span>
+            <span className="text-sm font-medium text-gray-600">{t("collegeFilterBy")}</span>
             <div className="flex gap-2 flex-wrap">
-              <button className="text-xs px-3 py-1.5 bg-[#4F46E5]/10 text-[#4F46E5] rounded-full font-medium">All</button>
-              <button className="text-xs px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full font-medium hover:bg-[#4F46E5]/10 hover:text-[#4F46E5] transition">Government</button>
-              <button className="text-xs px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full font-medium hover:bg-[#4F46E5]/10 hover:text-[#4F46E5] transition">Private</button>
-              <button className="text-xs px-3 py-1.5 bg-gray-100 text-gray-600 rounded-full font-medium hover:bg-[#4F46E5]/10 hover:text-[#4F46E5] transition">Deemed</button>
+              <button
+                onClick={() => setSelectedType("All Types")}
+                className={`text-xs px-3 py-1.5 rounded-full font-medium transition ${selectedType === "All Types" ? "bg-[#4F46E5]/10 text-[#4F46E5]" : "bg-gray-100 text-gray-600 hover:bg-[#4F46E5]/10 hover:text-[#4F46E5]"}`}
+              >
+                {t("types.all")}
+              </button>
+              <button
+                onClick={() => setSelectedType("Government")}
+                className={`text-xs px-3 py-1.5 rounded-full font-medium transition ${selectedType === "Government" ? "bg-[#4F46E5]/10 text-[#4F46E5]" : "bg-gray-100 text-gray-600 hover:bg-[#4F46E5]/10 hover:text-[#4F46E5]"}`}
+              >
+                {t("types.government")}
+              </button>
+              <button
+                onClick={() => setSelectedType("Private")}
+                className={`text-xs px-3 py-1.5 rounded-full font-medium transition ${selectedType === "Private" ? "bg-[#4F46E5]/10 text-[#4F46E5]" : "bg-gray-100 text-gray-600 hover:bg-[#4F46E5]/10 hover:text-[#4F46E5]"}`}
+              >
+                {t("types.private")}
+              </button>
+              <button
+                onClick={() => setSelectedType("Deemed University")}
+                className={`text-xs px-3 py-1.5 rounded-full font-medium transition ${selectedType === "Deemed University" ? "bg-[#4F46E5]/10 text-[#4F46E5]" : "bg-gray-100 text-gray-600 hover:bg-[#4F46E5]/10 hover:text-[#4F46E5]"}`}
+              >
+                {t("types.deemed")}
+              </button>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500">Sort by:</span>
+            <span className="text-xs text-gray-500">{t("collegeSortBy")}</span>
             <select className="text-sm bg-transparent text-[#4F46E5] font-medium outline-none">
-              <option>Popularity</option>
-              <option>Rating</option>
-              <option>Name A-Z</option>
+              <option>{t("collegeSortPopularity")}</option>
+              <option>{t("collegeSortRating")}</option>
+              <option>{t("collegeSortName")}</option>
             </select>
           </div>
         </div>
@@ -361,7 +417,7 @@ const CollegePage = () => {
                 <div
                   className="block w-full py-2.5 text-center text-sm font-medium rounded-xl border border-[#4F46E5] text-[#4F46E5] bg-white hover:bg-[#4F46E5] hover:text-white transition-all duration-300"
                 >
-                  View Details
+                  {t("viewDetails")}
                 </div>
               </div>
             </Link>
@@ -378,17 +434,17 @@ const CollegePage = () => {
               {isLoading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-[#4F46E5] border-t-transparent rounded-full animate-spin"></div>
-                  <span>Loading...</span>
+                  <span>{t("collegeLoadingText")}</span>
                 </>
               ) : (
                 <>
-                  <span>Load More Colleges</span>
+                  <span>{t("collegeLoadMoreButton")}</span>
                   <ChevronDown size={18} className="group-hover:translate-y-1 transition-transform duration-300" />
                 </>
               )}
             </button>
             <p className="text-xs text-gray-400 mt-3">
-              Showing {displayedColleges.length} of {filteredColleges.length} colleges
+              {t("collegeShowingStatus", { displayed: displayedColleges.length, total: filteredColleges.length })}
             </p>
           </div>
         )}
@@ -402,15 +458,15 @@ const CollegePage = () => {
               <GraduationCap size={48} className="text-white" />
             </div>
             <div className="text-center md:text-left">
-              <h2 className="text-2xl md:text-3xl font-bold mb-2">Can't find the right college?</h2>
-              <p className="text-white/80 text-sm md:text-base">Get personalized guidance from our expert counselors.</p>
+              <h2 className="text-2xl md:text-3xl font-bold mb-2">{t("collegeCtaTitle")}</h2>
+              <p className="text-white/80 text-sm md:text-base">{t("collegeCtaDesc")}</p>
             </div>
           </div>
           <button
             onClick={handleGetStarted}
             className="relative z-10 mt-6 md:mt-0 bg-white text-[#4F46E5] px-8 md:px-10 py-3.5 rounded-xl font-bold hover:shadow-lg transition-all duration-300 transform hover:scale-105 flex items-center gap-2"
           >
-            Get Started
+            {t("collegeCtaButton")}
             <ArrowRight size={18} />
           </button>
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl"></div>

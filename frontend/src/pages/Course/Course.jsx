@@ -1,94 +1,143 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { 
-  Search, GraduationCap, Laptop, BookOpen, FlaskConical, Briefcase, 
-  Pill, Palette, Microscope, ChevronRight, Settings, Users, 
-  ShieldCheck, Headphones, Sparkles, TrendingUp, Star, Zap
-} from 'lucide-react';
+import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import { Search, GraduationCap, Laptop, BookOpen, FlaskConical, Briefcase, Pill, Palette, Settings, Users, ShieldCheck, Headphones, TrendingUp, Zap, ChevronRight } from "lucide-react";
+import {
+  FaCog, FaHeartbeat, FaBriefcase, FaPalette,
+  FaFlask, FaBalanceScale, FaPencilAlt, FaConciergeBell,
+  FaDesktop, FaGraduationCap
+} from "react-icons/fa";
+import { useTranslation } from "react-i18next";
+import { useEnquiry } from "../../context/EnquiryContext";
 
 // Import your image
 import heroImage from "/src/assets/images/course.png";
 
-const Course = () => {
-  const [animatedText, setAnimatedText] = useState("");
-  const fullText = "Explore Courses, Build Your Future";
-  
-  useEffect(() => {
-    let i = 0;
-    const interval = setInterval(() => {
-      if (i <= fullText.length) {
-        setAnimatedText(fullText.slice(0, i));
-        i++;
-      } else {
-        clearInterval(interval);
-      }
-    }, 50);
-    return () => clearInterval(interval);
-  }, []);
+const iconMap = { GraduationCap, Briefcase, FlaskConical, Laptop, Pill, Settings, BookOpen, Palette };
 
-  const streams = [
-    { name: "Engineering",icon: <Laptop size={24} />, color: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10" },
-    { name: "Management",icon: <Briefcase size={24} />, color: "text-[#14B8A6]", bg: "bg-[#14B8A6]/10" },
-    { name: "Science", icon: <FlaskConical size={24} />, color: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10" },
-    { name: "Computer App.", icon: <Laptop size={24} />, color: "text-[#EC4899]", bg: "bg-[#EC4899]/10" },
-    { name: "Pharmacy", icon: <Pill size={24} />, color: "text-[#3B82F6]", bg: "bg-[#3B82F6]/10" },
-    { name: "Education", icon: <BookOpen size={24} />, color: "text-[#10B981]", bg: "bg-[#10B981]/10" },
-    { name: "Arts & Humanities", icon: <Palette size={24} />, color: "text-[#A855F7]", bg: "bg-[#A855F7]/10" },
-  ];
+const Course = () => {
+  const { t } = useTranslation();
+  const { openGuidance } = useEnquiry();
+  const [animatedText, setAnimatedText] = useState("");
+  const fullText = t("courseHeroTitle");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [selectedDegree, setSelectedDegree] = useState("All Degrees");
+  const [selectedStream, setSelectedStream] = useState("All Streams");
+  const courseSectionRef = useRef(null);
 
   const popularCourses = [
-    { t: "B.Tech", sub: "Bachelor of Technology", dur: "4 Years", s: "Engineering & Tech",  ic: <GraduationCap size={24} />, c: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10" },
-    { t: "MBA", sub: "Master of Business Admin.", dur: "2 Years", s: "Management",  ic: <Briefcase size={24} />, c: "text-[#14B8A6]", bg: "bg-[#14B8A6]/10" },
-    { t: "B.Sc", sub: "Bachelor of Science", dur: "3 Years", s: "Science",  ic: <FlaskConical size={24} />, c: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10" },
-    { t: "BCA", sub: "Bachelor of Computer App.", dur: "3 Years", s: "Computer Applications",  ic: <Laptop size={24} />, c: "text-[#EC4899]", bg: "bg-[#EC4899]/10" },
-    { t: "B.Pharm", sub: "Bachelor of Pharmacy", dur: "4 Years", s: "Pharmacy",  ic: <Pill size={24} />, c: "text-[#3B82F6]", bg: "bg-[#3B82F6]/10" },
-    { t: "Diploma", sub: "Polytechnic Diploma", dur: "3 Years", s: "Various Branches",  ic: <Settings size={24} />, c: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10" },
-    { t: "B.Ed", sub: "Bachelor of Education", dur: "2 Years", s: "Education",  ic: <BookOpen size={24} />, c: "text-[#10B981]", bg: "bg-[#10B981]/10" },
-    { t: "BA", sub: "Bachelor of Arts", dur: "3 Years", s: "Arts & Humanities",  ic: <Palette size={24} />, c: "text-[#A855F7]", bg: "bg-[#A855F7]/10" },
+    { t: "B.Tech",  sub: t("btechSubtitle"),    dur: t("duration4Years"), s: t("fieldEngineeringName").replace("\n", " "),   category: "Engineering", degree: "Bachelor's Degree", stream: "Technology", ic: "GraduationCap", c: "text-indigo-600",  bg: "bg-indigo-50"  },
+    { t: "MBA",     sub: t("mbaSubtitle"), dur: t("duration2Years"), s: t("fieldCommerceName").replace("\n", " "),            category: "Management",  degree: "Master's Degree",   stream: "Commerce",    ic: "Briefcase",     c: "text-teal-600",   bg: "bg-teal-50"    },
+    { t: "B.Sc",    sub: t("bscSubtitle"),       dur: t("duration3Years"), s: t("fieldScienceName"),               category: "Science",     degree: "Bachelor's Degree", stream: "Science",     ic: "FlaskConical",  c: "text-amber-600",  bg: "bg-amber-50"   },
+    { t: "BCA",     sub: t("bcaSubtitle"), dur: t("duration3Years"), s: t("fieldITComputerName").replace("\n", " "), category: "Engineering", degree: "Bachelor's Degree", stream: "Technology",  ic: "Laptop",        c: "text-pink-600",   bg: "bg-pink-50"    },
+    { t: "B.Pharm", sub: t("bpharmSubtitle"),      dur: t("duration4Years"), s: t("categories.pharmacy"),              category: "Pharmacy",    degree: "Bachelor's Degree", stream: "Science",     ic: "Pill",          c: "text-blue-600",   bg: "bg-blue-50"    },
+    { t: "Diploma", sub: t("diplomaSubtitle"),       dur: t("duration3Years"), s: t("fieldEngineeringName").replace("\n", " "),      category: "Engineering", degree: "Diploma",           stream: "Technology",  ic: "Settings",      c: "text-amber-600",  bg: "bg-amber-50"   },
+    { t: "B.Ed",    sub: t("bedSubtitle", "Bachelor of Education"),     dur: t("duration2Years"), s: t("fieldEducationName"),             category: "Education",   degree: "Bachelor's Degree", stream: "Arts",        ic: "BookOpen",      c: "text-emerald-600",bg: "bg-emerald-50" },
+    { t: "BA",      sub: t("baSubtitle", "Bachelor of Arts"),          dur: t("duration3Years"), s: t("fieldArtsName").replace("\n", " "),     category: "Arts",        degree: "Bachelor's Degree", stream: "Arts",        ic: "Palette",       c: "text-purple-600", bg: "bg-purple-50"  },
+  ];
+
+  const fields = [
+    { icon: <FaCog />, color: "bg-[#F3E8FF] text-[#6D28D9]", name: t("fieldEngineeringName"), desc: t("fieldEngineeringDesc"), link: "/field/engineering" },
+    { icon: <FaHeartbeat />, color: "bg-[#CCFBF1] text-[#0D9488]", name: t("fieldMedicalName"), desc: t("fieldMedicalDesc"), link: "/field/medical" },
+    { icon: <FaBriefcase />, color: "bg-[#FFEDD5] text-[#EA580C]", name: t("fieldCommerceName"), desc: t("fieldCommerceDesc"), link: "/field/commerce" },
+    { icon: <FaPalette />, color: "bg-[#FCE7F3] text-[#DB2777]", name: t("fieldArtsName"), desc: t("fieldArtsDesc"), link: "/field/arts" },
+    { icon: <FaFlask />, color: "bg-[#DBEAFE] text-[#2563EB]", name: t("fieldScienceName"), desc: t("fieldScienceDesc"), link: "/field/science" },
+    { icon: <FaBalanceScale />, color: "bg-[#EDE9FE] text-[#6D28D9]", name: t("fieldLawName"), desc: t("fieldLawDesc"), link: "/field/law" },
+    { icon: <FaPencilAlt />, color: "bg-[#FCE7F3] text-[#DB2777]", name: t("fieldDesignName"), desc: t("fieldDesignDesc"), link: "/field/design" },
+    { icon: <FaConciergeBell />, color: "bg-[#FEF3C7] text-[#D97706]", name: t("fieldHospitalityName"), desc: t("fieldHospitalityDesc"), link: "/field/hospitality" },
+    { icon: <FaDesktop />, color: "bg-[#CCFBF1] text-[#0D9488]", name: t("fieldITComputerName"), desc: t("fieldITComputerDesc"), link: "/field/it-computer" },
+    { icon: <FaGraduationCap />, color: "bg-[#EDE9FE] text-[#6D28D9]", name: t("fieldEducationName"), desc: t("fieldEducationDesc"), link: "/field/education" },
   ];
 
   const whyChooseUs = [
-    { t: "Wide Range", d: "Diverse courses across streams", ic: <BookOpen size={20} />, c: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10" },
-    { t: "Top Colleges", d: "Verified Universities", ic: <Users size={20} />, c: "text-[#14B8A6]", bg: "bg-[#14B8A6]/10" },
-    { t: "100% Trusted", d: "Verified and secure process", ic: <ShieldCheck size={20} />, c: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10" },
-    { t: "Expert Guidance", d: "Help from our counselors", ic: <Headphones size={20} />, c: "text-[#3B82F6]", bg: "bg-[#3B82F6]/10" },
+    { t: t("courseWhyChooseWideRange"),      d: t("courseWhyChooseWideRangeDesc"),  ic: <BookOpen size={20} />,    c: "text-indigo-600",  bg: "bg-indigo-50"  },
+    { t: t("courseWhyChooseTopColleges"),    d: t("courseWhyChooseTopCollegesDesc"),           ic: <Users size={20} />,       c: "text-teal-600",    bg: "bg-teal-50"    },
+    { t: t("courseWhyChooseTrusted"),    d: t("courseWhyChooseTrustedDesc"),     ic: <ShieldCheck size={20} />, c: "text-amber-600",   bg: "bg-amber-50"   },
+    { t: t("courseWhyChooseExpertGuidance"), d: t("courseWhyChooseExpertGuidanceDesc"),        ic: <Headphones size={20} />,  c: "text-blue-600",    bg: "bg-blue-50"    },
   ];
+
+  const categories = [
+    { value: "All Categories", labelKey: "categories.all" },
+    { value: "Engineering", labelKey: "categories.engineering" },
+    { value: "Management", labelKey: "categories.management" },
+    { value: "Medical", labelKey: "categories.medical" },
+    { value: "Pharmacy", labelKey: "categories.pharmacy" },
+    { value: "Law", labelKey: "categories.law" },
+    { value: "Arts", labelKey: "categories.arts" },
+    { value: "Science", labelKey: "categories.science" },
+    { value: "Education", labelKey: "categories.education" }
+  ];
+
+  const degrees = [
+    { value: "All Degrees", labelKey: "degrees.all" },
+    { value: "Bachelor's Degree", labelKey: "degrees.bachelor" },
+    { value: "Master's Degree", labelKey: "degrees.master" },
+    { value: "Diploma", labelKey: "degrees.diploma" },
+    { value: "Certificate", labelKey: "degrees.certificate" }
+  ];
+
+  const streams = [
+    { value: "All Streams", labelKey: "streams.all" },
+    { value: "Science", labelKey: "streams.science" },
+    { value: "Commerce", labelKey: "streams.commerce" },
+    { value: "Arts", labelKey: "streams.arts" },
+    { value: "Technology", labelKey: "streams.technology" }
+  ];
+
+  useEffect(() => {
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i <= fullText.length) { setAnimatedText(fullText.slice(0, i)); i++; }
+      else clearInterval(interval);
+    }, 50);
+    return () => clearInterval(interval);
+  }, [fullText]);
+
+  const filteredCourses = popularCourses.filter(c => {
+    const q = searchQuery.toLowerCase();
+    const matchSearch   = !q || c.t.toLowerCase().includes(q) || c.sub.toLowerCase().includes(q);
+    const matchCategory = selectedCategory === "All Categories" || c.category === selectedCategory;
+    const matchDegree   = selectedDegree   === "All Degrees"    || c.degree    === selectedDegree;
+    const matchStream   = selectedStream   === "All Streams"    || c.stream    === selectedStream;
+    return matchSearch && matchCategory && matchDegree && matchStream;
+  });
+
+  const handleSearch = () => courseSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+
+  const desktopFields = fields.slice(0, 6);
+  const mobileFields = fields.slice(0, 4);
+  const mobilePopularCourses = popularCourses.slice(0, 4);
 
   return (
     <div className="bg-[#F8F8FC] min-h-screen font-sans pb-16">
-      
-      {/* HERO SECTION */}
-      <section className="bg-white pt-8 pb-16 relative overflow-hidden">
+
+      {/* HERO */}
+      <section className="bg-white pt-10 pb-16">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6">
           <div className="flex flex-col lg:grid lg:grid-cols-2 gap-10 items-center">
-            {/* LEFT - Text Content */}
             <div>
-              <h1 className="text-[32px] sm:text-[40px] md:text-[48px] leading-[1.2] font-bold text-[#071B52]">
-                <span className="text-[#4F46E5]">{animatedText}</span>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl leading-tight font-bold text-[#071B52]">
+                <span className="text-indigo-600">{animatedText}</span>
+                <span className="animate-pulse text-indigo-400">|</span>
               </h1>
-              <p className="text-[#5E6282] text-base sm:text-lg mt-4 max-w-[560px]">
-                Discover a wide range of courses from top colleges and universities in Odisha. 
-                Find the perfect course that matches your career goals.
+              <p className="text-gray-500 text-base mt-4 max-w-lg">
+                {t("courseHeroDesc")}
               </p>
-
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 mt-6">
+              <div className="flex flex-col sm:flex-row gap-3 mt-6">
                 <Link to="/colleges">
-                  <button className="bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 hover:shadow-md transition-all duration-300 transform hover:scale-105">
-                    Explore Colleges
-                    <TrendingUp size={18} />
+                  <button className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2 hover:shadow-lg transition-all duration-300 hover:scale-105">
+                    {t("exploreColleges")} <TrendingUp size={16} />
                   </button>
                 </Link>
                 <Link to="/contact">
-                  <button className="border-2 border-[#4F46E5] text-[#4F46E5] px-6 py-3 rounded-xl font-semibold flex items-center gap-2 hover:bg-[#4F46E5] hover:text-white transition-all duration-300">
-                    Contact Us
-                    <Headphones size={18} />
+                  <button className="border-2 border-indigo-600 text-indigo-600 px-6 py-3 rounded-xl font-semibold flex items-center gap-2 hover:bg-indigo-600 hover:text-white transition-all duration-300">
+                    {t("contactUs")} <Headphones size={16} />
                   </button>
                 </Link>
               </div>
             </div>
-
-            {/* RIGHT - Image */}
+            {/* Hero Image */}
             <div className="relative flex justify-center">
               <img
                 src={heroImage}
@@ -100,200 +149,260 @@ const Course = () => {
         </div>
       </section>
 
-      {/* PROFESSIONAL SEARCH BAR */}
-      <section className="max-w-[1280px] mx-auto px-4 sm:px-6">
-        <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
-          {/* Search Input Row */}
-          <div className="p-4 border-b border-gray-100">
-            <div className="flex items-center gap-3">
-              <div className="bg-gray-50 p-2 rounded-xl">
-                <Search className="text-[#4F46E5]" size={20} />
-              </div>
+      {/* SEARCH BAR */}
+      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 -mt-2">
+        <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-visible">
+          <div className="flex flex-col md:flex-row">
+
+            {/* Text search with suggestions */}
+            <div className="relative flex items-center w-full md:w-[40%] px-4 py-2 border-b md:border-b-0 md:border-r border-gray-200">
+              <Search className="text-gray-400 flex-shrink-0" size={18} />
               <input
                 type="text"
-                placeholder="Search for courses by name, college, or stream..."
-                className="flex-1 outline-none bg-transparent text-gray-700 placeholder:text-gray-400 text-base py-2"
+                placeholder={t("courseSearchPlaceholder")}
+                value={searchQuery}
+                onChange={(e) => { setSearchQuery(e.target.value); setShowSuggestions(true); }}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                className="w-full px-3 py-2 outline-none bg-transparent text-gray-700 placeholder:text-gray-400 text-sm"
               />
+              {showSuggestions && searchQuery && (
+                <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-50 max-h-56 overflow-y-auto">
+                  {popularCourses.filter(c =>
+                    c.t.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    c.sub.toLowerCase().includes(searchQuery.toLowerCase())
+                  ).slice(0, 8).map((course, idx) => (
+                    <div
+                      key={idx}
+                      onMouseDown={() => { setSearchQuery(course.t); setShowSuggestions(false); setTimeout(() => courseSectionRef.current?.scrollIntoView({ behavior: "smooth" }), 50); }}
+                      className="px-4 py-2.5 hover:bg-indigo-50 cursor-pointer text-sm text-gray-700 border-b last:border-b-0 border-gray-100 flex items-center gap-2"
+                    >
+                      <Search size={13} className="text-gray-400 flex-shrink-0" />
+                      <span className="font-semibold">{course.t}</span>
+                      <span className="text-gray-400 text-xs truncate">— {course.sub}</span>
+                    </div>
+                  ))}
+                  {popularCourses.filter(c =>
+                    c.t.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    c.sub.toLowerCase().includes(searchQuery.toLowerCase())
+                  ).length === 0 && (
+                    <div className="px-4 py-3 text-xs text-gray-400 text-center">{t("courseNoCoursesFound")}</div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Category */}
+            <div className="w-full md:w-[20%] border-b md:border-b-0 md:border-r border-gray-200">
+              <div className="px-4 py-2">
+                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{t("courseCategoryLabel")}</label>
+                <select value={selectedCategory} onChange={e => setSelectedCategory(e.target.value)}
+                  className="w-full py-2 outline-none text-gray-700 bg-transparent text-sm cursor-pointer mt-1 appearance-none">
+                  {categories.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
+                </select>
+              </div>
+            </div>
+
+            {/* Degree */}
+            <div className="w-full md:w-[20%] border-b md:border-b-0 md:border-r border-gray-200">
+              <div className="px-4 py-2">
+                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{t("courseDegreeLabel")}</label>
+                <select value={selectedDegree} onChange={e => setSelectedDegree(e.target.value)}
+                  className="w-full py-2 outline-none text-gray-700 bg-transparent text-sm cursor-pointer mt-1 appearance-none">
+                  {degrees.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
+                </select>
+              </div>
+            </div>
+
+            {/* Stream */}
+            <div className="w-full md:w-[20%]">
+              <div className="px-4 py-2">
+                <label className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{t("courseStreamLabel")}</label>
+                <select value={selectedStream} onChange={e => setSelectedStream(e.target.value)}
+                  className="w-full py-2 outline-none text-gray-700 bg-transparent text-sm cursor-pointer mt-1 appearance-none">
+                  {streams.map(o => <option key={o.value} value={o.value}>{t(o.labelKey)}</option>)}
+                </select>
+              </div>
             </div>
           </div>
 
-          {/* Filters Row - Fixed dropdown positioning */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="border-b sm:border-b-0 sm:border-r border-gray-100 relative">
-              <div className="px-4 py-2">
-                <label className="text-xs font-medium text-gray-400 uppercase tracking-wide">Category</label>
-                <select className="w-full py-2 outline-none text-gray-700 bg-transparent text-sm cursor-pointer mt-1 appearance-none">
-                  <option>All Categories</option>
-                  <option>Engineering</option>
-                  <option>Management</option>
-                  <option>Medical</option>
-                  <option>Pharmacy</option>
-                  <option>Law</option>
-                </select>
-              </div>
-            </div>
-            <div className="border-b sm:border-b-0 sm:border-r border-gray-100 relative">
-              <div className="px-4 py-2">
-                <label className="text-xs font-medium text-gray-400 uppercase tracking-wide">Degree Level</label>
-                <select className="w-full py-2 outline-none text-gray-700 bg-transparent text-sm cursor-pointer mt-1 appearance-none">
-                  <option>All Degrees</option>
-                  <option>Bachelor's Degree</option>
-                  <option>Master's Degree</option>
-                  <option>Diploma</option>
-                  <option>Certificate</option>
-                </select>
-              </div>
-            </div>
-            <div className="border-b sm:border-b-0 sm:border-r border-gray-100 relative">
-              <div className="px-4 py-2">
-                <label className="text-xs font-medium text-gray-400 uppercase tracking-wide">Stream</label>
-                <select className="w-full py-2 outline-none text-gray-700 bg-transparent text-sm cursor-pointer mt-1 appearance-none">
-                  <option>All Streams</option>
-                  <option>Science</option>
-                  <option>Commerce</option>
-                  <option>Arts</option>
-                  <option>Technology</option>
-                </select>
-              </div>
-            </div>
-            <div className="p-3 bg-[#4F46E5]/5">
-              <button className="w-full bg-[#4F46E5] text-white py-3 rounded-xl font-semibold hover:bg-[#4338CA] transition-all duration-300 flex items-center justify-center gap-2 mt-1">
-                <Search size={18} />
-                Search Courses
-              </button>
-            </div>
-          </div>
+          <button onClick={handleSearch}
+            className="w-full bg-indigo-600 text-white py-3 rounded-b-2xl font-semibold hover:bg-indigo-700 transition-all duration-300 flex items-center justify-center gap-2">
+            <Search size={17} /> {t("courseSearchButton")}
+          </button>
         </div>
 
-        {/* Popular Searches Tags */}
-        <div className="flex flex-wrap gap-2 justify-center mt-6">
-          <span className="text-xs text-gray-400 font-medium">Popular Searches:</span>
-          {['B.Tech', 'MBA', 'B.Sc', 'BCA', 'B.Pharm', 'Diploma', 'M.Tech', 'LLB'].map(tag => (
-            <span key={tag} className="text-xs px-3 py-1.5 bg-gray-100 rounded-full text-gray-600 cursor-pointer hover:bg-[#4F46E5]/10 hover:text-[#4F46E5] transition-all duration-300">
+        {/* Popular tags */}
+        <div className="flex flex-wrap gap-2 justify-center mt-5">
+          <span className="text-xs text-gray-400 font-medium self-center">{t("collegePopularLabel")}</span>
+          {["B.Tech","MBA","B.Sc","BCA","B.Pharm","Diploma","M.Tech","LLB"].map(tag => (
+            <span key={tag}
+              onMouseDown={() => { setSearchQuery(tag); setTimeout(() => courseSectionRef.current?.scrollIntoView({ behavior: "smooth" }), 50); }}
+              className="text-xs px-3 py-1.5 bg-gray-100 rounded-full text-gray-600 cursor-pointer hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200">
               {tag}
             </span>
           ))}
         </div>
       </section>
 
-      {/* STREAMS SECTION */}
-      <section className="max-w-[1280px] mx-auto py-16 px-4 sm:px-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+      {/* STREAMS - Mobile: 4 cards, Desktop: 6 cards */}
+      <section className="max-w-[1280px] mx-auto py-14 px-4 sm:px-6">
+        <div className="flex items-center justify-between mb-7">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#071B52]">Browse by Stream</h2>
-            <p className="text-gray-500 text-sm mt-1">Explore courses by your preferred stream</p>
+            <h2 className="text-2xl font-bold text-[#071B52]">{t("courseBrowseStreamTitle")}</h2>
+            <p className="text-gray-400 text-xs mt-1">{t("courseBrowseStreamDesc")}</p>
           </div>
           <Link to="/field">
-  <button className="text-[#4F46E5] font-semibold text-sm flex items-center gap-1 hover:gap-2 transition-all duration-300">
-    View All Streams <ChevronRight size={16} />
-  </button>
-</Link>
+            <button className="text-indigo-600 font-semibold text-sm flex items-center gap-1 hover:gap-2 transition-all duration-200">
+              {t("courseViewAll")} <ChevronRight size={15} />
+            </button>
+          </Link>
+        </div>
+        
+        {/* Mobile View (4 cards) */}
+        <div className="grid grid-cols-2 sm:hidden gap-3">
+          {mobileFields.map((f, i) => (
+            <Link key={i} to={f.link || "#"} className="block">
+              <div className="group bg-white p-4 rounded-2xl shadow-sm hover:shadow-md border border-gray-100 text-center cursor-pointer hover:-translate-y-1 transition-all duration-300 h-full flex flex-col justify-center items-center">
+                <div className={`${f.color} w-11 h-11 mx-auto mb-2 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-xl`}>
+                  {f.icon}
+                </div>
+                <h4 className="font-bold text-[11px] text-[#071B52] leading-tight whitespace-pre-line">
+                  {f.name}
+                </h4>
+              </div>
+            </Link>
+          ))}
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
-          {streams.map((s, i) => (
-            <div 
-              key={i} 
-              className="group bg-white p-4 rounded-2xl shadow-sm hover:shadow-md transition-all duration-500 hover:-translate-y-2 border border-gray-100 text-center cursor-pointer"
-            >
-              <div className={`${s.bg} ${s.color} w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                {s.icon}
+        {/* Desktop View (6 cards) */}
+        <div className="hidden sm:grid sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {desktopFields.map((f, i) => (
+            <Link key={i} to={f.link || "#"} className="block">
+              <div className="group bg-white p-4 rounded-2xl shadow-sm hover:shadow-md border border-gray-100 text-center cursor-pointer hover:-translate-y-1 transition-all duration-300 h-full flex flex-col justify-center items-center">
+                <div className={`${f.color} w-11 h-11 mx-auto mb-2 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 text-xl`}>
+                  {f.icon}
+                </div>
+                <h4 className="font-bold text-[11px] text-[#071B52] leading-tight whitespace-pre-line">
+                  {f.name}
+                </h4>
               </div>
-              <h4 className="font-bold text-sm text-[#071B52]">{s.name}</h4>
-              <p className="text-xs text-gray-400 mt-1 font-medium">{s.count} Courses</p>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
 
-      {/* POPULAR COURSES SECTION */}
-      <section className="max-w-[1280px] mx-auto py-10 px-4 sm:px-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+      {/* POPULAR COURSES */}
+      <section ref={courseSectionRef} className="max-w-[1280px] mx-auto py-8 px-4 sm:px-6 scroll-mt-10">
+        <div className="flex items-center justify-between mb-7">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#071B52]">Popular Courses</h2>
-            <p className="text-gray-500 text-sm mt-1">Most sought-after courses by students</p>
+            <h2 className="text-2xl font-bold text-[#071B52]">{t("popularCourses")}</h2>
+            <p className="text-gray-400 text-xs mt-1">
+              {t("popularCoursesDesc")}
+            </p>
           </div>
           <Link to="/courses">
-            <button className="text-[#4F46E5] font-semibold text-sm flex items-center gap-1 hover:gap-2 transition-all duration-300">
-              View All Courses <ChevronRight size={16} />
+            <button className="text-indigo-600 font-semibold text-sm flex items-center gap-1 hover:gap-2 transition-all duration-200">
+              {t("courseViewAll")} <ChevronRight size={15} />
             </button>
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {popularCourses.map((c, i) => {
+        {/* Mobile View - 4 courses */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:hidden">
+          {mobilePopularCourses.map((c, i) => {
+            const Icon = iconMap[c.ic];
             const slug = c.t.toLowerCase().replace(/\./g, "");
             return (
-              <Link 
-                key={i} 
-                to={`/course-detail/${slug}`}
-                className="group bg-white p-5 rounded-2xl shadow-sm hover:shadow-md transition-all duration-500 hover:-translate-y-2 border border-gray-100 block"
-              >
-                <div className={`${c.bg} w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
-                  <div className={c.c}>{c.ic}</div>
+              <Link key={i} to={`/course-detail/${slug}`} className="group bg-white p-5 rounded-2xl shadow-sm hover:shadow-md border border-gray-100 hover:-translate-y-1 transition-all duration-300 cursor-pointer block">
+                <div className={`${c.bg} w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
+                  <span className={c.c}><Icon size={22} /></span>
                 </div>
-                <h4 className="text-xl font-bold text-[#071B52]">{c.t}</h4>
-                <p className="text-xs text-gray-500 mb-4">{c.sub}</p>
-                <div className="space-y-2 mb-5">
-                  <p className="text-xs font-semibold text-gray-600 bg-gray-50 p-2 rounded-lg">{c.dur} Degree Program</p>
-                  <p className="text-xs font-semibold text-gray-600 bg-gray-50 p-2 rounded-lg">{c.s}</p>
+                <h4 className="text-lg font-bold text-[#071B52]">{c.t}</h4>
+                <p className="text-xs text-gray-400 mb-3">{c.sub}</p>
+                <div className="space-y-1.5 mb-4">
+                  <p className="text-xs font-medium text-gray-600 bg-gray-50 px-2.5 py-1.5 rounded-lg">{c.dur} {t("courseProgramLabel", "Program")}</p>
+                  <p className="text-xs font-medium text-gray-600 bg-gray-50 px-2.5 py-1.5 rounded-lg">{c.s}</p>
                 </div>
-                <div className="flex justify-between items-center pt-4 border-t border-gray-100">
-                  <span className="text-xs font-bold text-gray-400 uppercase">{c.col} Colleges</span>
-                  <span className="text-[#4F46E5] font-bold text-xs flex items-center gap-1 hover:gap-2 transition-all duration-300">
-                    Details <ChevronRight size={14} />
-                  </span>
+                <div className="flex justify-between items-center pt-3 border-t border-gray-100">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase">{t("aboutStatsColleges")}</span>
+                  <span className="text-indigo-600 font-bold text-xs flex items-center gap-1">{t("courseDetailsLabel", "Details")} <ChevronRight size={13} /></span>
                 </div>
               </Link>
             );
           })}
         </div>
+
+        {/* Desktop/Tablet View - All filtered courses */}
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {filteredCourses.length === 0 ? (
+            <div className="col-span-full text-center py-16 text-gray-400">
+              <Search size={38} className="mx-auto mb-3 opacity-25" />
+              <p className="text-sm font-medium">{t("courseNoMatchesFound", "No courses match your search.")}</p>
+              <button
+                onClick={() => { setSearchQuery(""); setSelectedCategory("All Categories"); setSelectedDegree("All Degrees"); setSelectedStream("All Streams"); }}
+                className="mt-3 text-xs text-indigo-600 underline">
+                {t("courseClearFilters", "Clear filters")}
+              </button>
+            </div>
+          ) : (
+            filteredCourses.map((c, i) => {
+              const Icon = iconMap[c.ic];
+              const slug = c.t.toLowerCase().replace(/\./g, "");
+              return (
+                <Link key={i} to={`/course-detail/${slug}`} className="group bg-white p-5 rounded-2xl shadow-sm hover:shadow-md border border-gray-100 hover:-translate-y-1 transition-all duration-300 cursor-pointer block">
+                  <div className={`${c.bg} w-12 h-12 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300`}>
+                    <span className={c.c}><Icon size={22} /></span>
+                  </div>
+                  <h4 className="text-lg font-bold text-[#071B52]">{c.t}</h4>
+                  <p className="text-xs text-gray-400 mb-3">{c.sub}</p>
+                  <div className="space-y-1.5 mb-4">
+                    <p className="text-xs font-medium text-gray-600 bg-gray-50 px-2.5 py-1.5 rounded-lg">{c.dur} {t("courseProgramLabel", "Program")}</p>
+                    <p className="text-xs font-medium text-gray-600 bg-gray-50 px-2.5 py-1.5 rounded-lg">{c.s}</p>
+                  </div>
+                  <div className="flex justify-between items-center pt-3 border-t border-gray-100">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase">{t("aboutStatsColleges")}</span>
+                    <span className="text-indigo-600 font-bold text-xs flex items-center gap-1">{t("courseDetailsLabel", "Details")} <ChevronRight size={13} /></span>
+                  </div>
+                </Link>
+              );
+            })
+          )}
+        </div>
       </section>
 
-      {/* WHY CHOOSE US SECTION */}
-      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 py-16">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl font-bold text-[#071B52]">Why Choose Us?</h2>
-          <p className="text-gray-500 text-sm mt-2">We make your course selection journey easier</p>
+      {/* WHY CHOOSE US */}
+      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 py-14">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-[#071B52]">{t("whyChooseUs")}</h2>
+          <p className="text-gray-400 text-xs mt-1">{t("courseWhyChooseUsDesc", "We make your course selection journey easier")}</p>
         </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {whyChooseUs.map((w, i) => (
-            <div 
-              key={i} 
-              className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-all duration-500 hover:-translate-y-2 border border-gray-100 text-center"
-            >
-              <div className={`${w.bg} ${w.c} w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
+            <div key={i} className="group bg-white p-6 rounded-2xl shadow-sm hover:shadow-md border border-gray-100 text-center hover:-translate-y-1 transition-all duration-300">
+              <div className={`${w.bg} ${w.c} w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300`}>
                 {w.ic}
               </div>
-              <h5 className="font-bold text-lg text-[#071B52] mb-2">{w.t}</h5>
-              <p className="text-xs text-gray-500 leading-relaxed">{w.d}</p>
+              <h5 className="font-bold text-[#071B52] mb-1">{w.t}</h5>
+              <p className="text-xs text-gray-400">{w.d}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* CTA SECTION */}
-      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 mb-16">
-        <div className="bg-gradient-to-r from-[#4F46E5] to-[#7C3AED] rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between text-white relative overflow-hidden shadow-md">
-          <div className="relative z-10 text-center md:text-left mb-6 md:mb-0">
-            <h2 className="text-2xl md:text-3xl font-bold mb-3">
-              Finding the right course?
-            </h2>
-            <p className="text-white/80 text-sm md:text-base">
-              Get personalized guidance from our expert counselors.
-            </p>
+      {/* CTA */}
+      <section className="max-w-[1280px] mx-auto px-4 sm:px-6 mb-10">
+        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-8 md:p-10 flex flex-col md:flex-row items-center justify-between text-white relative overflow-hidden shadow-lg">
+          <div className="relative z-10 text-center md:text-left mb-5 md:mb-0">
+            <h2 className="text-xl md:text-2xl font-bold mb-1">{t("courseCtaTitle", "Finding the right course?")}</h2>
+            <p className="text-white/75 text-sm">{t("courseCtaDesc", "Get personalized guidance from our expert counselors.")}</p>
           </div>
-          <Link to="/register">
-            <button className="relative z-10 bg-white text-[#4F46E5] px-8 md:px-10 py-3.5 rounded-xl font-bold hover:shadow-md transition-all duration-300 transform hover:scale-105 flex items-center gap-2">
-              Get Free Guidance
-              <Zap size={18} />
-            </button>
-          </Link>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+          <button onClick={openGuidance} className="relative z-10 bg-white text-indigo-600 px-8 py-3 rounded-xl font-bold hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-2">
+            {t("courseCtaButton", "Get Free Guidance")} <Zap size={16} />
+          </button>
+          <div className="absolute top-0 right-0 w-56 h-56 bg-white/10 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none"></div>
         </div>
       </section>
-
     </div>
   );
 };

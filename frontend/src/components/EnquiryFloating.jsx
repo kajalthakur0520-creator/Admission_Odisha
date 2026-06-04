@@ -30,7 +30,6 @@ const EnquirySuccessModal = ({ open, onClose }) => {
         transition: "transform 0.45s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease",
         opacity: visible ? 1 : 0,
       }}>
-        {/* Close */}
         <button onClick={onClose} style={{
           position: "absolute", top: 14, right: 14, zIndex: 10,
           width: 30, height: 30, borderRadius: "50%",
@@ -42,19 +41,16 @@ const EnquirySuccessModal = ({ open, onClose }) => {
           </svg>
         </button>
 
-        {/* Top gradient section */}
         <div style={{
           background: "linear-gradient(160deg, #FFF5F7 0%, #F5F3FF 100%)",
           padding: "40px 24px 24px",
           display: "flex", flexDirection: "column", alignItems: "center",
           position: "relative",
         }}>
-          {/* Floating decorative emojis */}
           <span style={{ position: "absolute", top: 20, left: 24, fontSize: 18, animation: "floatUp 2s ease-in-out infinite" }}>💗</span>
           <span style={{ position: "absolute", top: 30, right: 28, fontSize: 13, animation: "floatUp 2.5s ease-in-out infinite 0.5s" }}>✨</span>
           <span style={{ position: "absolute", bottom: 30, left: 20, fontSize: 11, animation: "floatUp 3s ease-in-out infinite 1s" }}>⭐</span>
 
-          {/* Envelope */}
           <div style={{
             width: 140, height: 140, borderRadius: "50%", marginBottom: 12,
             background: "radial-gradient(circle, #FFD6DE 0%, #FFF0F3 65%, transparent 100%)",
@@ -104,7 +100,6 @@ const EnquirySuccessModal = ({ open, onClose }) => {
           </div>
         </div>
 
-        {/* Bottom white section */}
         <div style={{ padding: "22px 28px 20px", background: "white" }}>
           <div style={{
             display: "flex", alignItems: "flex-start", gap: 14,
@@ -170,7 +165,7 @@ const fields = [
     ),
   },
   {
-    id: "phone", label: "Phone Number", placeholder: "Enter your mobile number", type: "tel",
+    id: "phone", label: "Phone Number", placeholder: "Enter your phone number", type: "tel",
     icon: (
       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.06 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z"/>
@@ -178,7 +173,7 @@ const fields = [
     ),
   },
   {
-    id: "courses", label: "Interested Course(s)", placeholder: "e.g. B.Tech, MBA, BCA", type: "text",
+    id: "courses", label: "Interested Course(s)", placeholder: "Enter your preferred courses", type: "text",
     icon: (
       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
@@ -187,7 +182,7 @@ const fields = [
     ),
   },
   {
-    id: "colleges", label: "Preferred College(s)", placeholder: "e.g. KIIT, Silicon, ITER", type: "text",
+    id: "colleges", label: "Preferred College(s)", placeholder: "Enter your preferred colleges", type: "text",
     icon: (
       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <rect x="2" y="7" width="20" height="14" rx="2"/>
@@ -196,7 +191,7 @@ const fields = [
     ),
   },
   {
-    id: "location", label: "Preferred Location", placeholder: "e.g. Bhubaneswar, Cuttack", type: "text",
+    id: "location", label: "Preferred Location", placeholder: "Enter your preferred location", type: "text",
     icon: (
       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
@@ -211,7 +206,8 @@ export default function EnquiryFloating() {
   const [submitted, setSubmitted] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
   const [form, setForm] = useState({ fullName: "", phone: "", courses: "", colleges: "", location: "" });
-  const [guidance, setGuidance] = useState("yes");
+  const [phoneError, setPhoneError] = useState("");
+  const [guidance] = useState("yes");
 
   useEffect(() => {
     const userStr = localStorage.getItem("user");
@@ -229,6 +225,38 @@ export default function EnquiryFloating() {
     }
   }, []);
 
+  // Validate phone number - only digits, 10-11 characters
+  const validatePhone = (phone) => {
+    if (!phone || phone.trim() === "") {
+      return "Phone number is required";
+    }
+    const phoneRegex = /^[0-9]{10,11}$/;
+    if (!phoneRegex.test(phone)) {
+      return "Phone number must be 10-11 digits only";
+    }
+    return "";
+  };
+
+  // Handle phone input - only allow digits
+  const handlePhoneChange = (e) => {
+    const value = e.target.value.replace(/\D/g, ""); // Remove non-digit characters
+    if (value.length <= 11) {
+      setForm({ ...form, phone: value });
+      if (value.length > 0) {
+        const error = validatePhone(value);
+        setPhoneError(error);
+      } else {
+        setPhoneError("");
+      }
+    }
+  };
+
+  // Handle phone blur validation
+  const handlePhoneBlur = () => {
+    const error = validatePhone(form.phone);
+    setPhoneError(error);
+  };
+
   const resetForm = () => {
     const userStr = localStorage.getItem("user");
     let autofillName = "", autofillPhone = "";
@@ -240,11 +268,19 @@ export default function EnquiryFloating() {
       } catch (e) {}
     }
     setForm({ fullName: autofillName, phone: autofillPhone, courses: "", colleges: "", location: "" });
-    setGuidance("yes");
+    setPhoneError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate phone before submission
+    const phoneValidationError = validatePhone(form.phone);
+    if (phoneValidationError) {
+      setPhoneError(phoneValidationError);
+      return;
+    }
+    
     setSubmitted(true);
 
     try {
@@ -258,8 +294,8 @@ export default function EnquiryFloating() {
 
       if (result.status === "success") {
         setSubmitted(false);
-        closeEnquiry();         // close the enquiry form
-        setSuccessOpen(true);   // show thank you modal
+        closeEnquiry();
+        setSuccessOpen(true);
         resetForm();
       } else {
         console.error("Submission failed:", result.message);
@@ -321,8 +357,8 @@ export default function EnquiryFloating() {
         <div
           style={{
             position: "fixed", inset: 0,
-            background: "rgba(0,0,0,0.5)",
-            backdropFilter: "blur(4px)",
+            background: "rgba(0,0,0,0.6)",
+            backdropFilter: "blur(8px)",
             zIndex: 99999,
             display: "flex", alignItems: "center", justifyContent: "center",
             padding: "16px",
@@ -330,93 +366,244 @@ export default function EnquiryFloating() {
           onClick={(e) => e.target === e.currentTarget && closeEnquiry()}
         >
           <div style={{
-            background: "white", borderRadius: "24px",
-            width: "100%", maxWidth: "400px",
-            padding: "32px",
-            boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)",
-            maxHeight: "92vh", overflowY: "auto",
+            background: "linear-gradient(135deg, #ffffff 0%, #fef9ff 100%)",
+            borderRadius: "32px",
+            width: "100%", maxWidth: "440px",
+            padding: "0",
+            boxShadow: "0 40px 80px -20px rgba(0,0,0,0.3), 0 0 0 1px rgba(108,77,246,0.1)",
+            maxHeight: "90vh", 
+            overflowY: "auto",
+            position: "relative",
           }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "24px" }}>
-              <div>
-                <h2 style={{ margin: 0, fontSize: "24px", fontWeight: "800", color: "#1e1b4b" }}>Enquiry Now</h2>
-                <p style={{ margin: "4px 0 0", fontSize: "14px", color: "#64748b" }}>Fill in your details to get started.</p>
+            {/* Decorative top bar */}
+            <div style={{
+              height: "6px",
+              background: "linear-gradient(90deg, #6C4DF6, #8B5CF6, #FF6B8A, #6C4DF6)",
+              backgroundSize: "200% 100%",
+              animation: "gradientMove 3s ease infinite",
+              borderRadius: "32px 32px 0 0",
+            }} />
+            
+            <div style={{ padding: "28px 32px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "28px" }}>
+                <div>
+                  <h2 style={{ margin: 0, fontSize: "28px", fontWeight: "800", background: "linear-gradient(135deg, #6C4DF6, #8B5CF6)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+                    Enquiry Now
+                  </h2>
+                  <p style={{ margin: "6px 0 0", fontSize: "14px", color: "#64748b" }}>We're here to help you succeed</p>
+                </div>
+                <button 
+                  onClick={closeEnquiry} 
+                  style={{ 
+                    background: "#f8fafc", 
+                    border: "1px solid #e2e8f0", 
+                    padding: "8px", 
+                    borderRadius: "16px", 
+                    cursor: "pointer", 
+                    color: "#64748b",
+                    transition: "all 0.2s ease",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = "#f1f5f9"; e.currentTarget.style.transform = "scale(1.05)" }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = "#f8fafc"; e.currentTarget.style.transform = "scale(1)" }}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M18 6L6 18M6 6l12 12"/>
+                  </svg>
+                </button>
               </div>
-              <button onClick={closeEnquiry} style={{ background: "#f1f5f9", border: "none", padding: "8px", borderRadius: "12px", cursor: "pointer", color: "#64748b" }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M18 6L6 18M6 6l12 12"/>
-                </svg>
-              </button>
-            </div>
 
-            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-              {fields.map(field => (
-                <div key={field.id}>
-                  <label style={{ display: "block", fontSize: "13px", fontWeight: "600", color: "#475569", marginBottom: "6px" }}>{field.label}</label>
-                  <div style={{ position: "relative" }}>
-                    <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }}>
-                      {field.icon}
-                    </span>
-                    <input
-                      required
-                      type={field.type}
-                      placeholder={field.placeholder}
-                      value={form[field.id]}
-                      onChange={e => setForm({ ...form, [field.id]: e.target.value })}
-                      style={{
-                        width: "100%", padding: "12px 12px 12px 40px",
-                        borderRadius: "12px", border: "2px solid #f1f5f9",
-                        fontSize: "14px", outline: "none",
-                        transition: "all 0.2s", boxSizing: "border-box",
-                      }}
-                    />
+              <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                {fields.map(field => (
+                  <div key={field.id} style={{ position: "relative" }}>
+                    <label style={{ 
+                      display: "block", 
+                      fontSize: "13px", 
+                      fontWeight: "600", 
+                      color: "#334155", 
+                      marginBottom: "8px",
+                      letterSpacing: "0.3px"
+                    }}>
+                      {field.label} <span style={{ color: "#ef4444" }}>*</span>
+                    </label>
+                    <div style={{ position: "relative" }}>
+                      <span style={{ 
+                        position: "absolute", 
+                        left: "14px", 
+                        top: "50%", 
+                        transform: "translateY(-50%)", 
+                        color: "#94a3b8",
+                        transition: "all 0.2s ease",
+                      }}>
+                        {field.icon}
+                      </span>
+                      <input
+                        required={field.id === "fullName" || field.id === "phone"}
+                        type={field.type}
+                        placeholder={field.placeholder}
+                        value={form[field.id]}
+                        onChange={field.id === "phone" ? handlePhoneChange : (e) => setForm({ ...form, [field.id]: e.target.value })}
+                        onBlur={field.id === "phone" ? handlePhoneBlur : undefined}
+                        style={{
+                          width: "100%", 
+                          padding: "14px 16px 14px 44px",
+                          borderRadius: "16px", 
+                          border: `2px solid ${field.id === "phone" && phoneError ? "#ef4444" : "#e9e5ff"}`,
+                          fontSize: "14px", 
+                          outline: "none",
+                          transition: "all 0.3s ease",
+                          boxSizing: "border-box",
+                          background: "white",
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.borderColor = field.id === "phone" && phoneError ? "#ef4444" : "#6C4DF6";
+                          e.currentTarget.style.boxShadow = `0 0 0 3px ${field.id === "phone" && phoneError ? "rgba(239,68,68,0.1)" : "rgba(108,77,246,0.1)"}`;
+                        }}
+                        onBlur={(e) => {
+                          if (field.id !== "phone") {
+                            e.currentTarget.style.borderColor = "#e9e5ff";
+                            e.currentTarget.style.boxShadow = "none";
+                          }
+                        }}
+                      />
+                    </div>
+                    {field.id === "phone" && phoneError && (
+                      <p style={{ 
+                        margin: "6px 0 0", 
+                        fontSize: "12px", 
+                        color: "#ef4444",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px"
+                      }}>
+                        <span>⚠️</span> {phoneError}
+                      </p>
+                    )}
+                    {field.id === "phone" && !phoneError && form.phone && form.phone.length > 0 && (
+                      <p style={{ 
+                        margin: "6px 0 0", 
+                        fontSize: "11px", 
+                        color: "#10b981",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "4px"
+                      }}>
+                        <span>✓</span> Valid mobile number
+                      </p>
+                    )}
+                  </div>
+                ))}
+
+                {/* Guidance Section */}
+                <div style={{
+                  background: "linear-gradient(135deg, #F5F3FF 0%, #FFF5F7 100%)",
+                  borderRadius: "20px",
+                  padding: "18px",
+                  marginTop: "8px",
+                  border: "1px solid rgba(108,77,246,0.2)",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      background: "linear-gradient(135deg, #6C4DF6, #8B5CF6)",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}>
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
+                        <path d="M12 16v-4M12 8h.01"/>
+                      </svg>
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <p style={{ margin: 0, fontSize: "14px", fontWeight: "700", color: "#1e1b4b" }}>
+                        Need Guidance? ✓
+                      </p>
+                      <p style={{ margin: "2px 0 0", fontSize: "12px", color: "#64748b" }}>
+                        Our expert counselors will assist you
+                      </p>
+                    </div>
+                    <div style={{
+                      width: "24px",
+                      height: "24px",
+                      borderRadius: "50%",
+                      background: "#10b981",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    </div>
                   </div>
                 </div>
-              ))}
 
-              {/* Need Guidance */}
-              <div>
-                <label style={{ fontSize: "13px", fontWeight: "600", color: "#475569", display: "block", marginBottom: "8px" }}>
-                  Need Guidance? <span style={{ color: "red" }}>*</span>
-                </label>
-                <div style={{ display: "flex", gap: "24px" }}>
-                  {["yes", "no"].map((opt) => (
-                    <div key={opt} onClick={() => setGuidance(opt)} style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer" }}>
-                      <div style={{
-                        width: "20px", height: "20px", borderRadius: "50%",
-                        border: `2px solid ${guidance === opt ? "#6366f1" : "#cbd5e1"}`,
-                        background: guidance === opt ? "#6366f1" : "white",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                      }}>
-                        {guidance === opt && <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: "white" }} />}
-                      </div>
-                      <span style={{ fontSize: "14px", color: "#334155", textTransform: "capitalize" }}>{opt}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={submitted}
-                style={{
-                  marginTop: "8px", padding: "14px", borderRadius: "14px",
-                  border: "none",
-                  background: submitted ? "#10b981" : "#6366f1",
-                  color: "white", fontWeight: "700", fontSize: "16px",
-                  cursor: submitted ? "default" : "pointer",
-                  boxShadow: "0 10px 15px -3px rgba(99, 102, 241, 0.3)",
-                }}
-              >
-                {submitted ? "✓ Submitting..." : "Submit Enquiry"}
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  disabled={submitted}
+                  style={{
+                    marginTop: "8px", 
+                    padding: "16px", 
+                    borderRadius: "20px",
+                    border: "none",
+                    background: submitted ? "#10b981" : "linear-gradient(135deg, #6C4DF6, #8B5CF6)",
+                    color: "white", 
+                    fontWeight: "700", 
+                    fontSize: "16px",
+                    cursor: submitted ? "default" : "pointer",
+                    boxShadow: submitted ? "none" : "0 12px 20px -8px rgba(108,77,246,0.4)",
+                    transition: "all 0.3s ease",
+                    position: "relative",
+                    overflow: "hidden",
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!submitted) {
+                      e.currentTarget.style.transform = "translateY(-2px)";
+                      e.currentTarget.style.boxShadow = "0 16px 24px -8px rgba(108,77,246,0.5)";
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!submitted) {
+                      e.currentTarget.style.transform = "translateY(0)";
+                      e.currentTarget.style.boxShadow = "0 12px 20px -8px rgba(108,77,246,0.4)";
+                    }
+                  }}
+                >
+                  {submitted ? (
+                    <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                      Submitting...
+                    </span>
+                  ) : (
+                    <span style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+                      Submit Enquiry
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                        <polyline points="12 5 19 12 12 19"/>
+                      </svg>
+                    </span>
+                  )}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       )}
 
       {/* Thank You Success Modal */}
       <EnquirySuccessModal open={successOpen} onClose={() => setSuccessOpen(false)} />
+      
+      <style>{`
+        @keyframes gradientMove {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+      `}</style>
     </>
   );
 }
-

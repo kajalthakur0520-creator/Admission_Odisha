@@ -1,16 +1,22 @@
 import { createContext, useContext, useState } from 'react';
+import GuidancePopup from '../components/GuidancePopup';
 
 const EnquiryContext = createContext();
 
 export const EnquiryProvider = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isGuidanceOpen, setIsGuidanceOpen] = useState(false);
 
   const openEnquiry = () => setIsOpen(true);
   const closeEnquiry = () => setIsOpen(false);
 
+  const openGuidance = () => setIsGuidanceOpen(true);
+  const closeGuidance = () => setIsGuidanceOpen(false);
+
   return (
-    <EnquiryContext.Provider value={{ isOpen, openEnquiry, closeEnquiry }}>
+    <EnquiryContext.Provider value={{ isOpen, openEnquiry, closeEnquiry, isGuidanceOpen, openGuidance, closeGuidance }}>
       {children}
+      <GuidancePopup isOpen={isGuidanceOpen} onClose={closeGuidance} />
     </EnquiryContext.Provider>
   );
 };
@@ -22,7 +28,10 @@ export const useEnquiry = () => {
     return { 
       isOpen: false, 
       openEnquiry: () => console.warn('EnquiryProvider missing'), 
-      closeEnquiry: () => {} 
+      closeEnquiry: () => {},
+      isGuidanceOpen: false,
+      openGuidance: () => {},
+      closeGuidance: () => {}
     };
   }
   return context;

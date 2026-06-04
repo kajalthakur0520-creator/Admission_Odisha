@@ -1,14 +1,17 @@
 import React, { useState } from "react";
 import API_BASE from "../../config/api";
 import { Link } from "react-router-dom";
-import {
-  FaUser, FaEnvelope, FaPhone, FaLock, FaEye, FaEyeSlash
-} from "react-icons/fa";
-import { MdLocationCity } from "react-icons/md";
+import { MdEmail, MdLocationCity } from "react-icons/md";
+import { RiLockPasswordLine, RiUserLine } from "react-icons/ri";
+import { FiPhone } from "react-icons/fi";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { HiOutlineUserGroup } from "react-icons/hi2";
+import registerIllustration from "../../assets/images/register.png";
 
 const Register = () => {
-  const [showPass, setShowPass] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -22,9 +25,9 @@ const Register = () => {
     setForm({ ...form, [name]: value });
   };
 
-  // BACKEND LOGIC
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const res = await fetch(`${API_BASE}?r=auth/register`, {
@@ -46,124 +49,179 @@ const Register = () => {
     } catch (err) {
       console.log("Error:", err);
       alert("Something went wrong");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen font-[Poppins]">
+    <div className="min-h-screen flex items-center justify-center bg-[#f5f3ff] px-4 py-8">
+      {/* Main Card */}
+      <div className="max-w-6xl w-full grid md:grid-cols-2 bg-white shadow-xl rounded-2xl overflow-hidden">
+        
+        {/* Left Panel - Full Image like Login page */}
+        <div className="hidden md:block h-full">
+          
+          <img 
+            src={registerIllustration} 
+            alt="Registration Illustration"
+            className="w-full h-auto object-cover object-center"
+          />
+        </div>
 
-      {/* LEFT PANEL (UI kept) */}
-      <div className="hidden lg:flex flex-col justify-center px-16 bg-gradient-to-br from-indigo-50 via-indigo-100 to-purple-300">
-        <h1 className="text-4xl font-extrabold text-indigo-900 leading-tight mb-4">
-          Your Dream <br />
-          Our Guidance <br />
-          Your <span className="text-teal-500">Future</span>
-        </h1>
-        <p className="text-gray-600 text-sm">
-          Join thousands of students and start your journey towards a
-          bright future.
-        </p>
-      </div>
+        {/* Right Register Form */}
+        <div className="p-8 md:p-10 lg:p-12">
+          
+          {/* Top Icon */}
+          <div className="flex justify-center mb-4">
+            <HiOutlineUserGroup className="text-primary text-3xl" />
+          </div>
 
-      {/* RIGHT PANEL */}
-      <div className="flex items-center justify-center bg-indigo-50 px-6 py-10">
-        <div className="bg-white rounded-2xl shadow-lg w-full max-w-xl p-8">
+          {/* Title */}
+          <div className="mb-6 text-center">
+            <h2 className="text-2xl font-bold text-gray-800">
+              Create Account
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              Join us and start your journey
+            </p>
+          </div>
 
-          <h2 className="text-xl font-bold text-center text-indigo-900">
-            Create Your Account
-          </h2>
-          <p className="text-center text-gray-500 text-sm mb-6">
-            Sign up and start your journey
-          </p>
-
-          {/* FORM CONNECTED */}
-          <form onSubmit={handleSubmit} className="space-y-4">
-
-            {/* Name + Phone */}
-            <div className="grid md:grid-cols-2 gap-4">
-              <Input
-                icon={<FaUser />}
-                label="Full Name"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-              />
-              <Input
-                icon={<FaPhone />}
-                label="Phone"
-                name="phone"
-                value={form.phone}
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Email */}
-            <Input
-              icon={<FaEnvelope />}
-              label="Email"
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-            />
-
-            {/* City */}
-            <Input
-              icon={<MdLocationCity />}
-              label="City"
-              name="city"
-              value={form.city}
-              onChange={handleChange}
-            />
-
-            {/* Password */}
+          {/* Form */}
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            
+            {/* Full Name */}
             <div>
-              <label className="text-sm font-semibold text-gray-700">Password</label>
-              <div className="flex items-center border rounded-lg px-3 mt-1 focus-within:ring-2 focus-within:ring-indigo-400">
-                <FaLock className="text-gray-400 mr-2" />
+              <label className="text-sm text-gray-600 block mb-1.5">
+                Full Name
+              </label>
+              <div className="flex items-center border border-gray-200 rounded-md px-3 py-2.5 focus-within:ring-2 focus-within:ring-primary">
+                <RiUserLine className="text-gray-400 mr-2 text-lg" />
                 <input
-                  name="password"
-                  type={showPass ? "text" : "password"}
-                  value={form.password}
+                  type="text"
+                  name="name"
+                  placeholder="Enter your full name"
+                  className="w-full outline-none text-sm bg-transparent"
+                  value={form.name}
                   onChange={handleChange}
-                  className="w-full py-2 outline-none text-sm bg-transparent"
-                  placeholder="Create password"
                   required
                 />
-                <button type="button" onClick={() => setShowPass(!showPass)}>
-                  {showPass ? <FaEyeSlash /> : <FaEye />}
-                </button>
               </div>
             </div>
 
-            {/* Submit */}
-            <button className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
-              Register
+            {/* Email */}
+            <div>
+              <label className="text-sm text-gray-600 block mb-1.5">
+                Email Address
+              </label>
+              <div className="flex items-center border border-gray-200 rounded-md px-3 py-2.5 focus-within:ring-2 focus-within:ring-primary">
+                <MdEmail className="text-gray-400 mr-2 text-lg" />
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Enter your email"
+                  className="w-full outline-none text-sm bg-transparent"
+                  value={form.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Phone & City - Two columns */}
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-gray-600 block mb-1.5">
+                  Phone Number
+                </label>
+                <div className="flex items-center border border-gray-200 rounded-md px-3 py-2.5 focus-within:ring-2 focus-within:ring-primary">
+                  <FiPhone className="text-gray-400 mr-2 text-lg" />
+                  <input
+                    type="tel"
+                    name="phone"
+                    placeholder="Phone number"
+                    className="w-full outline-none text-sm bg-transparent"
+                    value={form.phone}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm text-gray-600 block mb-1.5">
+                  City
+                </label>
+                <div className="flex items-center border border-gray-200 rounded-md px-3 py-2.5 focus-within:ring-2 focus-within:ring-primary">
+                  <MdLocationCity className="text-gray-400 mr-2 text-lg" />
+                  <input
+                    type="text"
+                    name="city"
+                    placeholder="Your city"
+                    className="w-full outline-none text-sm bg-transparent"
+                    value={form.city}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="text-sm text-gray-600 block mb-1.5">
+                Password
+              </label>
+              <div className="flex items-center border border-gray-200 rounded-md px-3 py-2.5 focus-within:ring-2 focus-within:ring-primary">
+                <RiLockPasswordLine className="text-gray-400 mr-2 text-lg" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Create a password"
+                  className="w-full outline-none text-sm bg-transparent"
+                  value={form.password}
+                  onChange={handleChange}
+                  required
+                />
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="text-gray-500 cursor-pointer hover:text-primary transition"
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
+              <p className="text-xs text-gray-400 mt-1.5">
+                Password must be at least 6 characters
+              </p>
+            </div>
+
+            {/* Register Button */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-primary text-white py-2.5 rounded-md font-semibold hover:opacity-90 transition mt-4 disabled:opacity-50"
+            >
+              {loading ? "Creating Account..." : "Register"}
             </button>
           </form>
 
-          {/* Login */}
-          <p className="text-center text-sm text-gray-500 mt-6">
-            Already have an account?{" "}
-            <Link to="/login" className="text-indigo-600 font-semibold">
-              Login
-            </Link>
-          </p>
+          {/* Login Link */}
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-500">
+              Already have an account?{" "}
+              <Link
+                to="/login"
+                className="text-primary font-medium hover:underline"
+              >
+                Login here
+              </Link>
+            </p>
+          </div>
+
         </div>
       </div>
     </div>
   );
 };
-
-/* Reusable Input */
-const Input = ({ icon, label, ...props }) => (
-  <div>
-    <label className="text-sm font-semibold text-gray-700">{label}</label>
-    <div className="flex items-center border rounded-lg px-3 mt-1 focus-within:ring-2 focus-within:ring-indigo-400">
-      <span className="text-gray-400 mr-2">{icon}</span>
-      <input {...props} className="w-full py-2 outline-none text-sm bg-transparent" required />
-    </div>
-  </div>
-);
 
 export default Register;

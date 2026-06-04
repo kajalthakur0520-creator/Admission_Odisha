@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { FaBars, FaTimes } from "react-icons/fa";
+import { FaBars, FaTimes, FaUser, FaSignOutAlt, FaGlobe } from "react-icons/fa";
 import logo from "../assets/images/logo.png";
-import { FaHeart } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 const Navbar = () => {
   const token = localStorage.getItem("token");
-
+  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
-  const [lang, setLang] = useState("EN");
   const [user, setUser] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [lang, setLang] = useState(
+  localStorage.getItem("language") || "en"
+);
 
   const users = JSON.parse(localStorage.getItem("user"));
   useEffect(() => {
@@ -34,38 +36,43 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "About", path: "/about" },
-    { name: "College", path: "/colleges" },
-    { name: "Course", path: "/course" },
-    { name: "Contact", path: "/contact" },
-  ];
+  {
+    name: t("home"),
+    path: "/",
+  },
+  {
+    name: t("about"),
+    path: "/about",
+  },
+  {
+    name: t("college"),
+    path: "/colleges",
+  },
+  {
+    name: t("course"),
+    path: "/course",
+  },
+  {
+    name: t("contact"),
+    path: "/contact",
+  },
+];
 
-  const wishlistItems = JSON.parse(localStorage.getItem("wishlist")) || [];
-
-  const wishlistCount = wishlistItems.length;
   const isActive = (path) => location.pathname === path;
-
-  // const isActive = (path) => location.pathname === path;
 
   return (
     <>
-      {/* Mobile spacing fix */}
-      <div
-        className={`h-[72px] w-full md:hidden ${scrolled ? "block" : "hidden"}`}
-      ></div>
-
       <header
-        className={`z-[100] transition-all duration-300 bg-white border-b border-gray-200
-        ${scrolled ? "fixed top-4 left-4 w-[calc(100%-2rem)] rounded-xl shadow-lg" : "sticky top-0 w-full"}`}
+        className={`fixed top-0 left-0 w-full z-[100] transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-gray-100
+        ${scrolled ? "shadow-lg" : ""}`}
       >
         <div className="max-w-[1280px] mx-auto flex items-center justify-between px-6 py-3">
-          {/* LOGO */}
-          <Link to="/" className="flex items-center gap-3">
+          {/* LOGO - Reduced gap */}
+          <Link to="/" className="flex items-center gap-1 group">
             <img
               src={logo}
               alt="logo"
-              className="h-14 md:h-16 object-contain"
+              className="h-14 md:h-16 object-contain transition-transform duration-300 group-hover:scale-105"
             />
 
             <div className="leading-tight">
@@ -82,35 +89,35 @@ const Navbar = () => {
           </Link>
 
           {/* DESKTOP MENU */}
-          <nav className="hidden md:flex items-center gap-10 text-[15px] font-medium text-gray-600">
+          <nav className="hidden md:flex items-center gap-10 text-[15px] font-medium">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.path}
-                className={`relative cursor-pointer ${
+                className={`relative cursor-pointer transition-all duration-300 ${
                   isActive(link.path)
                     ? "text-[#6C4DF6] font-semibold"
-                    : "hover:text-[#6C4DF6]"
+                    : "text-gray-600 hover:text-[#6C4DF6]"
                 }`}
               >
                 {link.name}
                 {isActive(link.path) && (
-                  <span className="absolute left-0 -bottom-[8px] w-full h-[2px] bg-[#6C4DF6]"></span>
+                  <span className="absolute left-0 -bottom-[8px] w-full h-[2px] bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] rounded-full"></span>
                 )}
               </Link>
             ))}
             {user?.is_admin === 1 && (
               <Link
                 to="/dashboard"
-                className={`relative cursor-pointer ${
+                className={`relative cursor-pointer transition-all duration-300 ${
                   isActive("/dashboard")
                     ? "text-[#6C4DF6] font-semibold"
-                    : "hover:text-[#6C4DF6]"
+                    : "text-gray-600 hover:text-[#6C4DF6]"
                 }`}
               >
                 Dashboard
                 {isActive("/dashboard") && (
-                  <span className="absolute left-0 -bottom-[8px] w-full h-[2px] bg-[#6C4DF6]"></span>
+                  <span className="absolute left-0 -bottom-[8px] w-full h-[2px] bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] rounded-full"></span>
                 )}
               </Link>
             )}
@@ -118,41 +125,42 @@ const Navbar = () => {
 
           {/* RIGHT SIDE */}
           <div className="hidden md:flex items-center gap-4">
-            <Link
-              to="/wishlist"
-              className="relative flex items-center gap-2 text-[#0B1B43] font-medium hover:text-[#2563EB] transition-all duration-300"
-            >
-              <FaHeart className="text-xl" />
-
-              <span>Wishlist</span>
-
-              {/* Count */}
-              {wishlistCount > 0 && (
-                <span className="absolute -top-2 left-5 bg-[#2563EB] text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center">
-                  {wishlistCount}
-                </span>
-              )}
-            </Link>
             {/* Language */}
             <div className="relative">
               <button
                 onClick={() => setOpen(!open)}
-                className="flex items-center gap-2 border border-gray-300 px-3 py-1.5 rounded-md text-sm font-medium bg-white hover:bg-gray-50"
+                className="flex items-center gap-2 border border-gray-300 px-3 py-1.5 rounded-md text-sm font-medium bg-white/50 hover:bg-white transition-all duration-300"
               >
+                <FaGlobe className="text-gray-500 text-xs" />
                 {lang}
                 <span className="text-xs">▾</span>
               </button>
 
               {open && (
-                <div className="absolute right-0 mt-2 w-28 bg-white border rounded-md shadow-md z-50">
+                <div className="absolute right-0 mt-2 w-28 bg-white border border-gray-100 rounded-md shadow-lg z-50 overflow-hidden">
                   {["EN", "Hindi", "Odia"].map((item) => (
                     <div
                       key={item}
                       onClick={() => {
-                        setLang(item);
-                        setOpen(false);
-                      }}
-                      className="px-3 py-2 text-sm hover:bg-gray-100 cursor-pointer"
+  const selected =
+    item === "EN"
+      ? "en"
+      : item === "Hindi"
+      ? "hi"
+      : "od";
+
+  setLang(selected);
+
+  i18n.changeLanguage(selected);
+
+  localStorage.setItem(
+    "language",
+    selected
+  );
+
+  setOpen(false);
+}}
+                      className="px-3 py-2 text-sm hover:bg-gradient-to-r hover:from-[#F5F3FF] hover:to-[#F3E8FF] cursor-pointer transition-all duration-200"
                     >
                       {item}
                     </div>
@@ -198,22 +206,16 @@ const Navbar = () => {
                   )}
                 </button>
                 {profileOpen && (
-                  <div className="absolute right-0 mt-2 w-32 bg-white border rounded-md shadow-md z-50 overflow-hidden">
-                    <Link
-                      to="/wishlist"
-                      onClick={() => setProfileOpen(false)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      Wishlist
-                    </Link>
+                  <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-100 rounded-md shadow-lg z-50 overflow-hidden">
                     <button
                       onClick={() => {
                         localStorage.removeItem("token");
                         localStorage.removeItem("user");
                         window.location.reload();
                       }}
-                      className="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                      className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-all duration-200"
                     >
+                      <FaSignOutAlt className="text-xs" />
                       Logout
                     </button>
                   </div>
@@ -223,14 +225,14 @@ const Navbar = () => {
               <>
                 <Link
                   to="/login"
-                  className="border border-[#6C4DF6] text-[#6C4DF6] px-5 py-2 rounded-md text-sm font-semibold hover:bg-[#F5F3FF]"
+                  className="border border-[#6C4DF6] text-[#6C4DF6] px-5 py-2 rounded-md text-sm font-semibold hover:bg-[#F5F3FF] transition-all duration-300"
                 >
                   Login
                 </Link>
 
                 <button
                   onClick={() => navigate("/register")}
-                  className="bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] text-white px-5 py-2 rounded-md text-sm font-semibold shadow-md hover:opacity-90 transition"
+                  className="bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] text-white px-5 py-2 rounded-md text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300"
                 >
                   Register
                 </button>
@@ -241,7 +243,7 @@ const Navbar = () => {
           {/* MOBILE BUTTON */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-gray-600 text-2xl"
+            className="md:hidden text-gray-600 text-2xl hover:text-[#6C4DF6] transition-colors duration-300"
           >
             {mobileMenuOpen ? <FaTimes /> : <FaBars />}
           </button>
@@ -249,16 +251,16 @@ const Navbar = () => {
 
         {/* MOBILE MENU */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t shadow-lg animate-slideDown">
+          <div className="md:hidden bg-white/95 backdrop-blur-md border-t shadow-lg animate-slideDown">
             <div className="flex flex-col py-4">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   to={link.path}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`px-6 py-3 text-sm ${
+                  className={`px-6 py-3 text-sm transition-all duration-300 ${
                     isActive(link.path)
-                      ? "text-[#6C4DF6] bg-[#F5F3FF] border-l-4 border-[#6C4DF6]"
+                      ? "text-[#6C4DF6] bg-gradient-to-r from-[#F5F3FF] to-[#F3E8FF] border-l-4 border-[#6C4DF6]"
                       : "text-gray-600 hover:bg-gray-50"
                   }`}
                 >
@@ -270,9 +272,9 @@ const Navbar = () => {
                 <Link
                   to="/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`px-6 py-3 text-sm ${
+                  className={`px-6 py-3 text-sm transition-all duration-300 ${
                     isActive("/dashboard")
-                      ? "text-[#6C4DF6] bg-[#F5F3FF] border-l-4 border-[#6C4DF6]"
+                      ? "text-[#6C4DF6] bg-gradient-to-r from-[#F5F3FF] to-[#F3E8FF] border-l-4 border-[#6C4DF6]"
                       : "text-gray-600 hover:bg-gray-50"
                   }`}
                 >
@@ -281,24 +283,43 @@ const Navbar = () => {
               )}
 
               {/* Divider */}
-              <div className="h-px bg-gray-200 my-2 mx-4"></div>
+              <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-2 mx-4"></div>
 
               {/* Language */}
               <div className="px-6 py-3">
-                <p className="text-xs text-gray-500 mb-2">Language</p>
+                <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                  <FaGlobe className="text-xs" /> Language
+                </p>
                 <div className="flex gap-2">
                   {["EN", "Hindi", "Odia"].map((item) => (
                     <button
                       key={item}
-                      onClick={() => {
-                        setLang(item);
-                        setMobileMenuOpen(false);
-                      }}
-                      className={`px-3 py-1 rounded ${
-                        lang === item
-                          ? "bg-[#6C4DF6] text-white"
-                          : "bg-gray-100"
-                      }`}
+                     onClick={() => {
+  const selected =
+    item === "EN"
+      ? "en"
+      : item === "Hindi"
+      ? "hi"
+      : "od";
+
+  setLang(selected);
+
+  i18n.changeLanguage(selected);
+
+  localStorage.setItem(
+    "language",
+    selected
+  );
+
+  setMobileMenuOpen(false);
+}}
+                     className={`px-3 py-1 rounded-md text-sm transition-all duration-300 ${
+  (item === "EN" && lang === "en") ||
+  (item === "Hindi" && lang === "hi") ||
+  (item === "Odia" && lang === "od")
+    ? "bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] text-white shadow-md"
+    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+}`}
                     >
                       {item}
                     </button>
@@ -310,34 +331,27 @@ const Navbar = () => {
               <div className="flex gap-3 px-6 py-3">
                 {token ? (
                   <div className="flex flex-col w-full gap-3">
-                    <Link to="/wishlist" className="w-full">
-                      <button
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="w-full border border-[#6C4DF6] text-[#6C4DF6] py-2 rounded-md hover:bg-[#F5F3FF]"
-                      >
-                        Wishlist
-                      </button>
-                    </Link>
                     <button
-                      className="w-full border border-red-500 text-red-500 py-2 rounded-md hover:bg-red-50"
+                      className="w-full border border-red-500 text-red-500 py-2 rounded-md hover:bg-red-50 transition-all duration-300 flex items-center justify-center gap-2"
                       onClick={() => {
                         localStorage.removeItem("token");
                         localStorage.removeItem("user");
                         window.location.reload();
                       }}
                     >
+                      <FaSignOutAlt className="text-sm" />
                       Logout
                     </button>
                   </div>
                 ) : (
                   <>
                     <Link to="/login" className="flex-1">
-                      <button className="w-full border border-[#6C4DF6] text-[#6C4DF6] py-2 rounded-md">
+                      <button className="w-full border border-[#6C4DF6] text-[#6C4DF6] py-2 rounded-md hover:bg-[#F5F3FF] transition-all duration-300">
                         Login
                       </button>
                     </Link>
                     <Link to="/register" className="flex-1">
-                      <button className="w-full bg-[#6C4DF6] text-white py-2 rounded-md">
+                      <button className="w-full bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] text-white py-2 rounded-md shadow-md hover:shadow-lg transition-all duration-300">
                         Register
                       </button>
                     </Link>
@@ -365,6 +379,9 @@ const Navbar = () => {
           }
         `}</style>
       </header>
+      
+      {/* Spacer to prevent content from hiding under fixed navbar */}
+      <div className="h-[72px] md:h-[80px]"></div>
     </>
   );
 };

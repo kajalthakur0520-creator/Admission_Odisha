@@ -250,4 +250,120 @@ class DashboardController extends Controller
         Yii::$app->db->createCommand()->delete('specializations', 'id = :id', [':id' => $id])->execute();
         return ['status' => 'success', 'message' => 'Specialization deleted successfully.'];
     }
+
+    public function actionGetEnquiries()
+    {
+        $search = Yii::$app->request->get('search', '');
+        $date = Yii::$app->request->get('date', '');
+        $statusFilter = Yii::$app->request->get('status', '');
+        $page = (int)Yii::$app->request->get('page', 1);
+        $perPage = (int)Yii::$app->request->get('perPage', 5);
+        if ($page < 1) $page = 1;
+        if ($perPage < 1) $perPage = 5;
+
+        // Base Query
+        $where = ['and'];
+        
+        // Search filter
+        if (!empty($search)) {
+            $where[] = ['or', 
+                ['like', 'full_name', $search],
+                ['like', 'phone', $search],
+                ['like', 'courses', $search],
+                ['like', 'colleges', $search]
+            ];
+        }
+
+        // Date filter
+        if (!empty($date)) {
+            // date matches yyyy-mm-dd, so match created_at prefix
+            $where[] = ['like', 'created_at', $date . '%', false];
+        }
+
+        // Status filter
+        if (!empty($statusFilter)) {
+            $where[] = ['status' => $statusFilter];
+        }
+
+        // Count query
+        $countQuery = (new \yii\db\Query())
+            ->from('enquiries')
+            ->where($where);
+        
+        $total = (int)$countQuery->count();
+
+        // Fetch data
+        $offset = ($page - 1) * $perPage;
+        $enquiries = (new \yii\db\Query())
+            ->from('enquiries')
+            ->where($where)
+            ->orderBy(['created_at' => SORT_DESC])
+            ->limit($perPage)
+            ->offset($offset)
+            ->all();
+
+        // Calculate counts for stats cards
+        $totalCount = (int)(new \yii\db\Query())->from('enquiries')->count();
+        $newCount = (int)(new \yii\db\Query())->from('enquiries')->where(['status' => 'New'])->count();
+        $contactedCount = (int)(new \yii\db\Query())->from('enquiries')->where(['status' => 'Contacted'])->count();
+        $closedCount = (int)(new \yii\db\Query())->from('enquiries')->where(['status' => 'Closed'])->count();
+
+        return [
+            'status' => 'success',
+            'data' => $enquiries,
+            'total' => $total,
+            'stats' => [
+                'total' => $totalCount,
+                'new' => $newCount,
+                'contacted' => $contactedCount,
+                'closed' => $closedCount,
+            ]
+        ];
+    }
+
+    public function actionUpdateEnquiryStatus()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        $id = $data['id'] ?? null;
+        $status = $data['status'] ?? null;
+
+        if (!$id || !$status) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'Enquiry ID and status are required.'];
+        }
+
+        try {
+            Yii::$app->db->createCommand()->update('enquiries', [
+                'status' => $status
+            ], 'id = :id', [':id' => $id])->execute();
+
+            return ['status' => 'success', 'message' => 'Status updated successfully.'];
+        } catch (\Exception $e) {
+            Yii::$app->response->statusCode = 500;
+            return ['status' => 'error', 'message' => 'Failed to update status.'];
+        }
+    }
+
+    public function actionDeleteEnquiry()
+    {
+        $id = Yii::$app->request->get('id');
+        if (!$id) {
+            $data = Yii::$app->request->getBodyParams();
+            $id = $data['id'] ?? null;
+        }
+
+        if (!$id) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'Enquiry ID is required.'];
+        }
+
+        try {
+            Yii::$app->db->createCommand()->delete('enquiries', 'id = :id', [':id' => $id])->execute();
+            return ['status' => 'success', 'message' => 'Enquiry deleted successfully.'];
+        } catch (\Exception $e) {
+            Yii::$app->response->statusCode = 500;
+            return ['status' => 'error', 'message' => 'Failed to delete enquiry.'];
+        }
+    }
 }
+

@@ -10,8 +10,10 @@ import {
   FaMapMarkerAlt,
 } from "react-icons/fa";
 import footerLogo from "/src/assets/images/logo.png";
-
+import { useEnquiry } from "../context/EnquiryContext";
 const Footer = () => {
+   const { openEnquiry } = useEnquiry();
+
   return (
     <footer className="bg-[#071B52] text-white pt-8 pb-4">
       <div className="max-w-[1280px] mx-auto px-6">
@@ -89,42 +91,50 @@ const Footer = () => {
           <div>
             <h3 className="font-bold text-base mb-3">For Students</h3>
 
-            <ul className="space-y-2 text-white/80 text-sm">
-              <li>
-                <Link to="/about">Apply Now</Link>
-              </li>
-              <li>
-                <Link to="/about">Scholarships</Link>
-              </li>
-              <li>
-                <Link to="/about">Cut-Off</Link>
-              </li>
-              <li>
-                <Link to="/about">Help Center</Link>
-              </li>
-            </ul>
+           <ul className="space-y-2 text-white/80 text-sm">
+ <li>
+  <button
+    onClick={openEnquiry}
+    className="text-white/80 hover:text-white transition text-sm"
+  >
+    Apply Now
+  </button>
+</li>
+
+  <li>
+    <Link to="/course">Explore Courses</Link>
+  </li>
+
+  <li>
+    <Link to="/wishlist">My Wishlist</Link>
+  </li>
+
+  <li>
+    <Link to="/about">Help Center</Link>
+  </li>
+</ul>
           </div>
 
           {/* For Parents */}
-          <div>
-            <h3 className="font-bold text-base mb-3">For Parents</h3>
+         <div>
+  <h3 className="font-bold text-base mb-3">For Parents</h3>
 
-            <ul className="space-y-2 text-white/80 text-sm">
-              <li>
-                <Link to="/about">Admission Process</Link>
-              </li>
-              <li>
-                <Link to="/about">Documents Required</Link>
-              </li>
-              <li>
-                <Link to="/about">Fee Structure</Link>
-              </li>
-              <li>
-                <Link to="/about">FAQs</Link>
-              </li>
-            </ul>
-          </div>
+  <ul className="space-y-2 text-white/80 text-sm">
+    <li>
+      <Link to="/colleges">Find Colleges</Link>
+    </li>
 
+    <li>
+      <Link to="/contact">Contact Support</Link>
+    </li>
+
+    
+
+    <li>
+      <Link to="/register">Register here</Link>
+    </li>
+  </ul>
+</div>
           {/* Contact */}
           <div>
             <h3 className="font-bold text-base mb-3">Contact Us</h3>
@@ -132,7 +142,7 @@ const Footer = () => {
             <div className="space-y-3 text-sm text-white/80">
               <div className="flex items-start gap-2">
                 <FaPhoneAlt className="mt-0.5 text-sm" />
-                <p>+91 1234567890</p>
+                <p>+919114422555</p>
               </div>
 
               <div className="flex items-start gap-2">
@@ -151,7 +161,7 @@ const Footer = () => {
         {/* Bottom Copyright */}
         <div className="text-center pt-4">
           <p className="text-sm text-white/60">
-            © 2026 Admission Odisha. All rights reserved.
+            © 2026 SargNexus Pvt Ltd. All rights reserved.
           </p>
         </div>
       </div>

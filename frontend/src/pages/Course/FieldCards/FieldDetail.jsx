@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useEnquiry } from "../../../context/EnquiryContext";
 import API_BASE from "../../../config/api";
 import {
   FaArrowLeft, FaArrowRight, FaInfoCircle, FaHeadset,
@@ -169,6 +170,7 @@ const SpecCard = ({ icon, color, name, desc, link }) => {
 
 /* ── MAIN ── */
 const FieldDetail = () => {
+  const { openGuidance } = useEnquiry();
   const { fieldSlug } = useParams();
   const [fieldData, setFieldData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -326,7 +328,7 @@ const FieldDetail = () => {
               </p>
             </div>
           </div>
-          <button className="bg-[#3B28CC] hover:bg-[#2A1B99] text-white px-8 py-3.5 rounded-lg text-[15px] font-semibold flex items-center gap-2 transition-colors whitespace-nowrap mt-4 md:mt-0">
+          <button onClick={openGuidance} className="bg-[#3B28CC] hover:bg-[#2A1B99] text-white px-8 py-3.5 rounded-lg text-[15px] font-semibold flex items-center gap-2 transition-colors whitespace-nowrap mt-4 md:mt-0">
             Get Guidance <FaArrowRight />
           </button>
         </section>

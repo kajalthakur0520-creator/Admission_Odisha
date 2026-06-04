@@ -18,7 +18,7 @@ class SiteController extends Controller
      */
     public function beforeAction($action)
     {            
-        if (in_array($action->id, ['api-contact', 'api-course-detail', 'api-general-course-detail', 'api-field-detail', 'api-colleges', 'api-college-detail', 'api-college-course-specializations', 'api-submit-enquiry', 'api-get-wishlist', 'api-toggle-wishlist', 'api-get-wishlist-colleges', 'api-clear-wishlist'])) {
+        if (in_array($action->id, ['api-settings', 'api-contact', 'api-courses', 'api-course-detail', 'api-general-course-detail', 'api-field-detail', 'api-colleges', 'api-college-detail', 'api-college-course-specializations', 'api-submit-enquiry', 'api-get-wishlist', 'api-toggle-wishlist', 'api-get-wishlist-colleges', 'api-clear-wishlist'])) {
             $this->enableCsrfValidation = false;
         }
         return parent::beforeAction($action);
@@ -311,6 +311,53 @@ class SiteController extends Controller
         return [
             'status' => 'success',
             'data' => $course
+        ];
+    }
+
+    /**
+     * Returns all courses with duration and degree details.
+     *
+     * @return Response|array
+     */
+    public function actionApiCourses()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        
+        $courses = Yii::$app->db->createCommand("SELECT * FROM course_details")->queryAll();
+        
+        foreach ($courses as &$course) {
+            $generalCourse = Yii::$app->db->createCommand("SELECT * FROM general_courses WHERE LOWER(REPLACE(name, '.', '')) = :slug OR name = :sname", [
+                ':slug' => $course['slug'],
+                ':sname' => $course['short_name']
+            ])->queryOne();
+            
+            if ($generalCourse) {
+                $course['duration'] = $generalCourse['duration'];
+                $course['degree'] = $generalCourse['name'];
+                $course['mode'] = $generalCourse['course_type'];
+                $course['level'] = $generalCourse['degree_level'];
+            } else {
+                $course['duration'] = '3 Years';
+                $course['degree'] = $course['short_name'];
+                $course['mode'] = 'Full Time';
+                $course['level'] = 'UG Degree';
+            }
+            
+            // Decode JSON fields
+            $jsonFields = ['career_opportunities', 'eligibility'];
+            foreach ($jsonFields as $field) {
+                if (!empty($course[$field])) {
+                    $decoded = json_decode($course[$field], true);
+                    if (json_last_error() === JSON_ERROR_NONE) {
+                        $course[$field] = $decoded;
+                    }
+                }
+            }
+        }
+        
+        return [
+            'status' => 'success',
+            'data' => $courses
         ];
     }
 
@@ -619,5 +666,19 @@ class SiteController extends Controller
         Yii::$app->db->createCommand()->delete('wishlist', ['user_id' => $userLogin['user_id']])->execute();
         
         return ['status' => 'success', 'message' => 'Wishlist cleared'];
+    }
+
+    /**
+     * Returns system settings.
+     */
+    public function actionApiSettings()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $settings = Yii::$app->db->createCommand("SELECT setting_key, setting_value FROM settings WHERE is_status = 1")->queryAll();
+        $data = [];
+        foreach ($settings as $setting) {
+            $data[$setting['setting_key']] = trim($setting['setting_value']);
+        }
+        return ['status' => 'success', 'data' => $data];
     }
 }
