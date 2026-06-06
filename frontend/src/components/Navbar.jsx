@@ -12,12 +12,12 @@ const Navbar = () => {
   const [user, setUser] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const [lang, setLang] = useState(
-  localStorage.getItem("language") || "en"
-);
+    localStorage.getItem("language") || "en"
+  );
 
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsTab, setSettingsTab] = useState("password"); // "password", "language", "support"
-  
+
   // Password change states
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -76,6 +76,7 @@ const Navbar = () => {
     }
   };
 
+  const users = JSON.parse(localStorage.getItem("user"));
   useEffect(() => {
     const userData = localStorage.getItem("user");
     if (userData) {
@@ -97,27 +98,27 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-  {
-    name: t("home"),
-    path: "/",
-  },
-  {
-    name: t("about"),
-    path: "/about",
-  },
-  {
-    name: t("college"),
-    path: "/colleges",
-  },
-  {
-    name: t("course"),
-    path: "/course",
-  },
-  {
-    name: t("contact"),
-    path: "/contact",
-  },
-];
+    {
+      name: t("home"),
+      path: "/",
+    },
+    {
+      name: t("about"),
+      path: "/about",
+    },
+    {
+      name: t("college"),
+      path: "/colleges",
+    },
+    {
+      name: t("course"),
+      path: "/course",
+    },
+    {
+      name: t("contact"),
+      path: "/contact",
+    },
+  ];
 
   const isActive = (path) => location.pathname === path;
 
@@ -155,11 +156,10 @@ const Navbar = () => {
               <Link
                 key={link.name}
                 to={link.path}
-                className={`relative cursor-pointer transition-all duration-300 ${
-                  isActive(link.path)
+                className={`relative cursor-pointer transition-all duration-300 ${isActive(link.path)
                     ? "text-[#6C4DF6] font-semibold"
                     : "text-gray-600 hover:text-[#6C4DF6]"
-                }`}
+                  }`}
               >
                 {link.name}
                 {isActive(link.path) && (
@@ -170,11 +170,10 @@ const Navbar = () => {
             {user?.is_admin === 1 && (
               <Link
                 to="/dashboard"
-                className={`relative cursor-pointer transition-all duration-300 ${
-                  isActive("/dashboard")
+                className={`relative cursor-pointer transition-all duration-300 ${isActive("/dashboard")
                     ? "text-[#6C4DF6] font-semibold"
                     : "text-gray-600 hover:text-[#6C4DF6]"
-                }`}
+                  }`}
               >
                 Dashboard
                 {isActive("/dashboard") && (
@@ -203,24 +202,24 @@ const Navbar = () => {
                     <div
                       key={item}
                       onClick={() => {
-  const selected =
-    item === "EN"
-      ? "en"
-      : item === "Hindi"
-      ? "hi"
-      : "od";
+                        const selected =
+                          item === "EN"
+                            ? "en"
+                            : item === "Hindi"
+                              ? "hi"
+                              : "od";
 
-  setLang(selected);
+                        setLang(selected);
 
-  i18n.changeLanguage(selected);
+                        i18n.changeLanguage(selected);
 
-  localStorage.setItem(
-    "language",
-    selected
-  );
+                        localStorage.setItem(
+                          "language",
+                          selected
+                        );
 
-  setOpen(false);
-}}
+                        setOpen(false);
+                      }}
                       className="px-3 py-2 text-sm hover:bg-gradient-to-r hover:from-[#F5F3FF] hover:to-[#F3E8FF] cursor-pointer transition-all duration-200"
                     >
                       {item}
@@ -233,13 +232,38 @@ const Navbar = () => {
             {/* Auth Buttons */}
             {token ? (
               <div className="relative">
-                <button
-                  onClick={() => setProfileOpen(!profileOpen)}
-                  className="bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] text-white px-5 py-2 rounded-md text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-2"
-                >
-                  <FaUser className="text-sm" />
-                  Profile
-                  <span className="text-xs">▾</span>
+                <button onClick={() => setProfileOpen(!profileOpen)}>
+                  {!user ? (
+                    <div className="flex gap-3">
+                      <button>Login</button>
+
+                      <button>Register</button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3">
+                      {/* PROFILE IMAGE */}
+
+                      {user?.profile_photo ? (
+                        <img
+                          src={`http://localhost/backend/${user.profile_photo}`}
+                          alt="profile"
+                          className="w-10 h-10 rounded-full object-cover border-2 border-white"
+                        />
+                      ) : (
+                        /* FIRST LETTER AVATAR */
+
+                        <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold uppercase">
+                          {user?.name
+                            ? user.name
+                              .split(" ")
+                              .map((word) => word.charAt(0))
+                              .join("")
+                              .slice(0, 2)
+                            : user?.email?.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </button>
                 {profileOpen && (
                   <div className="absolute right-0 mt-2 w-36 bg-white border border-gray-100 rounded-md shadow-lg z-50 overflow-hidden py-1">
@@ -304,11 +328,10 @@ const Navbar = () => {
                   key={link.name}
                   to={link.path}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`px-6 py-3 text-sm transition-all duration-300 ${
-                    isActive(link.path)
+                  className={`px-6 py-3 text-sm transition-all duration-300 ${isActive(link.path)
                       ? "text-[#6C4DF6] bg-gradient-to-r from-[#F5F3FF] to-[#F3E8FF] border-l-4 border-[#6C4DF6]"
                       : "text-gray-600 hover:bg-gray-50"
-                  }`}
+                    }`}
                 >
                   {link.name}
                 </Link>
@@ -318,11 +341,10 @@ const Navbar = () => {
                 <Link
                   to="/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`px-6 py-3 text-sm transition-all duration-300 ${
-                    isActive("/dashboard")
+                  className={`px-6 py-3 text-sm transition-all duration-300 ${isActive("/dashboard")
                       ? "text-[#6C4DF6] bg-gradient-to-r from-[#F5F3FF] to-[#F3E8FF] border-l-4 border-[#6C4DF6]"
                       : "text-gray-600 hover:bg-gray-50"
-                  }`}
+                    }`}
                 >
                   Dashboard
                 </Link>
@@ -340,32 +362,31 @@ const Navbar = () => {
                   {["EN", "Hindi", "Odia"].map((item) => (
                     <button
                       key={item}
-                     onClick={() => {
-  const selected =
-    item === "EN"
-      ? "en"
-      : item === "Hindi"
-      ? "hi"
-      : "od";
+                      onClick={() => {
+                        const selected =
+                          item === "EN"
+                            ? "en"
+                            : item === "Hindi"
+                              ? "hi"
+                              : "od";
 
-  setLang(selected);
+                        setLang(selected);
 
-  i18n.changeLanguage(selected);
+                        i18n.changeLanguage(selected);
 
-  localStorage.setItem(
-    "language",
-    selected
-  );
+                        localStorage.setItem(
+                          "language",
+                          selected
+                        );
 
-  setMobileMenuOpen(false);
-}}
-                     className={`px-3 py-1 rounded-md text-sm transition-all duration-300 ${
-  (item === "EN" && lang === "en") ||
-  (item === "Hindi" && lang === "hi") ||
-  (item === "Odia" && lang === "od")
-    ? "bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] text-white shadow-md"
-    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-}`}
+                        setMobileMenuOpen(false);
+                      }}
+                      className={`px-3 py-1 rounded-md text-sm transition-all duration-300 ${(item === "EN" && lang === "en") ||
+                          (item === "Hindi" && lang === "hi") ||
+                          (item === "Odia" && lang === "od")
+                          ? "bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] text-white shadow-md"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        }`}
                     >
                       {item}
                     </button>
@@ -435,7 +456,7 @@ const Navbar = () => {
           }
         `}</style>
       </header>
-      
+
       {/* Spacer to prevent content from hiding under fixed navbar */}
       <div className="h-[72px] md:h-[80px]"></div>
 
@@ -455,33 +476,30 @@ const Navbar = () => {
                       setPasswordError("");
                       setPasswordSuccess("");
                     }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-semibold transition-all duration-200 ${
-                      settingsTab === "password"
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-semibold transition-all duration-200 ${settingsTab === "password"
                         ? "bg-[#6C4DF6] text-white shadow-md"
                         : "text-gray-600 hover:bg-gray-100"
-                    }`}
+                      }`}
                   >
                     <FaLock className="text-sm" />
                     Change Password
                   </button>
                   <button
                     onClick={() => setSettingsTab("language")}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-semibold transition-all duration-200 ${
-                      settingsTab === "language"
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-semibold transition-all duration-200 ${settingsTab === "language"
                         ? "bg-[#6C4DF6] text-white shadow-md"
                         : "text-gray-600 hover:bg-gray-100"
-                    }`}
+                      }`}
                   >
                     <FaGlobe className="text-sm" />
                     Language
                   </button>
                   <button
                     onClick={() => setSettingsTab("support")}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-semibold transition-all duration-200 ${
-                      settingsTab === "support"
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-semibold transition-all duration-200 ${settingsTab === "support"
                         ? "bg-[#6C4DF6] text-white shadow-md"
                         : "text-gray-600 hover:bg-gray-100"
-                    }`}
+                      }`}
                   >
                     <FaHeadset className="text-sm" />
                     Help & Support
@@ -595,11 +613,10 @@ const Navbar = () => {
                           i18n.changeLanguage(item.code);
                           localStorage.setItem("language", item.code);
                         }}
-                        className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-200 ${
-                          lang === item.code
+                        className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-200 ${lang === item.code
                             ? "border-[#6C4DF6] bg-[#F5F3FF]"
                             : "border-gray-100 hover:border-gray-200 bg-white"
-                        }`}
+                          }`}
                       >
                         <div className="text-left">
                           <p className="font-semibold text-gray-800 text-sm">{item.label}</p>
@@ -661,7 +678,7 @@ const Navbar = () => {
           </div>
         </div>
       )}
-      
+
       {/* Animation Styles */}
       <style>{`
         @keyframes fadeIn {
