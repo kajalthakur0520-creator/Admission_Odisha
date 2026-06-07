@@ -20,7 +20,7 @@ import LogoutButton from "./profile/LogoutButton";
 
 import logo from "../assets/images/logo.png";
 import { useTranslation } from "react-i18next";
-import API_BASE from "../config/api";
+import { API_BASE, ASSETS_BASE } from "../config/api";
 
 const Navbar = () => {
   const token = localStorage.getItem("token");
@@ -47,10 +47,18 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
+    const handleUserUpdate = () => {
+      const userData = localStorage.getItem("user");
+      if (userData) {
+        setUser(JSON.parse(userData));
+      }
+    };
+    
+    // Initial load
+    handleUserUpdate();
+    
+    window.addEventListener("userUpdated", handleUserUpdate);
+    return () => window.removeEventListener("userUpdated", handleUserUpdate);
   }, []);
 
   const navLinks = [
@@ -196,7 +204,7 @@ const Navbar = () => {
                     >
                       {user?.profile_photo ? (
                         <img
-                          src={`http://localhost/backend/${user.profile_photo}`}
+                          src={`${ASSETS_BASE}/${user.profile_photo}`}
                           alt="profile"
                           className="w-10 h-10 rounded-full object-cover border-2 border-white"
                         />

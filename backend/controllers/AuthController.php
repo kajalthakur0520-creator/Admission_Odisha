@@ -307,7 +307,8 @@ class AuthController extends Controller
                 "city" => $user['city'],
                 "gender" => $user['gender'],
                 "dob" => $user['dob'],
-                "is_admin" => (int) $user['is_admin']
+                "is_admin" => (int) $user['is_admin'],
+                "profile_photo" => $user['profile_photo']
             ]
         ];
     }
@@ -354,7 +355,8 @@ class AuthController extends Controller
                 "city" => $user->city,
                 "gender" => $user->gender,
                 "dob" => $user->dob,
-                "is_admin" => (int) $user->is_admin
+                "is_admin" => (int) $user->is_admin,
+                "profile_photo" => $user->profile_photo
             ]
         ];
     }
@@ -436,6 +438,10 @@ class AuthController extends Controller
             $user->dob = empty($data['dob']) ? null : $data['dob'];
         }
 
+        if (array_key_exists('profile_photo', $data)) {
+            $user->profile_photo = empty($data['profile_photo']) ? null : $data['profile_photo'];
+        }
+
         $user->updated_at = date('Y-m-d H:i:s');
 
         if ($user->save()) {
@@ -450,7 +456,8 @@ class AuthController extends Controller
                     "city" => $user->city,
                     "gender" => $user->gender,
                     "dob" => $user->dob,
-                    "is_admin" => (int) $user->is_admin
+                    "is_admin" => (int) $user->is_admin,
+                    "profile_photo" => $user->profile_photo
                 ]
             ];
         } else {

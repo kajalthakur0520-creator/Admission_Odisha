@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { FaUser, FaTimes } from "react-icons/fa";
-import API_BASE from "../../config/api";
+import { API_BASE, ASSETS_BASE } from "../../config/api";
 
 const MyProfileButton = ({ onClick, variant = "desktop" }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,6 +22,8 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const avatars = Array.from({ length: 9 }, (_, i) => `uploads/avatars/avatar${i + 1}.svg`);
 
   useEffect(() => {
     if (isOpen) {
@@ -158,12 +160,54 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
         localStorage.setItem("user", JSON.stringify(data.user));
         setUser(data.user);
         setIsEditing(false);
+        window.dispatchEvent(new Event("userUpdated"));
       } else {
         setErrorMsg(data.message || "Failed to update profile.");
       }
     } catch (err) {
       console.error(err);
       setErrorMsg("An error occurred while updating the profile. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSelectAvatar = async (avatarPath) => {
+    setErrorMsg("");
+    setSuccessMsg("");
+    setLoading(true);
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setErrorMsg("Session expired. Please log in again.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}?r=auth/update-profile`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": token
+        },
+        body: JSON.stringify({ profile_photo: avatarPath })
+      });
+
+      const data = await response.json();
+
+      if (data.status === "success") {
+        setSuccessMsg("Profile picture updated successfully!");
+        localStorage.setItem("user", JSON.stringify(data.user));
+        setUser(data.user);
+        setShowAvatarPicker(false);
+        window.dispatchEvent(new Event("userUpdated"));
+      } else {
+        setErrorMsg(data.message || "Failed to update profile picture.");
+      }
+    } catch (err) {
+      console.error(err);
+      setErrorMsg("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -269,10 +313,10 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
                 {/* Profile Card */}
                 <div className="bg-white rounded-2xl p-6 flex flex-col items-center border border-gray-100 shadow-sm w-full lg:w-[280px] flex-shrink-0">
                   {/* Avatar */}
-                  <div className="relative mb-3">
+                  <div className="relative mb-3 group">
                     {user?.profile_photo ? (
                       <img
-                        src={`http://localhost/backend/${user.profile_photo}`}
+                        src={`${ASSETS_BASE}/${user.profile_photo}`}
                         alt="profile"
                         className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md"
                       />
@@ -283,6 +327,15 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
                           : "U"}
                       </div>
                     )}
+                    <button
+                      onClick={() => setShowAvatarPicker(true)}
+                      className="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg border-2 border-white transition-all duration-200"
+                      title="Change Profile Picture"
+                    >
+                      <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      </svg>
+                    </button>
                   </div>
 
                   <h2 className="font-bold text-gray-900 text-lg text-center">{user?.name || "User"}</h2>
@@ -547,6 +600,66 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
 
               </div>
             </main>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Avatar Picker Modal */}
+      {showAvatarPicker && createPortal(
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 transform scale-100 transition-all duration-300">
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="text-lg font-bold text-gray-900">Choose Your Avatar</h3>
+              <button
+                onClick={() => setShowAvatarPicker(false)}
+                className="text-gray-400 hover:text-gray-600 transition"
+              >
+                <FaTimes />
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              {avatars.map((av, index) => {
+                const isSelected = user?.profile_photo === av;
+                return (
+                  <button
+                    key={av}
+                    onClick={() => handleSelectAvatar(av)}
+                    className={`relative rounded-full overflow-hidden p-1 transition-all duration-300 hover:scale-110 ${
+                      isSelected 
+                        ? "ring-4 ring-blue-500 ring-offset-2 scale-105" 
+                        : "hover:ring-2 hover:ring-gray-300"
+                    }`}
+                  >
+                    <img
+                      src={`${ASSETS_BASE}/${av}`}
+                      alt={`Avatar ${index + 1}`}
+                      className="w-full h-full object-cover rounded-full aspect-square bg-gray-50"
+                    />
+                    {isSelected && (
+                      <span className="absolute bottom-1 right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white border-2 border-white text-[10px] font-bold">
+                        ✓
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            
+            <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
+              <div className="text-xs text-gray-400">
+                Select any avatar to update your profile.
+              </div>
+              {user?.profile_photo && (
+                <button
+                  onClick={() => handleSelectAvatar("")}
+                  className="text-sm font-semibold text-red-500 hover:text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg transition"
+                >
+                  Remove Avatar
+                </button>
+              )}
+            </div>
           </div>
         </div>,
         document.body
