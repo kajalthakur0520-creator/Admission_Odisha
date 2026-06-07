@@ -1,6 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import {
+  FaBars,
+  FaTimes,
+  FaHeart,
+  FaSignOutAlt,
+  FaGlobe,
+} from "react-icons/fa";
 import { FaBars, FaTimes, FaUser, FaSignOutAlt, FaGlobe, FaCog, FaLock, FaHeadset, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
+
 import logo from "../assets/images/logo.png";
 import { useTranslation } from "react-i18next";
 import API_BASE from "../config/api";
@@ -11,6 +20,10 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
+
+  const [lang, setLang] = useState(localStorage.getItem("language") || "en");
+  const { wishlist } = useContext(AuthContext);
+
   const [lang, setLang] = useState(
     localStorage.getItem("language") || "en"
   );
@@ -185,6 +198,16 @@ const Navbar = () => {
 
           {/* RIGHT SIDE */}
           <div className="hidden md:flex items-center gap-4">
+            {/* Wishlist Count */}
+            {token && wishlist?.length > 0 && (
+              <Link
+                to="/wishlist"
+                className="relative inline-flex items-center justify-center rounded-full bg-red-50 border border-red-100 px-3 py-2 text-red-600 text-sm font-semibold hover:bg-red-100 transition-all duration-200"
+              >
+                <FaHeart className="mr-1 text-base" />
+                {wishlist.length}
+              </Link>
+            )}
             {/* Language */}
             <div className="relative">
               <button
@@ -203,6 +226,8 @@ const Navbar = () => {
                       key={item}
                       onClick={() => {
                         const selected =
+
+                          item === "EN" ? "en" : item === "Hindi" ? "hi" : "od";
                           item === "EN"
                             ? "en"
                             : item === "Hindi"
@@ -213,10 +238,14 @@ const Navbar = () => {
 
                         i18n.changeLanguage(selected);
 
+
+                        localStorage.setItem("language", selected);
+
                         localStorage.setItem(
                           "language",
                           selected
                         );
+
 
                         setOpen(false);
                       }}
@@ -232,17 +261,12 @@ const Navbar = () => {
             {/* Auth Buttons */}
             {token ? (
               <div className="relative">
-                <button onClick={() => setProfileOpen(!profileOpen)}>
-                  {!user ? (
-                    <div className="flex gap-3">
-                      <button>Login</button>
-
-                      <button>Register</button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-3">
-                      {/* PROFILE IMAGE */}
-
+                {user ? (
+                  <>
+                    <button
+                      onClick={() => setProfileOpen(!profileOpen)}
+                      className="flex items-center gap-3 focus:outline-none"
+                    >
                       {user?.profile_photo ? (
                         <img
                           src={`http://localhost/backend/${user.profile_photo}`}
@@ -250,8 +274,6 @@ const Navbar = () => {
                           className="w-10 h-10 rounded-full object-cover border-2 border-white"
                         />
                       ) : (
-                        /* FIRST LETTER AVATAR */
-
                         <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold uppercase">
                           {user?.name
                             ? user.name
@@ -262,6 +284,7 @@ const Navbar = () => {
                             : user?.email?.charAt(0)}
                         </div>
                       )}
+
                     </div>
                   )}
                 </button>
@@ -288,6 +311,44 @@ const Navbar = () => {
                       <FaSignOutAlt className="text-xs" />
                       Logout
                     </button>
+                    {profileOpen && (
+                      <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-100 rounded-md shadow-lg z-50 overflow-hidden">
+                        <Link
+                          to="/wishlist"
+                          onClick={() => setProfileOpen(false)}
+                          className="w-full block text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-all duration-200"
+                        >
+                          <FaHeart className="inline-block mr-2 text-xs text-red-500" />
+                          Wishlist
+                        </Link>
+                        <button
+                          onClick={() => {
+                            localStorage.removeItem("token");
+                            localStorage.removeItem("user");
+                            window.location.reload();
+                          }}
+                          className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-all duration-200"
+                        >
+                          <FaSignOutAlt className="text-xs" />
+                          Logout
+                        </button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex gap-3">
+                    <Link
+                      to="/login"
+                      className="border border-[#6C4DF6] text-[#6C4DF6] px-4 py-2 rounded-md text-sm font-semibold hover:bg-[#F5F3FF] transition-all duration-300"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      to="/register"
+                      className="bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] text-white px-4 py-2 rounded-md text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+                    >
+                      Register
+                    </Link>
                   </div>
                 )}
               </div>
@@ -349,6 +410,19 @@ const Navbar = () => {
                   Dashboard
                 </Link>
               )}
+              {token && (
+                <Link
+                  to="/wishlist"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`px-6 py-3 text-sm transition-all duration-300 ${
+                    isActive("/wishlist")
+                      ? "text-[#6C4DF6] bg-gradient-to-r from-[#F5F3FF] to-[#F3E8FF] border-l-4 border-[#6C4DF6]"
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  Wishlist {wishlist?.length > 0 && `(${wishlist.length})`}
+                </Link>
+              )}
 
               {/* Divider */}
               <div className="h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent my-2 mx-4"></div>
@@ -364,15 +438,32 @@ const Navbar = () => {
                       key={item}
                       onClick={() => {
                         const selected =
+
+                          item === "EN" ? "en" : item === "Hindi" ? "hi" : "od";
+
                           item === "EN"
                             ? "en"
                             : item === "Hindi"
                               ? "hi"
                               : "od";
 
+
                         setLang(selected);
 
                         i18n.changeLanguage(selected);
+
+
+                        localStorage.setItem("language", selected);
+
+                        setMobileMenuOpen(false);
+                      }}
+                      className={`px-3 py-1 rounded-md text-sm transition-all duration-300 ${
+                        (item === "EN" && lang === "en") ||
+                        (item === "Hindi" && lang === "hi") ||
+                        (item === "Odia" && lang === "od")
+                          ? "bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] text-white shadow-md"
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      }`}
 
                         localStorage.setItem(
                           "language",
@@ -387,6 +478,7 @@ const Navbar = () => {
                           ? "bg-gradient-to-r from-[#6C4DF6] to-[#8B5CF6] text-white shadow-md"
                           : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                         }`}
+
                     >
                       {item}
                     </button>

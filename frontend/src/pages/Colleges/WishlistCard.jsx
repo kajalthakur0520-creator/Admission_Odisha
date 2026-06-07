@@ -1,6 +1,7 @@
 // src/pages/Wishlist/WishlistCard.jsx
 
 import React from "react";
+import { Link } from "react-router-dom";
 import {
   FaHeart,
   FaRegEye,
@@ -8,58 +9,79 @@ import {
   FaStar,
   FaTrash,
 } from "react-icons/fa";
+import { ASSETS_BASE } from "../../config/api";
 
-const WishlistCard = ({ college, onRemove }) => {
+const WishlistCard = ({ college, onRemove, removing }) => {
+  const imageUrl = college.banner_image
+    ? college.banner_image.startsWith("http")
+      ? college.banner_image
+      : `${ASSETS_BASE}/${college.banner_image}`
+    : college.image
+      ? college.image.startsWith("http")
+        ? college.image
+        : `${ASSETS_BASE}/${college.image}`
+      : "/src/assets/wishlist/wishlist-banner.jpeg";
+
+  const courseText = Array.isArray(college.courses)
+    ? college.courses.slice(0, 3).join(", ")
+    : college.courses || college.type || "Engineering";
+
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300">
-      {/* Image Section */}
-      <div className="relative">
+    <div className="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
+      <div className="relative h-64 overflow-hidden">
         <img
-          src={college.image}
+          src={imageUrl}
           alt={college.name}
-          className="w-full h-[220px] object-cover"
+          className="w-full h-full object-cover"
         />
-
-        <button className="absolute top-4 right-4 bg-white p-3 rounded-full shadow-md">
-          <FaHeart className="text-pink-500 text-lg" />
-        </button>
+        <div className="absolute top-4 right-4 bg-white/90 p-3 rounded-full shadow-lg">
+          <FaHeart className="text-red-500 text-lg" />
+        </div>
       </div>
 
-      {/* Content */}
-      <div className="p-5">
-        <h2 className="text-[24px] font-bold text-[#0B1B43] mb-2">
+      <div className="p-6">
+        <h2 className="text-2xl font-bold text-[#0B1B43] mb-3">
           {college.name}
         </h2>
 
-        <div className="flex items-center gap-2 text-gray-500 text-[15px] mb-3">
-          <FaMapMarkerAlt />
-          <span>{college.location}</span>
+        <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-4">
+          <span className="flex items-center gap-2">
+            <FaMapMarkerAlt />
+            {college.location || college.city || "Bhubaneswar, Odisha"}
+          </span>
+          <span className="inline-flex items-center gap-2 rounded-full bg-[#EEF4FF] px-3 py-1 text-[#2563EB]">
+            {courseText}
+          </span>
         </div>
 
-        <div className="inline-block bg-[#EEF4FF] text-[#2563EB] text-sm px-3 py-2 rounded-lg mb-4">
-          {college.courses}
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+          <div className="inline-flex items-center gap-2 text-sm text-gray-700 font-semibold">
+            <FaStar className="text-yellow-400" />
+            {college.rating ? college.rating.toFixed(1) : "4.4"}
+          </div>
+          <span className="text-sm text-gray-500">
+            {college.total_reviews
+              ? `${college.total_reviews} Reviews`
+              : "1280 Reviews"}
+          </span>
         </div>
 
-        <div className="flex items-center gap-2 mb-5">
-          <FaStar className="text-yellow-400" />
-          <span className="font-semibold text-gray-700">{college.rating}</span>
-
-          <span className="text-gray-500">({college.reviews})</span>
-        </div>
-
-        {/* Buttons */}
-        <div className="flex items-center gap-3">
-          <button className="flex-1 border border-[#2563EB] text-[#2563EB] py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-[#2563EB] hover:text-white transition-all duration-300">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <Link
+            to={`/colleges/${college.id}`}
+            className="flex-1 inline-flex items-center justify-center gap-2 border border-[#2563EB] text-[#2563EB] py-3 rounded-2xl hover:bg-[#2563EB] hover:text-white transition-all duration-300"
+          >
             <FaRegEye />
             View Details
-          </button>
+          </Link>
 
           <button
-            onClick={() => onRemove(college.id)}
-            className="flex-1 border border-red-300 text-red-500 py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-red-500 hover:text-white transition-all duration-300"
+            disabled={removing}
+            onClick={onRemove}
+            className="flex-1 inline-flex items-center justify-center gap-2 border border-red-300 text-red-500 py-3 rounded-2xl hover:bg-red-500 hover:text-white transition-all duration-300 disabled:opacity-50"
           >
             <FaTrash />
-            Remove
+            {removing ? "Removing..." : "Remove"}
           </button>
         </div>
       </div>

@@ -56,17 +56,15 @@ const AppRoutes = () => {
           </MainLayout>
         }
       />
-      {/* <Route
+      {/* Wishlist route */}
+      <Route
         path="/wishlist"
         element={
           <MainLayout>
-            <CollegeWishlist />
+            <Wishlist />
           </MainLayout>
         }
-      /> */}
-
-      <Route path="/wishlist" element={<Wishlist />} />
-
+      />
       <Route
         path="/contact"
         element={
@@ -76,12 +74,30 @@ const AppRoutes = () => {
         }
       />
       <Route path="/streams" element={<Navigate to="/field" replace />} />
-
-      <Route path="/course" element={<MainLayout><Course /></MainLayout>} />
-      <Route path="/courses" element={<MainLayout><AllCourses /></MainLayout>} />
-      <Route path="/about" element={<MainLayout><About /></MainLayout>} />
-
-
+      <Route
+        path="/course"
+        element={
+          <MainLayout>
+            <Course />
+          </MainLayout>
+        }
+      />
+      <Route
+        path="/courses"
+        element={
+          <MainLayout>
+            <AllCourses />
+          </MainLayout>
+        }
+      />
+      <Route
+        path="/about"
+        element={
+          <MainLayout>
+            <About />
+          </MainLayout>
+        }
+      />
       <Route
         path="/register"
         element={
@@ -90,17 +106,16 @@ const AppRoutes = () => {
           </MainLayout>
         }
       />
-
       {/* Auth routes */}
-<Route
-  path="/login"
-  element={
-    <MainLayout>
-      <Login />
-    </MainLayout>
-  }
-/>      <Route path="/verify-otp" element={<VerifyOtp />} />
-
+      <Route
+        path="/login"
+        element={
+          <MainLayout>
+            <Login />
+          </MainLayout>
+        }
+      />{" "}
+      <Route path="/verify-otp" element={<VerifyOtp />} />
       {/* Fields */}
       <Route
         path="/field"
@@ -118,7 +133,6 @@ const AppRoutes = () => {
           </MainLayout>
         }
       />
-
       {/* Course Details */}
       <Route
         path="/course/:specializationSlug"
@@ -136,7 +150,6 @@ const AppRoutes = () => {
           </MainLayout>
         }
       />
-
       {/* Dashboard */}
       <Route path="/dashboard" element={<Dashboard />} />
     </Routes>

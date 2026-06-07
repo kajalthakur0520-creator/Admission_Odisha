@@ -1,8 +1,19 @@
-import React, { useState, useEffect, useContext, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, MapPin, Star, Heart, School, CheckCircle, GraduationCap, Filter, ChevronDown, ArrowRight } from 'lucide-react';
-import { ASSETS_BASE } from '../../config/api';
-import { AuthContext } from '../../context/AuthContext';
+import React, { useState, useEffect, useContext, useRef } from "react";
+import { Link } from "react-router-dom";
+import {
+  Search,
+  MapPin,
+  Star,
+  Heart,
+  School,
+  CheckCircle,
+  GraduationCap,
+  Filter,
+  ChevronDown,
+  ArrowRight,
+} from "lucide-react";
+import API_BASE, { ASSETS_BASE } from "../../config/api";
+import { AuthContext } from "../../context/AuthContext";
 import { useTranslation } from "react-i18next";
 
 // Import your images
@@ -27,6 +38,7 @@ const CollegePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const collegeSectionRef = useRef(null);
+  const initialFilterLoadRef = useRef(true);
 
   const { wishlist, toggleWishlist } = useContext(AuthContext);
 
@@ -34,16 +46,18 @@ const CollegePage = () => {
     t("collegeWordColleges"),
     t("collegeWordUniversities"),
     t("collegeWordInstitutions"),
-    t("collegeWordDreamColleges")
+    t("collegeWordDreamColleges"),
   ];
 
   useEffect(() => {
     const fetchColleges = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}?r=site/api-colleges`);
+        const response = await fetch(`${API_BASE}?r=site/api-colleges`);
         const result = await response.json();
-        if (result.status === 'success') {
-          setAllColleges(result.data);
+        if (result.status === "success") {
+          const colleges = Array.isArray(result.data) ? result.data : [];
+          setAllColleges(colleges);
+          setVisibleColleges(colleges.length);
         }
       } catch (error) {
         console.error("Error fetching colleges:", error);
@@ -76,14 +90,27 @@ const CollegePage = () => {
   }, [displayText, isDeleting, loopNum, words]);
 
   useEffect(() => {
+    if (initialFilterLoadRef.current) {
+      initialFilterLoadRef.current = false;
+      return;
+    }
     setVisibleColleges(8);
   }, [searchQuery, selectedDistrict, selectedType, selectedCategory]);
 
-  const filteredColleges = allColleges.filter(college => {
-    const matchName = !searchQuery || (college.name && college.name.toLowerCase().includes(searchQuery.toLowerCase()));
-    const matchDistrict = selectedDistrict === "All Districts" || (college.location && college.location.includes(selectedDistrict));
-    const matchType = selectedType === "All Types" || (college.type && college.type.includes(selectedType));
-    const matchCategory = selectedCategory === "All Categories" || (college.category ? college.category.includes(selectedCategory) : true);
+  const filteredColleges = allColleges.filter((college) => {
+    const matchName =
+      !searchQuery ||
+      (college.name &&
+        college.name.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchDistrict =
+      selectedDistrict === "All Districts" ||
+      (college.location && college.location.includes(selectedDistrict));
+    const matchType =
+      selectedType === "All Types" ||
+      (college.type && college.type.includes(selectedType));
+    const matchCategory =
+      selectedCategory === "All Categories" ||
+      (college.category ? college.category.includes(selectedCategory) : true);
 
     return matchName && matchDistrict && matchType && matchCategory;
   });
@@ -94,16 +121,40 @@ const CollegePage = () => {
   const loadMore = () => {
     setIsLoading(true);
     setTimeout(() => {
-      setVisibleColleges(prev => prev + 4);
+      setVisibleColleges((prev) => prev + 4);
       setIsLoading(false);
     }, 800);
   };
 
   const stats = [
-    { label: t("aboutStatsTrusted"), sub: t("aboutStatsColleges"), icon: <School size={28} />, color: "text-[#5B3DF5]", bg: "bg-[#5B3DF5]/10" },
-    { label: t("collegeStatsAcrossVarious"), sub: t("collegeStatsDistricts"), icon: <MapPin size={28} />, color: "text-[#14B8A6]", bg: "bg-[#14B8A6]/10" },
-    { label: t("aboutStatsDiverse"), sub: t("aboutStatsCourses"), icon: <GraduationCap size={28} />, color: "text-[#F59E0B]", bg: "bg-[#F59E0B]/10" },
-    { label: t("collegeStatsTrustedPlatform"), sub: t("collegeStatsPlatform"), icon: <CheckCircle size={28} />, color: "text-[#3B82F6]", bg: "bg-[#3B82F6]/10" },
+    {
+      label: t("aboutStatsTrusted"),
+      sub: t("aboutStatsColleges"),
+      icon: <School size={28} />,
+      color: "text-[#5B3DF5]",
+      bg: "bg-[#5B3DF5]/10",
+    },
+    {
+      label: t("collegeStatsAcrossVarious"),
+      sub: t("collegeStatsDistricts"),
+      icon: <MapPin size={28} />,
+      color: "text-[#14B8A6]",
+      bg: "bg-[#14B8A6]/10",
+    },
+    {
+      label: t("aboutStatsDiverse"),
+      sub: t("aboutStatsCourses"),
+      icon: <GraduationCap size={28} />,
+      color: "text-[#F59E0B]",
+      bg: "bg-[#F59E0B]/10",
+    },
+    {
+      label: t("collegeStatsTrustedPlatform"),
+      sub: t("collegeStatsPlatform"),
+      icon: <CheckCircle size={28} />,
+      color: "text-[#3B82F6]",
+      bg: "bg-[#3B82F6]/10",
+    },
   ];
 
   const districts = [
@@ -116,7 +167,7 @@ const CollegePage = () => {
     { value: "Puri", labelKey: "districts.puri" },
     { value: "Balasore", labelKey: "districts.balasore" },
     { value: "Baripada", labelKey: "districts.baripada" },
-    { value: "Jharsuguda", labelKey: "districts.jharsuguda" }
+    { value: "Jharsuguda", labelKey: "districts.jharsuguda" },
   ];
 
   const collegeTypes = [
@@ -126,7 +177,7 @@ const CollegePage = () => {
     { value: "Deemed University", labelKey: "types.deemed" },
     { value: "Institute of National Importance", labelKey: "types.importance" },
     { value: "Autonomous", labelKey: "types.autonomous" },
-    { value: "State University", labelKey: "types.state" }
+    { value: "State University", labelKey: "types.state" },
   ];
 
   const categories = [
@@ -138,7 +189,7 @@ const CollegePage = () => {
     { value: "Pharmacy", labelKey: "categories.pharmacy" },
     { value: "Science", labelKey: "categories.science" },
     { value: "Arts", labelKey: "categories.arts" },
-    { value: "Commerce", labelKey: "categories.commerce" }
+    { value: "Commerce", labelKey: "categories.commerce" },
   ];
 
   const handleGetStarted = () => {
@@ -147,18 +198,19 @@ const CollegePage = () => {
 
   const getImageUrl = (imagePath) => {
     if (!imagePath) return kiit;
-    if (imagePath.startsWith('http')) return imagePath;
+    if (imagePath.startsWith("http")) return imagePath;
     return `${ASSETS_BASE}/${imagePath}`;
   };
 
   return (
     <div className="bg-[#F8F8FC] min-h-screen font-sans pb-20">
-
       {/* Breadcrumb */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6 py-3">
           <div className="flex items-center gap-2 text-sm text-gray-500">
-            <Link to="/" className="hover:text-indigo-600 transition">{t("home")}</Link>
+            <Link to="/" className="hover:text-indigo-600 transition">
+              {t("home")}
+            </Link>
             <span className="text-gray-400">›</span>
             <span className="text-indigo-600 font-medium">{t("college")}</span>
           </div>
@@ -169,7 +221,6 @@ const CollegePage = () => {
       <section className="bg-white pt-12 pb-16">
         <div className="max-w-[1280px] mx-auto px-4 sm:px-6">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-
             {/* Left Side - Animated Heading */}
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-[#071B52] leading-tight mb-4">
@@ -197,13 +248,19 @@ const CollegePage = () => {
                         setShowSuggestions(true);
                       }}
                       onFocus={() => setShowSuggestions(true)}
-                      onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                      onBlur={() =>
+                        setTimeout(() => setShowSuggestions(false), 200)
+                      }
                       className="w-full px-3 py-2 outline-none bg-transparent text-gray-700 placeholder:text-gray-400 text-sm"
                     />
                     {showSuggestions && searchQuery && (
                       <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
                         {allColleges
-                          .filter(c => c.name?.toLowerCase().includes(searchQuery.toLowerCase()))
+                          .filter((c) =>
+                            c.name
+                              ?.toLowerCase()
+                              .includes(searchQuery.toLowerCase()),
+                          )
                           .slice(0, 8)
                           .map((college) => (
                             <div
@@ -213,16 +270,27 @@ const CollegePage = () => {
                                 setShowSuggestions(false);
                                 // Scroll to filter/college section
                                 setTimeout(() => {
-                                  collegeSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+                                  collegeSectionRef.current?.scrollIntoView({
+                                    behavior: "smooth",
+                                  });
                                 }, 50);
                               }}
                               className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-gray-700 border-b last:border-b-0 border-gray-100 flex items-center gap-2"
                             >
-                              <Search size={14} className="text-gray-400 flex-shrink-0" />
-                              <span className="font-medium truncate">{college.name}</span>
+                              <Search
+                                size={14}
+                                className="text-gray-400 flex-shrink-0"
+                              />
+                              <span className="font-medium truncate">
+                                {college.name}
+                              </span>
                             </div>
                           ))}
-                        {allColleges.filter(c => c.name?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                        {allColleges.filter((c) =>
+                          c.name
+                            ?.toLowerCase()
+                            .includes(searchQuery.toLowerCase()),
+                        ).length === 0 && (
                           <div className="px-4 py-3 text-xs text-gray-400 text-center">
                             {t("collegeNoCollegesFound")}
                           </div>
@@ -237,8 +305,10 @@ const CollegePage = () => {
                       onChange={(e) => setSelectedDistrict(e.target.value)}
                       className="w-full px-2 py-3 outline-none text-gray-600 bg-transparent text-sm"
                     >
-                      {districts.map(district => (
-                        <option key={district.value} value={district.value}>{t(district.labelKey)}</option>
+                      {districts.map((district) => (
+                        <option key={district.value} value={district.value}>
+                          {t(district.labelKey)}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -249,8 +319,10 @@ const CollegePage = () => {
                       onChange={(e) => setSelectedType(e.target.value)}
                       className="w-full px-2 py-3 outline-none text-gray-600 bg-transparent text-sm"
                     >
-                      {collegeTypes.map(type => (
-                        <option key={type.value} value={type.value}>{t(type.labelKey)}</option>
+                      {collegeTypes.map((type) => (
+                        <option key={type.value} value={type.value}>
+                          {t(type.labelKey)}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -261,15 +333,21 @@ const CollegePage = () => {
                       onChange={(e) => setSelectedCategory(e.target.value)}
                       className="w-full px-2 py-3 outline-none text-gray-600 bg-transparent text-sm"
                     >
-                      {categories.map(category => (
-                        <option key={category.value} value={category.value}>{t(category.labelKey)}</option>
+                      {categories.map((category) => (
+                        <option key={category.value} value={category.value}>
+                          {t(category.labelKey)}
+                        </option>
                       ))}
                     </select>
                   </div>
                 </div>
 
                 <button
-                  onClick={() => collegeSectionRef.current?.scrollIntoView({ behavior: 'smooth' })}
+                  onClick={() =>
+                    collegeSectionRef.current?.scrollIntoView({
+                      behavior: "smooth",
+                    })
+                  }
                   className="w-full bg-[#4F46E5] text-white py-3 rounded-b-2xl font-semibold hover:bg-[#4338CA] transition-all duration-300 flex items-center justify-center gap-2"
                 >
                   <Search size={18} />
@@ -279,14 +357,24 @@ const CollegePage = () => {
 
               {/* Quick Tags */}
               <div className="flex flex-wrap gap-2">
-                <span className="text-xs text-gray-400 font-medium">{t("collegePopularLabel")}</span>
-                {['Engineering', 'Medical', 'Management', 'Law', 'Pharmacy'].map(tag => (
+                <span className="text-xs text-gray-400 font-medium">
+                  {t("collegePopularLabel")}
+                </span>
+                {[
+                  "Engineering",
+                  "Medical",
+                  "Management",
+                  "Law",
+                  "Pharmacy",
+                ].map((tag) => (
                   <span
                     key={tag}
                     onClick={() => {
                       setSelectedCategory(tag);
                       setTimeout(() => {
-                        collegeSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+                        collegeSectionRef.current?.scrollIntoView({
+                          behavior: "smooth",
+                        });
                       }, 50);
                     }}
                     className="text-xs px-3 py-1.5 bg-gray-100 rounded-full text-gray-600 cursor-pointer hover:bg-[#4F46E5]/10 hover:text-[#4F46E5] transition-colors duration-300"
@@ -313,23 +401,37 @@ const CollegePage = () => {
       <section className="max-w-[1280px] mx-auto px-4 sm:px-6 -mt-8 relative z-10">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6">
           {stats.map((s, i) => (
-            <div key={i} className="bg-white p-5 md:p-6 rounded-2xl border border-gray-100 hover:border-[#4F46E5]/20 transition-all duration-300 hover:-translate-y-1 shadow-sm">
-              <div className={`${s.bg} w-14 h-14 md:w-16 md:h-16 rounded-xl flex items-center justify-center ${s.color} mb-4`}>
+            <div
+              key={i}
+              className="bg-white p-5 md:p-6 rounded-2xl border border-gray-100 hover:border-[#4F46E5]/20 transition-all duration-300 hover:-translate-y-1 shadow-sm"
+            >
+              <div
+                className={`${s.bg} w-14 h-14 md:w-16 md:h-16 rounded-xl flex items-center justify-center ${s.color} mb-4`}
+              >
                 {s.icon}
               </div>
-              <p className="text-xl md:text-xl font-bold text-[#071B52] leading-none">{s.label}</p>
-              <p className="text-sm md:text-base text-gray-500 font-semibold mt-1">{s.sub}</p>
+              <p className="text-xl md:text-xl font-bold text-[#071B52] leading-none">
+                {s.label}
+              </p>
+              <p className="text-sm md:text-base text-gray-500 font-semibold mt-1">
+                {s.sub}
+              </p>
             </div>
           ))}
         </div>
       </section>
 
       {/* FILTER BAR */}
-      <section ref={collegeSectionRef} className="max-w-[1280px] mx-auto mt-8 px-4 sm:px-6 scroll-mt-28">
+      <section
+        ref={collegeSectionRef}
+        className="max-w-[1280px] mx-auto mt-8 px-4 sm:px-6 scroll-mt-28"
+      >
         <div className="bg-white rounded-2xl p-4 border border-gray-100 flex flex-wrap items-center justify-between gap-3 shadow-sm">
           <div className="flex items-center gap-2 flex-wrap">
             <Filter size={18} className="text-gray-400" />
-            <span className="text-sm font-medium text-gray-600">{t("collegeFilterBy")}</span>
+            <span className="text-sm font-medium text-gray-600">
+              {t("collegeFilterBy")}
+            </span>
             <div className="flex gap-2 flex-wrap">
               <button
                 onClick={() => setSelectedType("All Types")}
@@ -387,20 +489,37 @@ const CollegePage = () => {
                   {college.type}
                 </div>
                 <button
+                  type="button"
                   onClick={(e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     toggleWishlist(college.id);
                   }}
-                  className={`absolute top-3 right-3 p-2 rounded-full transition-all duration-300 ${wishlist?.includes(parseInt(college.id, 10))
-                    ? 'bg-red-50 text-red-500'
-                    : 'bg-white/90 text-gray-400 hover:text-red-500'
-                    }`}
+                  aria-label={
+                    wishlist?.includes(parseInt(college.id, 10))
+                      ? "Remove from wishlist"
+                      : "Add to wishlist"
+                  }
+                  className={`absolute top-3 right-3 p-2 rounded-full transition-all duration-300 ${
+                    wishlist?.includes(parseInt(college.id, 10))
+                      ? "bg-red-50 text-red-500"
+                      : "bg-white/90 text-gray-400 hover:text-red-500"
+                  }`}
                 >
-                  <Heart size={16} className={wishlist?.includes(parseInt(college.id, 10)) ? 'fill-current' : ''} />
+                  <Heart
+                    size={16}
+                    className={
+                      wishlist?.includes(parseInt(college.id, 10))
+                        ? "fill-current"
+                        : ""
+                    }
+                  />
                 </button>
                 <div className="absolute bottom-3 right-3 bg-white/95 px-2 py-1 rounded-lg flex items-center gap-1">
                   <Star size={12} className="text-yellow-400 fill-yellow-400" />
-                  <span className="text-[#071B52] font-bold text-xs">{college.rating}</span>
+                  <span className="text-[#071B52] font-bold text-xs">
+                    {college.rating}
+                  </span>
                 </div>
               </div>
               <div className="p-5">
@@ -414,9 +533,7 @@ const CollegePage = () => {
                 <p className="text-xs text-gray-500 leading-relaxed mb-4 line-clamp-2">
                   {college.description}
                 </p>
-                <div
-                  className="block w-full py-2.5 text-center text-sm font-medium rounded-xl border border-[#4F46E5] text-[#4F46E5] bg-white hover:bg-[#4F46E5] hover:text-white transition-all duration-300"
-                >
+                <div className="block w-full py-2.5 text-center text-sm font-medium rounded-xl border border-[#4F46E5] text-[#4F46E5] bg-white hover:bg-[#4F46E5] hover:text-white transition-all duration-300">
                   {t("viewDetails")}
                 </div>
               </div>
@@ -439,12 +556,18 @@ const CollegePage = () => {
               ) : (
                 <>
                   <span>{t("collegeLoadMoreButton")}</span>
-                  <ChevronDown size={18} className="group-hover:translate-y-1 transition-transform duration-300" />
+                  <ChevronDown
+                    size={18}
+                    className="group-hover:translate-y-1 transition-transform duration-300"
+                  />
                 </>
               )}
             </button>
             <p className="text-xs text-gray-400 mt-3">
-              {t("collegeShowingStatus", { displayed: displayedColleges.length, total: filteredColleges.length })}
+              {t("collegeShowingStatus", {
+                displayed: displayedColleges.length,
+                total: filteredColleges.length,
+              })}
             </p>
           </div>
         )}
@@ -458,8 +581,12 @@ const CollegePage = () => {
               <GraduationCap size={48} className="text-white" />
             </div>
             <div className="text-center md:text-left">
-              <h2 className="text-2xl md:text-3xl font-bold mb-2">{t("collegeCtaTitle")}</h2>
-              <p className="text-white/80 text-sm md:text-base">{t("collegeCtaDesc")}</p>
+              <h2 className="text-2xl md:text-3xl font-bold mb-2">
+                {t("collegeCtaTitle")}
+              </h2>
+              <p className="text-white/80 text-sm md:text-base">
+                {t("collegeCtaDesc")}
+              </p>
             </div>
           </div>
           <button

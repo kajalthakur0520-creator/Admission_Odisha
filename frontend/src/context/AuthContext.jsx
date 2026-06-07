@@ -8,7 +8,9 @@ const AuthProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
 
   const fetchWishlist = async (currentToken) => {
-    const isAdminPage = window.location.pathname.includes("/admin") || window.location.pathname.includes("/dashboard");
+    const isAdminPage =
+      window.location.pathname.includes("/admin") ||
+      window.location.pathname.includes("/dashboard");
     if (isAdminPage) {
       return;
     }
@@ -59,8 +61,17 @@ const AuthProvider = ({ children }) => {
     if (!token) {
       alert("Please login before wishlisting.");
       window.location.href = "/login";
-      return;
+      throw new Error("Unauthorized");
     }
+
+    const normalizedCollegeId = parseInt(collegeId, 10);
+    const alreadyWishlisted = wishlist.includes(normalizedCollegeId);
+
+    setWishlist((prev) =>
+      alreadyWishlisted
+        ? prev.filter((id) => id !== normalizedCollegeId)
+        : [...prev, normalizedCollegeId],
+    );
 
     try {
       const response = await fetch(`${API_BASE}?r=site/api-toggle-wishlist`, {
@@ -69,25 +80,34 @@ const AuthProvider = ({ children }) => {
           "Content-Type": "application/json",
           Authorization: token,
         },
-        body: JSON.stringify({ college_id: collegeId }),
+        body: JSON.stringify({ college_id: normalizedCollegeId }),
       });
 
       const data = await response.json();
       if (data.status === "success") {
-        if (data.is_wishlisted) {
-          setWishlist((prev) => [...prev, parseInt(collegeId, 10)]);
-        } else {
-          setWishlist((prev) =>
-            prev.filter((id) => id !== parseInt(collegeId, 10)),
-          );
-        }
-      } else if (data.status === "error" && data.message === "Unauthorized") {
+        return data;
+      }
+
+      if (data.status === "error" && data.message === "Unauthorized") {
         alert("Session expired. Please login again.");
         logout();
         window.location.href = "/login";
       }
+
+      setWishlist((prev) =>
+        alreadyWishlisted
+          ? [...prev, normalizedCollegeId]
+          : prev.filter((id) => id !== normalizedCollegeId),
+      );
+      throw new Error(data.message || "Unable to update wishlist.");
     } catch (e) {
       console.error("Error toggling wishlist", e);
+      setWishlist((prev) =>
+        alreadyWishlisted
+          ? [...prev, normalizedCollegeId]
+          : prev.filter((id) => id !== normalizedCollegeId),
+      );
+      throw e;
     }
   };
 
@@ -101,9 +121,12 @@ const AuthProvider = ({ children }) => {
       const data = await response.json();
       if (data.status === "success") {
         setWishlist([]);
+        return data;
       }
+      throw new Error(data.message || "Unable to clear wishlist.");
     } catch (e) {
       console.error("Error clearing wishlist", e);
+      throw e;
     }
   };
 

@@ -17,8 +17,8 @@ class SiteController extends Controller
      * @inheritdoc
      */
     public function beforeAction($action)
-    {            
-        if (in_array($action->id, ['api-settings', 'api-contact', 'api-courses', 'api-course-detail', 'api-general-course-detail', 'api-field-detail', 'api-colleges', 'api-college-detail', 'api-college-course-specializations', 'api-submit-enquiry', 'api-get-wishlist', 'api-toggle-wishlist', 'api-get-wishlist-colleges', 'api-clear-wishlist'])) {
+    {
+        if (in_array($action->id, ['api-settings', 'api-contact', 'api-courses', 'api-course-detail', 'api-general-course-detail', 'api-field-detail', 'api-colleges', 'api-college-detail', 'api-college-course-specializations', 'api-submit-enquiry', 'api-get-wishlist', 'api-add-wishlist', 'api-remove-wishlist', 'api-toggle-wishlist', 'api-get-wishlist-colleges', 'api-clear-wishlist'])) {
             $this->enableCsrfValidation = false;
         }
         return parent::beforeAction($action);
@@ -35,7 +35,7 @@ class SiteController extends Controller
                 'cors' => [
                     // Allow common development ports
                     'Origin' => [
-                        'http://localhost:5173', 
+                        'http://localhost:5173',
                         'http://127.0.0.1:5173',
                         'http://localhost:5174', 
                         'http://127.0.0.1:5174',
@@ -166,10 +166,10 @@ class SiteController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
 
         $model = new ApiContactForm();
-        
+
         // Load data from JSON body
         $requestData = Yii::$app->request->getBodyParams();
-        
+
         if ($model->load($requestData, '') && $model->contact(Yii::$app->params['adminEmail'])) {
             return ['status' => 'success', 'message' => 'Your message has been sent successfully.'];
         }
@@ -186,20 +186,20 @@ class SiteController extends Controller
     public function actionApiCourseDetail()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-        
+
         $name = Yii::$app->request->get('name', 'Computer Science Engineering');
-        
+
         $specialization = Yii::$app->db->createCommand("SELECT * FROM specializations WHERE name = :name", [':name' => $name])->queryOne();
-        
+
         if (!$specialization) {
             Yii::$app->response->statusCode = 404;
             return ['status' => 'error', 'message' => 'Specialization not found'];
         }
-        
+
         $details = Yii::$app->db->createCommand("SELECT * FROM specialization_details WHERE specialization_id = :id", [':id' => $specialization['id']])->queryOne();
-        
+
         $courses = Yii::$app->db->createCommand("SELECT * FROM courses WHERE specialization_id = :id AND is_status = 1", [':id' => $specialization['id']])->queryAll();
-        
+
         $universities = [];
         if (!empty($courses)) {
             $courseIds = array_column($courses, 'id');
@@ -216,7 +216,7 @@ class SiteController extends Controller
                     WHERE cc.course_id IN ($placeholders) AND c.is_status = 1";
             $universities = Yii::$app->db->createCommand($sql, $paramBindings)->queryAll();
         }
-        
+
         // Ensure eligibility is decoded if it's stored as JSON string
         if ($details && !empty($details['eligibility'])) {
             $eligibilityDecoded = json_decode($details['eligibility'], true);
@@ -224,9 +224,9 @@ class SiteController extends Controller
                 $details['eligibility'] = $eligibilityDecoded;
             }
         }
-        
+
         $field = Yii::$app->db->createCommand("SELECT * FROM fields WHERE id = :id", [':id' => $specialization['field_id']])->queryOne();
-        
+
         return [
             'status' => 'success',
             'data' => [
@@ -247,22 +247,22 @@ class SiteController extends Controller
     public function actionApiGeneralCourseDetail()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-        
+
         $slug = Yii::$app->request->get('slug', 'btech');
-        
+
         $course = Yii::$app->db->createCommand("SELECT * FROM course_details WHERE slug = :slug", [':slug' => $slug])->queryOne();
-        
+
         if (!$course) {
             Yii::$app->response->statusCode = 404;
             return ['status' => 'error', 'message' => 'Course not found'];
         }
-        
+
         // Fetch general course data for duration, level, mode, degree
         $generalCourse = Yii::$app->db->createCommand("SELECT * FROM general_courses WHERE LOWER(REPLACE(name, '.', '')) = :slug OR name = :sname", [
             ':slug' => $slug,
             ':sname' => $course['short_name']
         ])->queryOne();
-        
+
         if ($generalCourse) {
             $course['duration'] = $generalCourse['duration'];
             $course['degree'] = $generalCourse['name'];
@@ -282,7 +282,7 @@ class SiteController extends Controller
             ':cname' => $course['short_name'] . ' %',
             ':cname2' => $course['short_name']
         ])->queryAll();
-        
+
         $course['top_specializations'] = $specializations;
 
         // Fetch top colleges dynamically
@@ -298,7 +298,7 @@ class SiteController extends Controller
         ])->queryAll();
 
         $course['top_colleges'] = $colleges;
-        
+
         // Decode remaining JSON fields
         $jsonFields = ['career_opportunities', 'eligibility'];
         foreach ($jsonFields as $field) {
@@ -309,7 +309,7 @@ class SiteController extends Controller
                 }
             }
         }
-        
+
         return [
             'status' => 'success',
             'data' => $course
@@ -324,15 +324,15 @@ class SiteController extends Controller
     public function actionApiCourses()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-        
+
         $courses = Yii::$app->db->createCommand("SELECT * FROM course_details")->queryAll();
-        
+
         foreach ($courses as &$course) {
             $generalCourse = Yii::$app->db->createCommand("SELECT * FROM general_courses WHERE LOWER(REPLACE(name, '.', '')) = :slug OR name = :sname", [
                 ':slug' => $course['slug'],
                 ':sname' => $course['short_name']
             ])->queryOne();
-            
+
             if ($generalCourse) {
                 $course['duration'] = $generalCourse['duration'];
                 $course['degree'] = $generalCourse['name'];
@@ -344,7 +344,7 @@ class SiteController extends Controller
                 $course['mode'] = 'Full Time';
                 $course['level'] = 'UG Degree';
             }
-            
+
             // Decode JSON fields
             $jsonFields = ['career_opportunities', 'eligibility'];
             foreach ($jsonFields as $field) {
@@ -356,7 +356,7 @@ class SiteController extends Controller
                 }
             }
         }
-        
+
         return [
             'status' => 'success',
             'data' => $courses
@@ -405,7 +405,46 @@ class SiteController extends Controller
     public function actionApiColleges()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-        $colleges = Yii::$app->db->createCommand("SELECT * FROM colleges WHERE is_status = 1")->queryAll();
+
+        // If POST, create a new college (Phase 3)
+        if (Yii::$app->request->isPost) {
+            $data = Yii::$app->request->getBodyParams();
+            $name = isset($data['name']) ? trim($data['name']) : '';
+            $location = isset($data['location']) ? trim($data['location']) : '';
+            if (empty($name) || empty($location)) {
+                Yii::$app->response->statusCode = 400;
+                return ['status' => 'error', 'message' => 'Name and location are required.'];
+            }
+
+            try {
+                $insertData = [
+                    'name' => $name,
+                    'location' => $location,
+                    'rating' => isset($data['rating']) ? $data['rating'] : null,
+                    'image' => isset($data['image']) ? $data['image'] : null,
+                    'banner_image' => isset($data['banner_image']) ? $data['banner_image'] : null,
+                    'description' => isset($data['description']) ? $data['description'] : null,
+                    'type' => isset($data['type']) ? $data['type'] : null,
+                    'established_year' => isset($data['established_year']) ? $data['established_year'] : null,
+                    'website' => isset($data['website']) ? $data['website'] : null,
+                    'address' => isset($data['address']) ? $data['address'] : null,
+                    'courses' => isset($data['courses']) ? json_encode($data['courses']) : null,
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'is_status' => isset($data['is_status']) ? (int) $data['is_status'] : 1,
+                ];
+
+                Yii::$app->db->createCommand()->insert('colleges', $insertData)->execute();
+                $id = Yii::$app->db->getLastInsertID();
+
+                return ['status' => 'success', 'data' => ['id' => $id]];
+            } catch (\Exception $e) {
+                Yii::$app->response->statusCode = 500;
+                return ['status' => 'error', 'message' => 'Failed to create college.'];
+            }
+        }
+
+        // Default: return list of colleges from the database
+        $colleges = Yii::$app->db->createCommand("SELECT * FROM colleges")->queryAll();
         return [
             'status' => 'success',
             'data' => $colleges
@@ -421,9 +460,9 @@ class SiteController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
         $id = Yii::$app->request->get('id');
-        
+
         $college = Yii::$app->db->createCommand("SELECT * FROM colleges WHERE id = :id AND is_status = 1", [':id' => $id])->queryOne();
-        
+
         if (!$college) {
             Yii::$app->response->statusCode = 404;
             return ['status' => 'error', 'message' => 'College not found'];
@@ -435,13 +474,13 @@ class SiteController extends Controller
                 $college['courses'] = $decoded;
             }
         }
-        
+
         // Fetch courses offered by this college
         $sql = "SELECT co.*, cc.id as mapping_id FROM courses co 
                 JOIN college_courses cc ON co.id = cc.course_id 
                 WHERE cc.college_id = :cid AND co.is_status = 1";
         $courses = Yii::$app->db->createCommand($sql, [':cid' => $id])->queryAll();
-        
+
         return [
             'status' => 'success',
             'data' => [
@@ -460,27 +499,27 @@ class SiteController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
         $collegeId = Yii::$app->request->get('college_id');
         $courseName = Yii::$app->request->get('course_name');
-        
+
         $college = Yii::$app->db->createCommand("SELECT * FROM colleges WHERE id = :id AND is_status = 1", [':id' => $collegeId])->queryOne();
-        
+
         if (!$college) {
             Yii::$app->response->statusCode = 404;
             return ['status' => 'error', 'message' => 'College not found'];
         }
 
         $course = Yii::$app->db->createCommand("SELECT * FROM general_courses WHERE name = :name", [':name' => $courseName])->queryOne();
-        
+
         if (!$course) {
             Yii::$app->response->statusCode = 404;
             return ['status' => 'error', 'message' => 'Course not found'];
         }
-        
+
         $sql = "SELECT s.name, s.image, ccs.total_seats, ccs.short_desc 
                 FROM college_course_specializations ccs
                 JOIN specializations s ON ccs.specialization_id = s.id
                 WHERE ccs.college_id = :cid AND ccs.course_id = :course_id AND ccs.is_status = 1";
         $specializations = Yii::$app->db->createCommand($sql, [':cid' => $collegeId, ':course_id' => $course['id']])->queryAll();
-        
+
         return [
             'status' => 'success',
             'data' => [
@@ -500,7 +539,7 @@ class SiteController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
 
         $requestData = Yii::$app->request->getBodyParams();
-        
+
         $fullName = isset($requestData['fullName']) ? $requestData['fullName'] : '';
         $phone = isset($requestData['phone']) ? $requestData['phone'] : '';
         $courses = isset($requestData['courses']) ? $requestData['courses'] : '';
@@ -538,23 +577,48 @@ class SiteController extends Controller
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
         $token = Yii::$app->request->headers->get('Authorization');
-        
+
         if (!$token) {
             Yii::$app->response->statusCode = 401;
             return ['status' => 'error', 'message' => 'Unauthorized'];
         }
-        
+
         $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
             ->bindValue(':token', $token)->queryOne();
-            
+
         if (!$userLogin) {
             Yii::$app->response->statusCode = 401;
             return ['status' => 'error', 'message' => 'Invalid token'];
         }
-        
-        $wishlist = Yii::$app->db->createCommand("SELECT college_id FROM wishlist WHERE user_id = :uid")
-            ->bindValue(':uid', $userLogin['user_id'])->queryColumn();
-            
+
+        $wishlist = Yii::$app->db->createCommand("
+    SELECT
+        c.id,
+        c.name,
+        c.location,
+        c.rating,
+        c.image,
+        c.banner_image,
+        c.description,
+        c.type,
+        c.established_year,
+        c.approved_by,
+        c.campus_size,
+        c.website,
+        c.address,
+        c.rankings,
+        c.courses,
+        c.created_at,
+        c.is_status
+    FROM wishlist w
+    INNER JOIN colleges c
+        ON w.college_id = c.id
+    WHERE w.user_id = :uid
+    ORDER BY w.created_at DESC
+")
+            ->bindValue(':uid', $userLogin['user_id'])
+            ->queryAll();
+
         return ['status' => 'success', 'data' => $wishlist];
     }
 
@@ -564,34 +628,34 @@ class SiteController extends Controller
     public function actionApiToggleWishlist()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-        
+
         $token = Yii::$app->request->headers->get('Authorization');
         if (!$token) {
             Yii::$app->response->statusCode = 401;
             return ['status' => 'error', 'message' => 'Unauthorized'];
         }
-        
+
         $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
             ->bindValue(':token', $token)->queryOne();
-            
+
         if (!$userLogin) {
             Yii::$app->response->statusCode = 401;
             return ['status' => 'error', 'message' => 'Invalid token'];
         }
-        
+
         $data = json_decode(Yii::$app->request->getRawBody(), true);
         $collegeId = $data['college_id'] ?? null;
-        
+
         if (!$collegeId) {
             Yii::$app->response->statusCode = 400;
             return ['status' => 'error', 'message' => 'College ID is required'];
         }
-        
+
         $existing = Yii::$app->db->createCommand("SELECT * FROM wishlist WHERE user_id = :uid AND college_id = :cid")
             ->bindValue(':uid', $userLogin['user_id'])
             ->bindValue(':cid', $collegeId)
             ->queryOne();
-            
+
         if ($existing) {
             Yii::$app->db->createCommand()->delete('wishlist', ['user_id' => $userLogin['user_id'], 'college_id' => $collegeId])->execute();
             return ['status' => 'success', 'message' => 'Removed from wishlist', 'is_wishlisted' => false];
@@ -606,32 +670,113 @@ class SiteController extends Controller
     }
 
     /**
+     * Handles API to add a college to the user's wishlist
+     */
+    public function actionApiAddWishlist()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $token = Yii::$app->request->headers->get('Authorization');
+
+        if (!$token) {
+            Yii::$app->response->statusCode = 401;
+            return ['status' => 'error', 'message' => 'Unauthorized'];
+        }
+
+        $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
+            ->bindValue(':token', $token)->queryOne();
+
+        if (!$userLogin) {
+            Yii::$app->response->statusCode = 401;
+            return ['status' => 'error', 'message' => 'Invalid token'];
+        }
+
+        $data = json_decode(Yii::$app->request->getRawBody(), true);
+        $collegeId = $data['college_id'] ?? null;
+
+        if (!$collegeId) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'College ID is required'];
+        }
+
+        $existing = Yii::$app->db->createCommand("SELECT * FROM wishlist WHERE user_id = :uid AND college_id = :cid")
+            ->bindValue(':uid', $userLogin['user_id'])
+            ->bindValue(':cid', $collegeId)
+            ->queryOne();
+
+        if ($existing) {
+            return ['status' => 'success', 'message' => 'Already in wishlist', 'is_wishlisted' => true];
+        }
+
+        Yii::$app->db->createCommand()->insert('wishlist', [
+            'user_id' => $userLogin['user_id'],
+            'college_id' => $collegeId,
+            'created_at' => date('Y-m-d H:i:s')
+        ])->execute();
+
+        return ['status' => 'success', 'message' => 'Added to wishlist', 'is_wishlisted' => true];
+    }
+
+    /**
+     * Handles API to remove a college from the user's wishlist
+     */
+    public function actionApiRemoveWishlist()
+    {
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        $token = Yii::$app->request->headers->get('Authorization');
+
+        if (!$token) {
+            Yii::$app->response->statusCode = 401;
+            return ['status' => 'error', 'message' => 'Unauthorized'];
+        }
+
+        $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
+            ->bindValue(':token', $token)->queryOne();
+
+        if (!$userLogin) {
+            Yii::$app->response->statusCode = 401;
+            return ['status' => 'error', 'message' => 'Invalid token'];
+        }
+
+        $data = json_decode(Yii::$app->request->getRawBody(), true);
+        $collegeId = $data['college_id'] ?? null;
+
+        if (!$collegeId) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'College ID is required'];
+        }
+
+        Yii::$app->db->createCommand()->delete('wishlist', ['user_id' => $userLogin['user_id'], 'college_id' => $collegeId])->execute();
+
+        return ['status' => 'success', 'message' => 'Removed from wishlist', 'is_wishlisted' => false];
+    }
+
+    /**
      * Handles API to get full college details for user's wishlist
      */
     public function actionApiGetWishlistColleges()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
         $token = Yii::$app->request->headers->get('Authorization');
-        
+
         if (!$token) {
             Yii::$app->response->statusCode = 401;
             return ['status' => 'error', 'message' => 'Unauthorized'];
         }
-        
+
         $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
             ->bindValue(':token', $token)->queryOne();
-            
+
         if (!$userLogin) {
             Yii::$app->response->statusCode = 401;
             return ['status' => 'error', 'message' => 'Invalid token'];
         }
-        
+
         $colleges = Yii::$app->db->createCommand("
             SELECT c.* FROM colleges c
             JOIN wishlist w ON c.id = w.college_id
             WHERE w.user_id = :uid AND c.is_status = 1
         ")->bindValue(':uid', $userLogin['user_id'])->queryAll();
-            
+
         foreach ($colleges as &$college) {
             if (!empty($college['courses']) && is_string($college['courses'])) {
                 $decoded = json_decode($college['courses'], true);
@@ -640,7 +785,7 @@ class SiteController extends Controller
                 }
             }
         }
-            
+
         return ['status' => 'success', 'data' => $colleges];
     }
 
@@ -650,23 +795,23 @@ class SiteController extends Controller
     public function actionApiClearWishlist()
     {
         Yii::$app->response->format = Response::FORMAT_JSON;
-        
+
         $token = Yii::$app->request->headers->get('Authorization');
         if (!$token) {
             Yii::$app->response->statusCode = 401;
             return ['status' => 'error', 'message' => 'Unauthorized'];
         }
-        
+
         $userLogin = Yii::$app->db->createCommand("SELECT user_id FROM user_login WHERE token = :token")
             ->bindValue(':token', $token)->queryOne();
-            
+
         if (!$userLogin) {
             Yii::$app->response->statusCode = 401;
             return ['status' => 'error', 'message' => 'Invalid token'];
         }
-        
+
         Yii::$app->db->createCommand()->delete('wishlist', ['user_id' => $userLogin['user_id']])->execute();
-        
+
         return ['status' => 'success', 'message' => 'Wishlist cleared'];
     }
 

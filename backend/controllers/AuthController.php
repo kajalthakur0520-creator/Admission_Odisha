@@ -303,8 +303,7 @@ class AuthController extends Controller
                 "id" => $user['id'],
                 "name" => $user['name'],
                 "email" => $user['email'],
-                "is_admin" => (int) $user['is_admin'],
-                "profile_photo" => $user['profile_photo']
+                "is_admin" => (int) $user['is_admin']
             ]
         ];
     }
