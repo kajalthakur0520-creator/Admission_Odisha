@@ -590,32 +590,12 @@ class SiteController extends Controller
         }
 
         $wishlist = Yii::$app->db->createCommand("
-    SELECT
-        c.id,
-        c.name,
-        c.location,
-        c.rating,
-        c.image,
-        c.banner_image,
-        c.description,
-        c.type,
-        c.established_year,
-        c.approved_by,
-        c.campus_size,
-        c.website,
-        c.address,
-        c.rankings,
-        c.courses,
-        c.created_at,
-        c.is_status
-    FROM wishlist w
-    INNER JOIN colleges c
-        ON w.college_id = c.id
-    WHERE w.user_id = :uid
-    ORDER BY w.created_at DESC
+    SELECT college_id
+    FROM wishlist
+    WHERE user_id = :uid
 ")
             ->bindValue(':uid', $userLogin['user_id'])
-            ->queryAll();
+            ->queryColumn();
 
         return ['status' => 'success', 'data' => $wishlist];
     }

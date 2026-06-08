@@ -141,8 +141,8 @@ const Wishlist = () => {
         </div>
       </div>
 
-      <div className="px-6 md:px-12 lg:px-20 py-10">
-        <div className="bg-white rounded-3xl border border-gray-200 p-8">
+      <div className="px-5 md:px-8 lg:px-10 py-10">
+        <div className="bg-white rounded-3xl border border-gray-200 p-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5 mb-8">
             <div>
               <h2 className="text-3xl font-bold text-[#0B1B43] mb-2">
@@ -188,7 +188,7 @@ const Wishlist = () => {
               </div>
             </div>
           ) : wishlist.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-7">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
               {wishlist.map((college) => (
                 <WishlistCard
                   key={college.id}
