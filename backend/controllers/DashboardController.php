@@ -383,6 +383,100 @@ class DashboardController extends Controller
         }
         return ['status' => 'success', 'data' => $courses];
     }
+    public function actionGetUsers()
+    {
+        $search = Yii::$app->request->get('search', '');
+        $city = Yii::$app->request->get('city', 'All Cities');
+        $statusFilter = Yii::$app->request->get('status', 'All Status');
+        $gender = Yii::$app->request->get('gender', 'All Gender');
+        $page = (int)Yii::$app->request->get('page', 1);
+        $perPage = (int)Yii::$app->request->get('perPage', 10);
+        
+        if ($page < 1) $page = 1;
+        if ($perPage < 1) $perPage = 10;
+
+        $query = (new \yii\db\Query())
+            ->from('users');
+
+        if (!empty($search)) {
+            $query->andWhere(['or', 
+                ['like', 'name', $search], 
+                ['like', 'email', $search],
+                ['like', 'phone', $search]
+            ]);
+        }
+
+        if ($city !== 'All Cities' && !empty($city)) {
+            $query->andWhere(['city' => $city]);
+        }
+
+        if ($gender !== 'All Gender' && !empty($gender)) {
+            $query->andWhere(['gender' => $gender]);
+        }
+
+        if ($statusFilter !== 'All Status' && !empty($statusFilter)) {
+            if ($statusFilter === 'Active') {
+                $query->andWhere(['is_status' => 1]);
+            } elseif ($statusFilter === 'Inactive') {
+                $query->andWhere(['is_status' => 0]);
+            } elseif ($statusFilter === 'Blocked') {
+                $query->andWhere(['is_status' => 2]);
+            }
+        }
+
+        $totalCount = $query->count();
+        $users = $query->orderBy(['created_at' => SORT_DESC])
+            ->offset(($page - 1) * $perPage)
+            ->limit($perPage)
+            ->all();
+
+        // Format data
+        $formattedUsers = [];
+        foreach ($users as $u) {
+            $statusStr = 'Inactive';
+            if ((int)$u['is_status'] === 1) $statusStr = 'Active';
+            elseif ((int)$u['is_status'] === 2) $statusStr = 'Blocked';
+
+            $formattedUsers[] = [
+                'id' => (int)$u['id'],
+                'name' => $u['name'] ?? 'Unknown',
+                'email' => $u['email'] ?? '',
+                'phone' => $u['phone'] ?? '',
+                'city' => $u['city'] ?? '-',
+                'gender' => $u['gender'] ?? '-',
+                'status' => $statusStr,
+                'joinedOn' => !empty($u['created_at']) ? date('d M Y', strtotime($u['created_at'])) : '-',
+                'lastLogin' => !empty($u['last_login']) ? date('d M Y, h:i A', strtotime($u['last_login'])) : '-',
+            ];
+        }
+
+        // Stats
+        $totalUsers = (int)(new \yii\db\Query())->from('users')->count();
+        $activeUsers = (int)(new \yii\db\Query())->from('users')->where(['is_status' => 1])->count();
+        $inactiveUsers = (int)(new \yii\db\Query())->from('users')->where(['is_status' => 0])->count();
+        $blockedUsers = (int)(new \yii\db\Query())->from('users')->where(['is_status' => 2])->count();
+        $newThisMonth = (int)(new \yii\db\Query())->from('users')->where(['>=', 'created_at', date('Y-m-01')])->count();
+
+        return [
+            'status' => 'success',
+            'data' => [
+                'users' => $formattedUsers,
+                'stats' => [
+                    'total' => $totalUsers,
+                    'active' => $activeUsers,
+                    'inactive' => $inactiveUsers,
+                    'blocked' => $blockedUsers,
+                    'newMonth' => $newThisMonth
+                ],
+                'pagination' => [
+                    'total' => (int)$totalCount,
+                    'page' => $page,
+                    'perPage' => $perPage
+                ]
+            ]
+        ];
+    }
+
     public function actionGetUserActivity()
     {
         $search = Yii::$app->request->get('search', '');
