@@ -44,7 +44,7 @@ const Avatar = ({ name }) => {
 };
 
 /* ── MAIN COMPONENT ── */
-const UserActivity = () => {
+const UserActivity = ({ setActiveNav }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activityType, setActivityType] = useState("All Activities");
   const [userFilter, setUserFilter] = useState("All Users");
@@ -172,9 +172,9 @@ const UserActivity = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-800">User Activity</h1>
           <div className="text-sm text-gray-500 mt-1 flex items-center gap-2">
-            <span>Home</span>
+            <span className="cursor-pointer hover:text-gray-700" onClick={() => setActiveNav && setActiveNav("Dashboard")}>Home</span>
             <span className="text-gray-300">›</span>
-            <span>Users</span>
+            <span className="cursor-pointer hover:text-gray-700" onClick={() => setActiveNav && setActiveNav("Users")}>Users</span>
             <span className="text-gray-300">›</span>
             <span className="text-indigo-600 font-medium">User Activity</span>
           </div>

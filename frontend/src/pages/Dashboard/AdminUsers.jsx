@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import API_BASE from "../../config/api";
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 const Icon = ({ d, size = 18, stroke = "currentColor", fill = "none", strokeWidth = 1.8 }) => (
@@ -118,16 +119,7 @@ const StatIcons = {
 };
 
 // ── Data ─────────────────────────────────────────────────────────────────
-const USERS = [
-  { id: 1, name: "Kajal Thakur",  initials: "K", email: "kajal.thakur@example.com",  phone: "9876543210", city: "Bhadrak",      gender: "Female", status: "Active",   joinedOn: "15 May 2026", lastLogin: "12 Jun 2026, 10:35 AM", avatarBg: "#f472b6" },
-  { id: 2, name: "Rahul Sahu",    initials: "R", email: "rahul.sahu@example.com",    phone: "8765432109", city: "Cuttack",      gender: "Male",   status: "Active",   joinedOn: "14 May 2026", lastLogin: "12 Jun 2026, 09:12 AM", avatarBg: "#60a5fa" },
-  { id: 3, name: "Priya Panda",   initials: "P", email: "priya.panda@example.com",   phone: "7654321098", city: "Bhubaneswar",  gender: "Female", status: "Active",   joinedOn: "13 May 2026", lastLogin: "11 Jun 2026, 08:45 AM", avatarBg: "#a78bfa" },
-  { id: 4, name: "Subham Das",    initials: "S", email: "subham.das@example.com",    phone: "6543210987", city: "Puri",         gender: "Male",   status: "Inactive", joinedOn: "12 May 2026", lastLogin: "07 Jun 2026, 06:20 PM", avatarBg: "#34d399" },
-  { id: 5, name: "Anjali Mishra", initials: "A", email: "anjali.mishra@example.com", phone: "5432109876", city: "Berhampur",    gender: "Female", status: "Active",   joinedOn: "11 May 2026", lastLogin: "12 Jun 2026, 11:05 AM", avatarBg: "#f472b6" },
-  { id: 6, name: "Manoj Behera",  initials: "M", email: "manoj.behera@example.com",  phone: "4321098765", city: "Sambalpur",   gender: "Male",   status: "Active",   joinedOn: "10 May 2026", lastLogin: "12 Jun 2026, 10:55 AM", avatarBg: "#60a5fa" },
-  { id: 7, name: "Sweta Lenka",   initials: "S", email: "sweta.lenka@example.com",   phone: "3210987654", city: "Rourkela",    gender: "Female", status: "Blocked",  joinedOn: "09 May 2026", lastLogin: "05 Jun 2026, 04:15 PM", avatarBg: "#fb923c" },
-  { id: 8, name: "Rakesh Jena",   initials: "R", email: "rakesh.jena@example.com",   phone: "2109876543", city: "Balasore",    gender: "Male",   status: "Inactive", joinedOn: "08 May 2026", lastLogin: "03 Jun 2026, 02:30 PM", avatarBg: "#38bdf8" },
-];
+
 
 const STATUS_STYLE = {
   Active:   { bg: "#dcfce7", color: "#16a34a", border: "#bbf7d0" },
@@ -138,34 +130,78 @@ const STATUS_STYLE = {
 const NAV = ["Dashboard","Colleges","Courses","Counselling","Scholarships","Notifications","Users","Enquiries","Reports","Settings"];
 
 // ── Main Component ────────────────────────────────────────────────────────
-export default function AdminUsers() {
+export default function AdminUsers({ setActiveNav }) {
   const [search, setSearch]   = useState("");
   const [city, setCity]       = useState("All Cities");
   const [status, setStatus]   = useState("All Status");
   const [gender, setGender]   = useState("All Gender");
   const [activePage, setActivePage] = useState(1);
 
-  const filtered = USERS.filter(u => {
-    const q = search.toLowerCase();
-    return (
-      (u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q) || u.phone.includes(q)) &&
-      (city   === "All Cities"  || u.city   === city)   &&
-      (status === "All Status"  || u.status === status) &&
-      (gender === "All Gender"  || u.gender === gender)
-    );
-  });
+  const [users, setUsers] = useState([]);
+  const [statsData, setStatsData] = useState({ total: 0, active: 0, inactive: 0, blocked: 0, newMonth: 0 });
+  const [loading, setLoading] = useState(false);
+  const [totalEntries, setTotalEntries] = useState(0);
+  const [perPage, setPerPage] = useState(10);
 
-  const reset = () => { setSearch(""); setCity("All Cities"); setStatus("All Status"); setGender("All Gender"); };
+  const fetchUsers = async (pSearch = search, pCity = city, pStatus = status, pGender = gender, pPage = activePage, pPerPage = perPage) => {
+    setLoading(true);
+    try {
+      const qSearch = encodeURIComponent(pSearch);
+      const qCity = encodeURIComponent(pCity);
+      const qStatus = encodeURIComponent(pStatus);
+      const qGender = encodeURIComponent(pGender);
+      
+      const res = await fetch(`${API_BASE}?r=dashboard/get-users&search=${qSearch}&city=${qCity}&status=${qStatus}&gender=${qGender}&page=${pPage}&perPage=${pPerPage}`);
+      const result = await res.json();
+      
+      if (result.status === 'success') {
+        const d = result.data;
+        const colors = ["#f472b6", "#60a5fa", "#a78bfa", "#34d399", "#fb923c", "#38bdf8"];
+        
+        const mappedUsers = (d.users || []).map(u => {
+            const initial = u.name ? u.name.charAt(0).toUpperCase() : '?';
+            const colorIdx = u.name ? u.name.charCodeAt(0) % colors.length : 0;
+            return {
+                ...u,
+                initials: initial,
+                avatarBg: colors[colorIdx]
+            };
+        });
+        
+        setUsers(mappedUsers);
+        setStatsData(d.stats || { total: 0, active: 0, inactive: 0, blocked: 0, newMonth: 0 });
+        setTotalEntries(d.pagination?.total || 0);
+      }
+    } catch (err) {
+      console.error("Failed to fetch users", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
+    fetchUsers();
+  }, [activePage, perPage]);
 
+  const handleFilter = () => {
+    setActivePage(1);
+    fetchUsers(search, city, status, gender, 1, perPage);
+  };
 
-  // ── Stat Cards ──────────────────────────────────────────────────────
+  const reset = () => { 
+    setSearch(""); 
+    setCity("All Cities"); 
+    setStatus("All Status"); 
+    setGender("All Gender"); 
+    setActivePage(1);
+    fetchUsers("", "All Cities", "All Status", "All Gender", 1, perPage);
+  };  // ── Stat Cards ──────────────────────────────────────────────────────
   const stats = [
-    { label: "Total Users",    value: "12,458", change: "18.5%", up: true,  iconKey: "Total",    iconBg: "#eef2ff", valueColor: "#4f46e5" },
-    { label: "Active Users",   value: "11,245", change: "16.3%", up: true,  iconKey: "Active",   iconBg: "#f0fdf4", valueColor: "#16a34a" },
-    { label: "Inactive Users", value: "1,012",  change: "8.7%",  up: false, iconKey: "Inactive", iconBg: "#fff7ed", valueColor: "#f97316" },
-    { label: "Blocked Users",  value: "201",    change: "3.1%",  up: false, iconKey: "Blocked",  iconBg: "#fef2f2", valueColor: "#ef4444" },
-    { label: "New This Month", value: "1,245",  change: "20.4%", up: true,  iconKey: "NewMonth", iconBg: "#eff6ff", valueColor: "#3b82f6" },
+    { label: "Total Users",    value: statsData.total.toLocaleString(), change: "0%", up: true,  iconKey: "Total",    iconBg: "#eef2ff", valueColor: "#4f46e5" },
+    { label: "Active Users",   value: statsData.active.toLocaleString(), change: "0%", up: true,  iconKey: "Active",   iconBg: "#f0fdf4", valueColor: "#16a34a" },
+    { label: "Inactive Users", value: statsData.inactive.toLocaleString(),  change: "0%",  up: false, iconKey: "Inactive", iconBg: "#fff7ed", valueColor: "#f97316" },
+    { label: "Blocked Users",  value: statsData.blocked.toLocaleString(),    change: "0%",  up: false, iconKey: "Blocked",  iconBg: "#fef2f2", valueColor: "#ef4444" },
+    { label: "New This Month", value: statsData.newMonth.toLocaleString(),  change: "0%", up: true,  iconKey: "NewMonth", iconBg: "#eff6ff", valueColor: "#3b82f6" },
   ];
 
   return (
@@ -177,12 +213,17 @@ export default function AdminUsers() {
               <h1 style={{ fontSize: 20, fontWeight: 700, color: "#0f172a", margin: 0, lineHeight: 1.3 }}>Users</h1>
               {/* Breadcrumb */}
               <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 4 }}>
-                {["Home","Users","All Users"].map((crumb, i, arr) => (
-                  <div key={crumb} style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                    <span style={{ fontSize: 12, color: i === arr.length - 1 ? "#4f46e5" : "#94a3b8", fontWeight: i === arr.length - 1 ? 500 : 400, cursor: "pointer" }}>{crumb}</span>
-                    {i < arr.length - 1 && <span style={{ color: "#cbd5e1", fontSize: 12 }}>›</span>}
-                  </div>
-                ))}
+                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  <span onClick={() => setActiveNav && setActiveNav("Dashboard")} style={{ fontSize: 12, color: "#94a3b8", fontWeight: 400, cursor: "pointer" }}>Home</span>
+                  <span style={{ color: "#cbd5e1", fontSize: 12 }}>›</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  <span onClick={() => setActiveNav && setActiveNav("Users")} style={{ fontSize: 12, color: "#94a3b8", fontWeight: 400, cursor: "pointer" }}>Users</span>
+                  <span style={{ color: "#cbd5e1", fontSize: 12 }}>›</span>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  <span style={{ fontSize: 12, color: "#4f46e5", fontWeight: 500 }}>All Users</span>
+                </div>
               </div>
             </div>
             <div style={{ display: "flex", gap: 10, marginTop: 2 }}>
@@ -270,7 +311,7 @@ export default function AdminUsers() {
               </div>
 
               {/* Buttons */}
-              <button style={{ height: 36, display: "flex", alignItems: "center", gap: 6, padding: "0 16px", background: "#4f46e5", border: "none", borderRadius: 8, color: "white", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+              <button onClick={handleFilter} style={{ height: 36, display: "flex", alignItems: "center", gap: 6, padding: "0 16px", background: "#4f46e5", border: "none", borderRadius: 8, color: "white", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
                 <FilterIcon /> Filter
               </button>
               <button onClick={reset} style={{ height: 36, display: "flex", alignItems: "center", gap: 6, padding: "0 14px", background: "#fff", border: "1px solid #e2e8f0", borderRadius: 8, color: "#64748b", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
@@ -290,8 +331,10 @@ export default function AdminUsers() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((u, i) => {
-                  const ss = STATUS_STYLE[u.status];
+                {loading ? (
+                  <tr><td colSpan={10} style={{ padding: "40px 14px", textAlign: "center", color: "#94a3b8", fontSize: 13 }}>Loading users...</td></tr>
+                ) : users.length > 0 ? users.map((u, i) => {
+                  const ss = STATUS_STYLE[u.status] || { bg: "#f1f5f9", color: "#64748b", border: "#e2e8f0" };
                   return (
                     <tr key={u.id} style={{ borderBottom: "1px solid #f8fafc", transition: "background 0.15s" }}
                       onMouseEnter={e => e.currentTarget.style.background = "#fafbff"}
@@ -319,41 +362,61 @@ export default function AdminUsers() {
                       <td style={{ padding: "11px 14px", color: "#64748b", fontSize: 12.5, whiteSpace: "nowrap" }}>{u.lastLogin}</td>
                       <td style={{ padding: "11px 14px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <button style={{ background: "none", border: "none", cursor: "pointer", padding: 2, display: "flex" }} title="View"><EyeIcon /></button>
-                          <button style={{ background: "none", border: "none", cursor: "pointer", padding: 2, display: "flex" }} title="Edit"><EditIcon /></button>
-                          <button style={{ background: "none", border: "none", cursor: "pointer", padding: 2, display: "flex" }} title="More"><DotsIcon /></button>
+                          <button onClick={() => console.log('View user', u.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, display: "flex" }} title="View"><EyeIcon /></button>
+                          <button onClick={() => console.log('Edit user', u.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, display: "flex" }} title="Edit"><EditIcon /></button>
+                          <button onClick={() => console.log('More actions', u.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, display: "flex" }} title="More"><DotsIcon /></button>
                         </div>
                       </td>
                     </tr>
                   );
-                })}
-                {filtered.length === 0 && (
-                  <tr><td colSpan={10} style={{ padding: "40px 14px", textAlign: "center", color: "#94a3b8", fontSize: 13 }}>No users match your filters.</td></tr>
+                }) : (
+                  <tr><td colSpan={10} style={{ padding: "40px 14px", textAlign: "center", color: "#94a3b8", fontSize: 13 }}>No users found.</td></tr>
                 )}
               </tbody>
             </table>
 
             {/* Pagination */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderTop: "1px solid #f1f5f9" }}>
-              <span style={{ fontSize: 12.5, color: "#94a3b8" }}>Showing 1 to {filtered.length} of 12,458 entries</span>
+              <span style={{ fontSize: 12.5, color: "#94a3b8" }}>Showing {totalEntries > 0 ? (activePage - 1) * perPage + 1 : 0} to {Math.min(activePage * perPage, totalEntries)} of {totalEntries.toLocaleString()} entries</span>
               <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                <button disabled style={{ width: 28, height: 28, border: "1px solid #e2e8f0", borderRadius: 6, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "not-allowed", opacity: 0.4 }}>
+                <button 
+                  disabled={activePage === 1}
+                  onClick={() => setActivePage(p => Math.max(1, p - 1))}
+                  style={{ width: 28, height: 28, border: "1px solid #e2e8f0", borderRadius: 6, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: activePage === 1 ? "not-allowed" : "pointer", opacity: activePage === 1 ? 0.4 : 1 }}>
                   <ChevronLeft />
                 </button>
-                {[1,2,3].map(p => (
-                  <button key={p} onClick={() => setActivePage(p)} style={{ width: 28, height: 28, border: p === activePage ? "none" : "1px solid #e2e8f0", borderRadius: 6, background: p === activePage ? "#4f46e5" : "#fff", color: p === activePage ? "white" : "#64748b", fontSize: 12.5, fontWeight: p === activePage ? 600 : 400, cursor: "pointer" }}>
-                    {p}
-                  </button>
-                ))}
-                <span style={{ fontSize: 12, color: "#94a3b8", padding: "0 2px" }}>...</span>
-                <button onClick={() => setActivePage(1558)} style={{ width: 32, height: 28, border: activePage === 1558 ? "none" : "1px solid #e2e8f0", borderRadius: 6, background: activePage === 1558 ? "#4f46e5" : "#fff", color: activePage === 1558 ? "white" : "#64748b", fontSize: 12, cursor: "pointer" }}>1558</button>
-                <button style={{ width: 28, height: 28, border: "1px solid #e2e8f0", borderRadius: 6, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
+                
+                {Array.from({ length: Math.min(5, Math.ceil(totalEntries / perPage) || 1) }, (_, i) => {
+                  const totalPages = Math.ceil(totalEntries / perPage) || 1;
+                  let p = i + 1;
+                  if (totalPages > 5 && activePage > 3) {
+                     p = activePage - 2 + i;
+                     if (p > totalPages) p = totalPages - (4 - i);
+                  }
+                  return (
+                    <button key={p} onClick={() => setActivePage(p)} style={{ width: 28, height: 28, border: p === activePage ? "none" : "1px solid #e2e8f0", borderRadius: 6, background: p === activePage ? "#4f46e5" : "#fff", color: p === activePage ? "white" : "#64748b", fontSize: 12.5, fontWeight: p === activePage ? 600 : 400, cursor: "pointer" }}>
+                      {p}
+                    </button>
+                  );
+                })}
+
+                {Math.ceil(totalEntries / perPage) > 5 && activePage < Math.ceil(totalEntries / perPage) - 2 && (
+                  <>
+                    <span style={{ fontSize: 12, color: "#94a3b8", padding: "0 2px" }}>...</span>
+                    <button onClick={() => setActivePage(Math.ceil(totalEntries / perPage))} style={{ minWidth: 28, height: 28, border: "1px solid #e2e8f0", borderRadius: 6, background: "#fff", color: "#64748b", fontSize: 12, cursor: "pointer", padding: "0 4px" }}>{Math.ceil(totalEntries / perPage)}</button>
+                  </>
+                )}
+
+                <button 
+                  disabled={activePage === (Math.ceil(totalEntries / perPage) || 1)}
+                  onClick={() => setActivePage(p => Math.min(Math.ceil(totalEntries / perPage) || 1, p + 1))}
+                  style={{ width: 28, height: 28, border: "1px solid #e2e8f0", borderRadius: 6, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: activePage === (Math.ceil(totalEntries / perPage) || 1) ? "not-allowed" : "pointer", opacity: activePage === (Math.ceil(totalEntries / perPage) || 1) ? 0.4 : 1 }}>
                   <ChevronRight />
                 </button>
-                <select style={{ height: 28, padding: "0 24px 0 8px", border: "1px solid #e2e8f0", borderRadius: 6, fontSize: 12, color: "#64748b", background: "#fff", outline: "none", cursor: "pointer", marginLeft: 4 }}>
-                  <option>10 / page</option>
-                  <option>25 / page</option>
-                  <option>50 / page</option>
+                <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setActivePage(1); }} style={{ height: 28, padding: "0 24px 0 8px", border: "1px solid #e2e8f0", borderRadius: 6, fontSize: 12, color: "#64748b", background: "#fff", outline: "none", cursor: "pointer", marginLeft: 4 }}>
+                  <option value={10}>10 / page</option>
+                  <option value={25}>25 / page</option>
+                  <option value={50}>50 / page</option>
                 </select>
               </div>
             </div>

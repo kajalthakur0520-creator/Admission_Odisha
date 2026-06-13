@@ -684,14 +684,14 @@ const Dashboard = () => {
             </>
           )}
 
-          {activeNav === "Fields" && <AdminField />}
-          {activeNav === "Specializations" && <AdminSpecializations />}
+          {activeNav === "Fields" && <AdminField setActiveNav={setActiveNav} />}
+          {activeNav === "Specializations" && <AdminSpecializations setActiveNav={setActiveNav} />}
 
-          {activeNav === "Courses" && <CoursesManagement />}
-          {activeNav === "Enquiries / Leads" && <AdminEnquiry />}
-          {activeNav === "Colleges" && <AdminColleges />}
-          {activeNav === "Users" && <AdminUsers />}
-          {activeNav === "User Activity" && <UserActivity />}
+          {activeNav === "Courses" && <CoursesManagement setActiveNav={setActiveNav} />}
+          {activeNav === "Enquiries / Leads" && <AdminEnquiry setActiveNav={setActiveNav} />}
+          {activeNav === "Colleges" && <AdminColleges setActiveNav={setActiveNav} />}
+          {activeNav === "Users" && <AdminUsers setActiveNav={setActiveNav} />}
+          {activeNav === "User Activity" && <UserActivity setActiveNav={setActiveNav} />}
 
           {/* FOOTER */}
           <div className="flex items-center justify-between text-xs text-gray-400 py-2">
