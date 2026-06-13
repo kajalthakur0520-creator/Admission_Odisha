@@ -118,23 +118,23 @@ const StatIcons = {
   ),
 };
 
-// ── Data ─────────────────────────────────────────────────────────────────
+// ── Data ──────────────────────────────────────────────────── ─────────────
 
 
 const STATUS_STYLE = {
-  Active:   { bg: "#dcfce7", color: "#16a34a", border: "#bbf7d0" },
+  Active: { bg: "#dcfce7", color: "#16a34a", border: "#bbf7d0" },
   Inactive: { bg: "#fff7ed", color: "#ea580c", border: "#fed7aa" },
-  Blocked:  { bg: "#fef2f2", color: "#dc2626", border: "#fecaca" },
+  Blocked: { bg: "#fef2f2", color: "#dc2626", border: "#fecaca" },
 };
 
-const NAV = ["Dashboard","Colleges","Courses","Counselling","Scholarships","Notifications","Users","Enquiries","Reports","Settings"];
+const NAV = ["Dashboard", "Colleges", "Courses", "Counselling", "Scholarships", "Notifications", "Users", "Enquiries", "Reports", "Settings"];
 
 // ── Main Component ────────────────────────────────────────────────────────
 export default function AdminUsers({ setActiveNav }) {
-  const [search, setSearch]   = useState("");
-  const [city, setCity]       = useState("All Cities");
-  const [status, setStatus]   = useState("All Status");
-  const [gender, setGender]   = useState("All Gender");
+  const [search, setSearch] = useState("");
+  const [city, setCity] = useState("All Cities");
+  const [status, setStatus] = useState("All Status");
+  const [gender, setGender] = useState("All Gender");
   const [activePage, setActivePage] = useState(1);
 
   const [users, setUsers] = useState([]);
@@ -150,24 +150,24 @@ export default function AdminUsers({ setActiveNav }) {
       const qCity = encodeURIComponent(pCity);
       const qStatus = encodeURIComponent(pStatus);
       const qGender = encodeURIComponent(pGender);
-      
+
       const res = await fetch(`${API_BASE}?r=dashboard/get-users&search=${qSearch}&city=${qCity}&status=${qStatus}&gender=${qGender}&page=${pPage}&perPage=${pPerPage}`);
       const result = await res.json();
-      
+
       if (result.status === 'success') {
         const d = result.data;
         const colors = ["#f472b6", "#60a5fa", "#a78bfa", "#34d399", "#fb923c", "#38bdf8"];
-        
+
         const mappedUsers = (d.users || []).map(u => {
-            const initial = u.name ? u.name.charAt(0).toUpperCase() : '?';
-            const colorIdx = u.name ? u.name.charCodeAt(0) % colors.length : 0;
-            return {
-                ...u,
-                initials: initial,
-                avatarBg: colors[colorIdx]
-            };
+          const initial = u.name ? u.name.charAt(0).toUpperCase() : '?';
+          const colorIdx = u.name ? u.name.charCodeAt(0) % colors.length : 0;
+          return {
+            ...u,
+            initials: initial,
+            avatarBg: colors[colorIdx]
+          };
         });
-        
+
         setUsers(mappedUsers);
         setStatsData(d.stats || { total: 0, active: 0, inactive: 0, blocked: 0, newMonth: 0 });
         setTotalEntries(d.pagination?.total || 0);
@@ -188,239 +188,240 @@ export default function AdminUsers({ setActiveNav }) {
     fetchUsers(search, city, status, gender, 1, perPage);
   };
 
-  const reset = () => { 
-    setSearch(""); 
-    setCity("All Cities"); 
-    setStatus("All Status"); 
-    setGender("All Gender"); 
+  const reset = () => {
+    setSearch("");
+    setCity("All Cities");
+    setStatus("All Status");
+    setGender("All Gender");
     setActivePage(1);
     fetchUsers("", "All Cities", "All Status", "All Gender", 1, perPage);
   };  // ── Stat Cards ──────────────────────────────────────────────────────
   const stats = [
-    { label: "Total Users",    value: statsData.total.toLocaleString(), change: "0%", up: true,  iconKey: "Total",    iconBg: "#eef2ff", valueColor: "#4f46e5" },
-    { label: "Active Users",   value: statsData.active.toLocaleString(), change: "0%", up: true,  iconKey: "Active",   iconBg: "#f0fdf4", valueColor: "#16a34a" },
-    { label: "Inactive Users", value: statsData.inactive.toLocaleString(),  change: "0%",  up: false, iconKey: "Inactive", iconBg: "#fff7ed", valueColor: "#f97316" },
-    { label: "Blocked Users",  value: statsData.blocked.toLocaleString(),    change: "0%",  up: false, iconKey: "Blocked",  iconBg: "#fef2f2", valueColor: "#ef4444" },
-    { label: "New This Month", value: statsData.newMonth.toLocaleString(),  change: "0%", up: true,  iconKey: "NewMonth", iconBg: "#eff6ff", valueColor: "#3b82f6" },
+    { label: "Total Users", value: statsData.total.toLocaleString(), change: "0%", up: true, iconKey: "Total", iconBg: "#eef2ff", valueColor: "#4f46e5" },
+    { label: "Active Users", value: statsData.active.toLocaleString(), change: "0%", up: true, iconKey: "Active", iconBg: "#f0fdf4", valueColor: "#16a34a" },
+    { label: "Inactive Users", value: statsData.inactive.toLocaleString(), change: "0%", up: false, iconKey: "Inactive", iconBg: "#fff7ed", valueColor: "#f97316" },
+    { label: "Blocked Users", value: statsData.blocked.toLocaleString(), change: "0%", up: false, iconKey: "Blocked", iconBg: "#fef2f2", valueColor: "#ef4444" },
+    { label: "New This Month", value: statsData.newMonth.toLocaleString(), change: "0%", up: true, iconKey: "NewMonth", iconBg: "#eff6ff", valueColor: "#3b82f6" },
   ];
 
   return (
     <div style={{ flex: 1, overflowY: "auto", padding: "22px 24px", fontFamily: "'Inter', system-ui, sans-serif" }}>
 
-          {/* Page heading row */}
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 4 }}>
-            <div>
-              <h1 style={{ fontSize: 20, fontWeight: 700, color: "#0f172a", margin: 0, lineHeight: 1.3 }}>Users</h1>
-              {/* Breadcrumb */}
-              <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 4 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <span onClick={() => setActiveNav && setActiveNav("Dashboard")} style={{ fontSize: 12, color: "#94a3b8", fontWeight: 400, cursor: "pointer" }}>Home</span>
-                  <span style={{ color: "#cbd5e1", fontSize: 12 }}>›</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <span onClick={() => setActiveNav && setActiveNav("Users")} style={{ fontSize: 12, color: "#94a3b8", fontWeight: 400, cursor: "pointer" }}>Users</span>
-                  <span style={{ color: "#cbd5e1", fontSize: 12 }}>›</span>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ fontSize: 12, color: "#4f46e5", fontWeight: 500 }}>All Users</span>
-                </div>
-              </div>
+      {/* Page heading row */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 4 }}>
+        <div>
+          <h1 style={{ fontSize: 20, fontWeight: 700, color: "#0f172a", margin: 0, lineHeight: 1.3 }}>Users</h1>
+          {/* Breadcrumb */}
+          <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 4 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <span onClick={() => setActiveNav && setActiveNav("Dashboard")} style={{ fontSize: 12, color: "#94a3b8", fontWeight: 400, cursor: "pointer" }}>Home</span>
+              <span style={{ color: "#cbd5e1", fontSize: 12 }}>›</span>
             </div>
-            <div style={{ display: "flex", gap: 10, marginTop: 2 }}>
-              <button style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", border: "1px solid #e2e8f0", borderRadius: 8, background: "#fff", color: "#475569", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
-                <ImportIcon /> Import Users
-              </button>
-              <button style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", border: "none", borderRadius: 8, background: "#4f46e5", color: "white", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
-                <PlusIcon /> Add New User
-              </button>
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <span onClick={() => setActiveNav && setActiveNav("Users")} style={{ fontSize: 12, color: "#94a3b8", fontWeight: 400, cursor: "pointer" }}>Users</span>
+              <span style={{ color: "#cbd5e1", fontSize: 12 }}>›</span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <span style={{ fontSize: 12, color: "#4f46e5", fontWeight: 500 }}>All Users</span>
             </div>
           </div>
+        </div>
+        <div style={{ display: "flex", gap: 10, marginTop: 2 }}>
+          <button style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", border: "1px solid #e2e8f0", borderRadius: 8, background: "#fff", color: "#475569", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
+            <ImportIcon /> Import Users
+          </button>
+          <button style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", border: "none", borderRadius: 8, background: "#4f46e5", color: "white", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+            <PlusIcon /> Add New User
+          </button>
+        </div>
+      </div>
 
-          {/* Stat cards */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 14, margin: "18px 0 16px" }}>
-            {stats.map(s => (
-              <div key={s.label} style={{ background: "#fff", border: "1px solid #f1f5f9", borderRadius: 14, padding: "16px 16px 14px", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
-                <div style={{ width: 40, height: 40, background: s.iconBg, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
-                  {StatIcons[s.iconKey]}
-                </div>
-                <div style={{ fontSize: 11.5, color: "#94a3b8", marginBottom: 2, fontWeight: 500 }}>{s.label}</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: s.valueColor, lineHeight: 1.2, marginBottom: 5 }}>{s.value}</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  <span style={{ fontSize: 11.5, fontWeight: 600, color: s.up ? "#22c55e" : "#ef4444" }}>
-                    {s.up ? "▲" : "▼"} {s.change}
-                  </span>
-                  <span style={{ fontSize: 11, color: "#94a3b8" }}>vs last 30 days</span>
-                </div>
-              </div>
-            ))}
+      {/* Stat cards */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(5,1fr)", gap: 14, margin: "18px 0 16px" }}>
+        {stats.map(s => (
+          <div key={s.label} style={{ background: "#fff", border: "1px solid #f1f5f9", borderRadius: 14, padding: "16px 16px 14px", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
+            <div style={{ width: 40, height: 40, background: s.iconBg, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
+              {StatIcons[s.iconKey]}
+            </div>
+            <div style={{ fontSize: 11.5, color: "#94a3b8", marginBottom: 2, fontWeight: 500 }}>{s.label}</div>
+            <div style={{ fontSize: 24, fontWeight: 700, color: s.valueColor, lineHeight: 1.2, marginBottom: 5 }}>{s.value}</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <span style={{ fontSize: 11.5, fontWeight: 600, color: s.up ? "#22c55e" : "#ef4444" }}>
+                {s.up ? "▲" : "▼"} {s.change}
+              </span>
+              <span style={{ fontSize: 11, color: "#94a3b8" }}>vs last 30 days</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Filter bar */}
+      <div style={{ background: "#fff", border: "1px solid #f1f5f9", borderRadius: 14, padding: "16px 16px", marginBottom: 14, boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 10, flexWrap: "wrap" }}>
+          {/* Search */}
+          <div style={{ flex: "1 1 180px", position: "relative" }}>
+            <div style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }}><SearchIcon /></div>
+            <input
+              value={search} onChange={e => setSearch(e.target.value)}
+              placeholder="Search by name, email or phone..."
+              style={{ width: "100%", paddingLeft: 32, paddingRight: 12, height: 36, border: "1px solid #e2e8f0", borderRadius: 8, fontSize: 12.5, color: "#475569", outline: "none", boxSizing: "border-box" }}
+            />
           </div>
 
-          {/* Filter bar */}
-          <div style={{ background: "#fff", border: "1px solid #f1f5f9", borderRadius: 14, padding: "16px 16px", marginBottom: 14, boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
-            <div style={{ display: "flex", alignItems: "flex-end", gap: 10, flexWrap: "wrap" }}>
-              {/* Search */}
-              <div style={{ flex: "1 1 180px", position: "relative" }}>
-                <div style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)" }}><SearchIcon /></div>
-                <input
-                  value={search} onChange={e => setSearch(e.target.value)}
-                  placeholder="Search by name, email or phone..."
-                  style={{ width: "100%", paddingLeft: 32, paddingRight: 12, height: 36, border: "1px solid #e2e8f0", borderRadius: 8, fontSize: 12.5, color: "#475569", outline: "none", boxSizing: "border-box" }}
-                />
-              </div>
-
-              {/* City */}
-              <div>
-                <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 3, fontWeight: 500 }}>City</div>
-                <div style={{ position: "relative" }}>
-                  <select value={city} onChange={e => setCity(e.target.value)} style={{ height: 36, padding: "0 28px 0 10px", border: "1px solid #e2e8f0", borderRadius: 8, fontSize: 12.5, color: "#475569", background: "#fff", outline: "none", appearance: "none", minWidth: 118, cursor: "pointer" }}>
-                    {["All Cities","Bhadrak","Cuttack","Bhubaneswar","Puri","Berhampur","Sambalpur","Rourkela","Balasore"].map(c => <option key={c}>{c}</option>)}
-                  </select>
-                  <div style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}><ChevronDown /></div>
-                </div>
-              </div>
-
-              {/* Status */}
-              <div>
-                <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 3, fontWeight: 500 }}>Status</div>
-                <div style={{ position: "relative" }}>
-                  <select value={status} onChange={e => setStatus(e.target.value)} style={{ height: 36, padding: "0 28px 0 10px", border: "1px solid #e2e8f0", borderRadius: 8, fontSize: 12.5, color: "#475569", background: "#fff", outline: "none", appearance: "none", minWidth: 110, cursor: "pointer" }}>
-                    {["All Status","Active","Inactive","Blocked"].map(s => <option key={s}>{s}</option>)}
-                  </select>
-                  <div style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}><ChevronDown /></div>
-                </div>
-              </div>
-
-              {/* Gender */}
-              <div>
-                <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 3, fontWeight: 500 }}>Gender</div>
-                <div style={{ position: "relative" }}>
-                  <select value={gender} onChange={e => setGender(e.target.value)} style={{ height: 36, padding: "0 28px 0 10px", border: "1px solid #e2e8f0", borderRadius: 8, fontSize: 12.5, color: "#475569", background: "#fff", outline: "none", appearance: "none", minWidth: 110, cursor: "pointer" }}>
-                    {["All Gender","Male","Female"].map(g => <option key={g}>{g}</option>)}
-                  </select>
-                  <div style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}><ChevronDown /></div>
-                </div>
-              </div>
-
-              {/* Date range */}
-              <div>
-                <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 3, fontWeight: 500 }}>Joined Date</div>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, height: 36, padding: "0 12px", border: "1px solid #e2e8f0", borderRadius: 8, background: "#fff", minWidth: 190 }}>
-                  <CalendarIcon />
-                  <span style={{ fontSize: 12, color: "#64748b" }}>01 May 2026 – 12 Jun 2026</span>
-                </div>
-              </div>
-
-              {/* Buttons */}
-              <button onClick={handleFilter} style={{ height: 36, display: "flex", alignItems: "center", gap: 6, padding: "0 16px", background: "#4f46e5", border: "none", borderRadius: 8, color: "white", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
-                <FilterIcon /> Filter
-              </button>
-              <button onClick={reset} style={{ height: 36, display: "flex", alignItems: "center", gap: 6, padding: "0 14px", background: "#fff", border: "1px solid #e2e8f0", borderRadius: 8, color: "#64748b", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
-                <ResetIcon /> Reset
-              </button>
+          {/* City */}
+          <div>
+            <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 3, fontWeight: 500 }}>City</div>
+            <div style={{ position: "relative" }}>
+              <select value={city} onChange={e => setCity(e.target.value)} style={{ height: 36, padding: "0 28px 0 10px", border: "1px solid #e2e8f0", borderRadius: 8, fontSize: 12.5, color: "#475569", background: "#fff", outline: "none", appearance: "none", minWidth: 118, cursor: "pointer" }}>
+                {["All Cities", "Bhadrak", "Cuttack", "Bhubaneswar", "Puri", "Berhampur", "Sambalpur", "Rourkela", "Balasore"].map(c => <option key={c}>{c}</option>)}
+              </select>
+              <div style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}><ChevronDown /></div>
             </div>
           </div>
 
-          {/* Table */}
-          <div style={{ background: "#fff", border: "1px solid #f1f5f9", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-              <thead>
-                <tr style={{ background: "#f8fafc", borderBottom: "1px solid #f1f5f9" }}>
-                  {["#","User","Email","Phone","City","Gender","Status","Joined On","Last Login","Actions"].map(h => (
-                    <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontSize: 11.5, fontWeight: 600, color: "#94a3b8", whiteSpace: "nowrap" }}>{h}</th>
-                  ))}
+          {/* Status */}
+          <div>
+            <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 3, fontWeight: 500 }}>Status</div>
+            <div style={{ position: "relative" }}>
+              <select value={status} onChange={e => setStatus(e.target.value)} style={{ height: 36, padding: "0 28px 0 10px", border: "1px solid #e2e8f0", borderRadius: 8, fontSize: 12.5, color: "#475569", background: "#fff", outline: "none", appearance: "none", minWidth: 110, cursor: "pointer" }}>
+                {["All Status", "Active", "Inactive", "Blocked"].map(s => <option key={s}>{s}</option>)}
+              </select>
+              <div style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}><ChevronDown /></div>
+            </div>
+          </div>
+
+          {/* Gender */}
+          <div>
+            <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 3, fontWeight: 500 }}>Gender</div>
+            <div style={{ position: "relative" }}>
+              <select value={gender} onChange={e => setGender(e.target.value)} style={{ height: 36, padding: "0 28px 0 10px", border: "1px solid #e2e8f0", borderRadius: 8, fontSize: 12.5, color: "#475569", background: "#fff", outline: "none", appearance: "none", minWidth: 110, cursor: "pointer" }}>
+                {["All Gender", "Male", "Female"].map(g => <option key={g}>{g}</option>)}
+              </select>
+              <div style={{ position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }}><ChevronDown /></div>
+            </div>
+          </div>
+
+          {/* Date range */}
+          <div>
+            <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 3, fontWeight: 500 }}>Joined Date</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, height: 36, padding: "0 12px", border: "1px solid #e2e8f0", borderRadius: 8, background: "#fff", minWidth: 190 }}>
+              <CalendarIcon />
+              <span style={{ fontSize: 12, color: "#64748b" }}>01 May 2026 – 12 Jun 2026</span>
+            </div>
+          </div>
+
+          {/* Buttons */}
+          <button onClick={handleFilter} style={{ height: 36, display: "flex", alignItems: "center", gap: 6, padding: "0 16px", background: "#4f46e5", border: "none", borderRadius: 8, color: "white", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+            <FilterIcon /> Filter
+          </button>
+          <button onClick={reset} style={{ height: 36, display: "flex", alignItems: "center", gap: 6, padding: "0 14px", background: "#fff", border: "1px solid #e2e8f0", borderRadius: 8, color: "#64748b", fontSize: 13, fontWeight: 500, cursor: "pointer" }}>
+            <ResetIcon /> Reset
+          </button>
+        </div>
+      </div>
+
+      {/* Table */}
+      <div style={{ background: "#fff", border: "1px solid #f1f5f9", borderRadius: 14, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+          <thead>
+            <tr style={{ background: "#f8fafc", borderBottom: "1px solid #f1f5f9" }}>
+              {["#", "User", "Email", "Phone", "City", "Gender", "IP Address", "Status", "Joined On", "Last Login", "Actions"].map(h => (
+                <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontSize: 11.5, fontWeight: 600, color: "#94a3b8", whiteSpace: "nowrap" }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr><td colSpan={10} style={{ padding: "40px 14px", textAlign: "center", color: "#94a3b8", fontSize: 13 }}>Loading users...</td></tr>
+            ) : users.length > 0 ? users.map((u, i) => {
+              const ss = STATUS_STYLE[u.status] || { bg: "#f1f5f9", color: "#64748b", border: "#e2e8f0" };
+              return (
+                <tr key={u.id} style={{ borderBottom: "1px solid #f8fafc", transition: "background 0.15s" }}
+                  onMouseEnter={e => e.currentTarget.style.background = "#fafbff"}
+                  onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                >
+                  <td style={{ padding: "11px 14px", color: "#94a3b8", fontSize: 13 }}>{u.id}</td>
+                  <td style={{ padding: "11px 14px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: "50%", background: u.avatarBg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 12, fontWeight: 700, color: "white" }}>
+                        {u.initials}
+                      </div>
+                      <span style={{ fontWeight: 500, color: "#1e293b", whiteSpace: "nowrap" }}>{u.name}</span>
+                    </div>
+                  </td>
+                  <td style={{ padding: "11px 14px", color: "#64748b", fontSize: 12.5 }}>{u.email}</td>
+                  <td style={{ padding: "11px 14px", color: "#64748b", fontSize: 12.5 }}>{u.phone}</td>
+                  <td style={{ padding: "11px 14px", color: "#64748b", fontSize: 12.5 }}>{u.city}</td>
+                  <td style={{ padding: "11px 14px", color: "#64748b", fontSize: 12.5 }}>{u.gender}</td>
+                  <td style={{ padding: "11px 14px", color: "#64748b", fontSize: 12.5 }}>{u.ipAddress}</td>
+                  <td style={{ padding: "11px 14px" }}>
+                    <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 20, fontSize: 12, fontWeight: 500, background: ss.bg, color: ss.color, border: `1px solid ${ss.border}` }}>
+                      {u.status}
+                    </span>
+                  </td>
+                  <td style={{ padding: "11px 14px", color: "#64748b", fontSize: 12.5, whiteSpace: "nowrap" }}>{u.joinedOn}</td>
+                  <td style={{ padding: "11px 14px", color: "#64748b", fontSize: 12.5, whiteSpace: "nowrap" }}>{u.lastLogin}</td>
+                  <td style={{ padding: "11px 14px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <button onClick={() => console.log('View user', u.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, display: "flex" }} title="View"><EyeIcon /></button>
+                      <button onClick={() => console.log('Edit user', u.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, display: "flex" }} title="Edit"><EditIcon /></button>
+                      <button onClick={() => console.log('More actions', u.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, display: "flex" }} title="More"><DotsIcon /></button>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {loading ? (
-                  <tr><td colSpan={10} style={{ padding: "40px 14px", textAlign: "center", color: "#94a3b8", fontSize: 13 }}>Loading users...</td></tr>
-                ) : users.length > 0 ? users.map((u, i) => {
-                  const ss = STATUS_STYLE[u.status] || { bg: "#f1f5f9", color: "#64748b", border: "#e2e8f0" };
-                  return (
-                    <tr key={u.id} style={{ borderBottom: "1px solid #f8fafc", transition: "background 0.15s" }}
-                      onMouseEnter={e => e.currentTarget.style.background = "#fafbff"}
-                      onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-                    >
-                      <td style={{ padding: "11px 14px", color: "#94a3b8", fontSize: 13 }}>{u.id}</td>
-                      <td style={{ padding: "11px 14px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <div style={{ width: 32, height: 32, borderRadius: "50%", background: u.avatarBg, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 12, fontWeight: 700, color: "white" }}>
-                            {u.initials}
-                          </div>
-                          <span style={{ fontWeight: 500, color: "#1e293b", whiteSpace: "nowrap" }}>{u.name}</span>
-                        </div>
-                      </td>
-                      <td style={{ padding: "11px 14px", color: "#64748b", fontSize: 12.5 }}>{u.email}</td>
-                      <td style={{ padding: "11px 14px", color: "#64748b", fontSize: 12.5 }}>{u.phone}</td>
-                      <td style={{ padding: "11px 14px", color: "#64748b", fontSize: 12.5 }}>{u.city}</td>
-                      <td style={{ padding: "11px 14px", color: "#64748b", fontSize: 12.5 }}>{u.gender}</td>
-                      <td style={{ padding: "11px 14px" }}>
-                        <span style={{ display: "inline-block", padding: "3px 10px", borderRadius: 20, fontSize: 12, fontWeight: 500, background: ss.bg, color: ss.color, border: `1px solid ${ss.border}` }}>
-                          {u.status}
-                        </span>
-                      </td>
-                      <td style={{ padding: "11px 14px", color: "#64748b", fontSize: 12.5, whiteSpace: "nowrap" }}>{u.joinedOn}</td>
-                      <td style={{ padding: "11px 14px", color: "#64748b", fontSize: 12.5, whiteSpace: "nowrap" }}>{u.lastLogin}</td>
-                      <td style={{ padding: "11px 14px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <button onClick={() => console.log('View user', u.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, display: "flex" }} title="View"><EyeIcon /></button>
-                          <button onClick={() => console.log('Edit user', u.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, display: "flex" }} title="Edit"><EditIcon /></button>
-                          <button onClick={() => console.log('More actions', u.id)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2, display: "flex" }} title="More"><DotsIcon /></button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                }) : (
-                  <tr><td colSpan={10} style={{ padding: "40px 14px", textAlign: "center", color: "#94a3b8", fontSize: 13 }}>No users found.</td></tr>
-                )}
-              </tbody>
-            </table>
+              );
+            }) : (
+              <tr><td colSpan={10} style={{ padding: "40px 14px", textAlign: "center", color: "#94a3b8", fontSize: 13 }}>No users found.</td></tr>
+            )}
+          </tbody>
+        </table>
 
-            {/* Pagination */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderTop: "1px solid #f1f5f9" }}>
-              <span style={{ fontSize: 12.5, color: "#94a3b8" }}>Showing {totalEntries > 0 ? (activePage - 1) * perPage + 1 : 0} to {Math.min(activePage * perPage, totalEntries)} of {totalEntries.toLocaleString()} entries</span>
-              <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                <button 
-                  disabled={activePage === 1}
-                  onClick={() => setActivePage(p => Math.max(1, p - 1))}
-                  style={{ width: 28, height: 28, border: "1px solid #e2e8f0", borderRadius: 6, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: activePage === 1 ? "not-allowed" : "pointer", opacity: activePage === 1 ? 0.4 : 1 }}>
-                  <ChevronLeft />
+        {/* Pagination */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", borderTop: "1px solid #f1f5f9" }}>
+          <span style={{ fontSize: 12.5, color: "#94a3b8" }}>Showing {totalEntries > 0 ? (activePage - 1) * perPage + 1 : 0} to {Math.min(activePage * perPage, totalEntries)} of {totalEntries.toLocaleString()} entries</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+            <button
+              disabled={activePage === 1}
+              onClick={() => setActivePage(p => Math.max(1, p - 1))}
+              style={{ width: 28, height: 28, border: "1px solid #e2e8f0", borderRadius: 6, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: activePage === 1 ? "not-allowed" : "pointer", opacity: activePage === 1 ? 0.4 : 1 }}>
+              <ChevronLeft />
+            </button>
+
+            {Array.from({ length: Math.min(5, Math.ceil(totalEntries / perPage) || 1) }, (_, i) => {
+              const totalPages = Math.ceil(totalEntries / perPage) || 1;
+              let p = i + 1;
+              if (totalPages > 5 && activePage > 3) {
+                p = activePage - 2 + i;
+                if (p > totalPages) p = totalPages - (4 - i);
+              }
+              return (
+                <button key={p} onClick={() => setActivePage(p)} style={{ width: 28, height: 28, border: p === activePage ? "none" : "1px solid #e2e8f0", borderRadius: 6, background: p === activePage ? "#4f46e5" : "#fff", color: p === activePage ? "white" : "#64748b", fontSize: 12.5, fontWeight: p === activePage ? 600 : 400, cursor: "pointer" }}>
+                  {p}
                 </button>
-                
-                {Array.from({ length: Math.min(5, Math.ceil(totalEntries / perPage) || 1) }, (_, i) => {
-                  const totalPages = Math.ceil(totalEntries / perPage) || 1;
-                  let p = i + 1;
-                  if (totalPages > 5 && activePage > 3) {
-                     p = activePage - 2 + i;
-                     if (p > totalPages) p = totalPages - (4 - i);
-                  }
-                  return (
-                    <button key={p} onClick={() => setActivePage(p)} style={{ width: 28, height: 28, border: p === activePage ? "none" : "1px solid #e2e8f0", borderRadius: 6, background: p === activePage ? "#4f46e5" : "#fff", color: p === activePage ? "white" : "#64748b", fontSize: 12.5, fontWeight: p === activePage ? 600 : 400, cursor: "pointer" }}>
-                      {p}
-                    </button>
-                  );
-                })}
+              );
+            })}
 
-                {Math.ceil(totalEntries / perPage) > 5 && activePage < Math.ceil(totalEntries / perPage) - 2 && (
-                  <>
-                    <span style={{ fontSize: 12, color: "#94a3b8", padding: "0 2px" }}>...</span>
-                    <button onClick={() => setActivePage(Math.ceil(totalEntries / perPage))} style={{ minWidth: 28, height: 28, border: "1px solid #e2e8f0", borderRadius: 6, background: "#fff", color: "#64748b", fontSize: 12, cursor: "pointer", padding: "0 4px" }}>{Math.ceil(totalEntries / perPage)}</button>
-                  </>
-                )}
+            {Math.ceil(totalEntries / perPage) > 5 && activePage < Math.ceil(totalEntries / perPage) - 2 && (
+              <>
+                <span style={{ fontSize: 12, color: "#94a3b8", padding: "0 2px" }}>...</span>
+                <button onClick={() => setActivePage(Math.ceil(totalEntries / perPage))} style={{ minWidth: 28, height: 28, border: "1px solid #e2e8f0", borderRadius: 6, background: "#fff", color: "#64748b", fontSize: 12, cursor: "pointer", padding: "0 4px" }}>{Math.ceil(totalEntries / perPage)}</button>
+              </>
+            )}
 
-                <button 
-                  disabled={activePage === (Math.ceil(totalEntries / perPage) || 1)}
-                  onClick={() => setActivePage(p => Math.min(Math.ceil(totalEntries / perPage) || 1, p + 1))}
-                  style={{ width: 28, height: 28, border: "1px solid #e2e8f0", borderRadius: 6, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: activePage === (Math.ceil(totalEntries / perPage) || 1) ? "not-allowed" : "pointer", opacity: activePage === (Math.ceil(totalEntries / perPage) || 1) ? 0.4 : 1 }}>
-                  <ChevronRight />
-                </button>
-                <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setActivePage(1); }} style={{ height: 28, padding: "0 24px 0 8px", border: "1px solid #e2e8f0", borderRadius: 6, fontSize: 12, color: "#64748b", background: "#fff", outline: "none", cursor: "pointer", marginLeft: 4 }}>
-                  <option value={10}>10 / page</option>
-                  <option value={25}>25 / page</option>
-                  <option value={50}>50 / page</option>
-                </select>
-              </div>
-            </div>
+            <button
+              disabled={activePage === (Math.ceil(totalEntries / perPage) || 1)}
+              onClick={() => setActivePage(p => Math.min(Math.ceil(totalEntries / perPage) || 1, p + 1))}
+              style={{ width: 28, height: 28, border: "1px solid #e2e8f0", borderRadius: 6, background: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: activePage === (Math.ceil(totalEntries / perPage) || 1) ? "not-allowed" : "pointer", opacity: activePage === (Math.ceil(totalEntries / perPage) || 1) ? 0.4 : 1 }}>
+              <ChevronRight />
+            </button>
+            <select value={perPage} onChange={e => { setPerPage(Number(e.target.value)); setActivePage(1); }} style={{ height: 28, padding: "0 24px 0 8px", border: "1px solid #e2e8f0", borderRadius: 6, fontSize: 12, color: "#64748b", background: "#fff", outline: "none", cursor: "pointer", marginLeft: 4 }}>
+              <option value={10}>10 / page</option>
+              <option value={25}>25 / page</option>
+              <option value={50}>50 / page</option>
+            </select>
           </div>
+        </div>
+      </div>
 
     </div>
   );
