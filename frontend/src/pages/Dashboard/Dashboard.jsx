@@ -9,6 +9,7 @@ import AdminColleges from "./AdminColleges";
 import AdminUsers from "./AdminUsers";
 import UserActivity from "./UserActivity";
 import AdminFaq from "./AdminFaq";
+import AdminScholarships from "./AdminScholarships";
 import {
   FaBook,
   FaLayerGroup,
@@ -30,6 +31,7 @@ import {
   FaExternalLinkAlt,
   FaPlus,
   FaEye,
+  FaGraduationCap as FaScholarshipIcon,
 } from "react-icons/fa";
 import {
   LineChart,
@@ -104,6 +106,7 @@ const navItems = [
   { label: "OTHER", section: true },
   { label: "Banners", icon: <FaImage /> },
   { label: "FAQ's", icon: <FaQuestionCircle /> },
+  { label: "Scholarships", icon: <FaGraduationCap /> },
   { label: "Settings", icon: <FaCog /> },
   { label: "Activity Logs", icon: <FaClipboardList /> },
 ];
@@ -640,34 +643,34 @@ const Dashboard = () => {
                 <h2 className="font-bold text-gray-800 mb-4">Quick Actions</h2>
                 <div className="grid grid-cols-8 gap-4">
                   {quickActions.map((a, i) => (
-  <button
-    key={i}
-    onClick={() => {
-      switch (a.label) {
-        case "Add Field":
-          setActiveNav("Fields");
-          break;
+                    <button
+                      key={i}
+                      onClick={() => {
+                        switch (a.label) {
+                          case "Add Field":
+                            setActiveNav("Fields");
+                            break;
 
-        case "Add Specialization":
-          setActiveNav("Specializations");
-          break;
+                          case "Add Specialization":
+                            setActiveNav("Specializations");
+                            break;
 
-        case "Add Course":
-          setActiveNav("Courses");
-          break;
+                          case "Add Course":
+                            setActiveNav("Courses");
+                            break;
 
-        case "Add College":
-          setActiveNav("Colleges");
-          break;
+                          case "Add College":
+                            setActiveNav("Colleges");
+                            break;
 
-        case "View Enquiries":
-          setActiveNav("Enquiries / Leads");
-          break;
+                          case "View Enquiries":
+                            setActiveNav("Enquiries / Leads");
+                            break;
 
-        default:
-          break;
-      }
-    }}
+                          default:
+                            break;
+                        }
+                      }}
                       className="flex flex-col items-center gap-2 group cursor-pointer"
                     >
                       <div
@@ -686,13 +689,26 @@ const Dashboard = () => {
           )}
 
           {activeNav === "Fields" && <AdminField setActiveNav={setActiveNav} />}
-          {activeNav === "Specializations" && <AdminSpecializations setActiveNav={setActiveNav} />}
+          {activeNav === "Specializations" && (
+            <AdminSpecializations setActiveNav={setActiveNav} />
+          )}
 
-          {activeNav === "Courses" && <CoursesManagement setActiveNav={setActiveNav} />}
-          {activeNav === "Enquiries / Leads" && <AdminEnquiry setActiveNav={setActiveNav} />}
-          {activeNav === "Colleges" && <AdminColleges setActiveNav={setActiveNav} />}
+          {activeNav === "Courses" && (
+            <CoursesManagement setActiveNav={setActiveNav} />
+          )}
+          {activeNav === "Enquiries / Leads" && (
+            <AdminEnquiry setActiveNav={setActiveNav} />
+          )}
+          {activeNav === "Colleges" && (
+            <AdminColleges setActiveNav={setActiveNav} />
+          )}
           {activeNav === "Users" && <AdminUsers setActiveNav={setActiveNav} />}
-          {activeNav === "User Activity" && <UserActivity setActiveNav={setActiveNav} />}
+          {activeNav === "Scholarships" && (
+            <AdminScholarships setActiveNav={setActiveNav} />
+          )}
+          {activeNav === "User Activity" && (
+            <UserActivity setActiveNav={setActiveNav} />
+          )}
           {activeNav === "FAQ's" && <AdminFaq setActiveNav={setActiveNav} />}
 
           {/* FOOTER */}
