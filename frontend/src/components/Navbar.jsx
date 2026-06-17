@@ -32,7 +32,6 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false);
-
   const [lang, setLang] = useState(localStorage.getItem("language") || "en");
   const { wishlist } = useContext(AuthContext);
 
@@ -56,10 +55,10 @@ const Navbar = () => {
         setUser(JSON.parse(userData));
       }
     };
-    
+
     // Initial load
     handleUserUpdate();
-    
+
     window.addEventListener("userUpdated", handleUserUpdate);
     return () => window.removeEventListener("userUpdated", handleUserUpdate);
   }, []);
@@ -123,10 +122,11 @@ const Navbar = () => {
               <Link
                 key={link.name}
                 to={link.path}
-                className={`relative cursor-pointer transition-all duration-300 ${isActive(link.path)
+                className={`relative cursor-pointer transition-all duration-300 ${
+                  isActive(link.path)
                     ? "text-[#6C4DF6] font-semibold"
                     : "text-gray-600 hover:text-[#6C4DF6]"
-                  }`}
+                }`}
               >
                 {link.name}
                 {isActive(link.path) && (
@@ -137,10 +137,11 @@ const Navbar = () => {
             {user?.is_admin === 1 && (
               <Link
                 to="/dashboard"
-                className={`relative cursor-pointer transition-all duration-300 ${isActive("/dashboard")
+                className={`relative cursor-pointer transition-all duration-300 ${
+                  isActive("/dashboard")
                     ? "text-[#6C4DF6] font-semibold"
                     : "text-gray-600 hover:text-[#6C4DF6]"
-                  }`}
+                }`}
               >
                 Dashboard
                 {isActive("/dashboard") && (
@@ -215,27 +216,29 @@ const Navbar = () => {
                         <div className="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold uppercase">
                           {user?.name
                             ? user.name
-                              .split(" ")
-                              .map((word) => word.charAt(0))
-                              .join("")
-                              .slice(0, 2)
+                                .split(" ")
+                                .map((word) => word.charAt(0))
+                                .join("")
+                                .slice(0, 2)
                             : user?.email?.charAt(0)}
                         </div>
                       )}
                     </button>
-                      <div className={`absolute right-0 mt-2 w-44 bg-white border border-gray-100 rounded-md shadow-lg z-50 overflow-hidden py-1 transition-all duration-200 ${profileOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"}`}>
-                        <MyProfileButton onClick={() => setProfileOpen(false)} />
-                        <SettingsButton onClick={() => setProfileOpen(false)} />
-                        <Link
-                          to="/wishlist"
-                          onClick={() => setProfileOpen(false)}
-                          className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100 transition-all duration-200"
-                        >
-                          <FaHeart className="inline-block mr-2 text-xs text-red-500" />
-                          Wishlist
-                        </Link>
-                        <LogoutButton onClick={() => setProfileOpen(false)} />
-                      </div>
+                    <div
+                      className={`absolute right-0 mt-2 w-44 bg-white border border-gray-100 rounded-md shadow-lg z-50 overflow-hidden py-1 transition-all duration-200 ${profileOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"}`}
+                    >
+                      <MyProfileButton onClick={() => setProfileOpen(false)} />
+                      <SettingsButton onClick={() => setProfileOpen(false)} />
+                      <Link
+                        to="/wishlist"
+                        onClick={() => setProfileOpen(false)}
+                        className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 border-t border-gray-100 transition-all duration-200"
+                      >
+                        <FaHeart className="inline-block mr-2 text-xs text-red-500" />
+                        Wishlist
+                      </Link>
+                      <LogoutButton onClick={() => setProfileOpen(false)} />
+                    </div>
                   </>
                 ) : (
                   <div className="flex gap-2 md:gap-3">
@@ -273,7 +276,6 @@ const Navbar = () => {
             )}
           </div>
         </div>
-
       </header>
 
       {/* Spacer to prevent content from hiding under fixed top navbar */}
@@ -281,23 +283,38 @@ const Navbar = () => {
 
       {/* MOBILE BOTTOM NAVIGATION */}
       <nav className="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 z-[100] flex justify-around items-center h-16 pb-safe shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
-        <Link to="/" className={`flex flex-col items-center justify-center w-full h-full ${isActive("/") ? "text-[#6C4DF6]" : "text-gray-500 hover:text-[#6C4DF6]"}`}>
+        <Link
+          to="/"
+          className={`flex flex-col items-center justify-center w-full h-full ${isActive("/") ? "text-[#6C4DF6]" : "text-gray-500 hover:text-[#6C4DF6]"}`}
+        >
           <FaHome className="text-xl mb-1" />
           <span className="text-[10px] font-medium">Home</span>
         </Link>
-        <Link to="/about" className={`flex flex-col items-center justify-center w-full h-full ${isActive("/about") ? "text-[#6C4DF6]" : "text-gray-500 hover:text-[#6C4DF6]"}`}>
+        <Link
+          to="/about"
+          className={`flex flex-col items-center justify-center w-full h-full ${isActive("/about") ? "text-[#6C4DF6]" : "text-gray-500 hover:text-[#6C4DF6]"}`}
+        >
           <FaInfoCircle className="text-xl mb-1" />
           <span className="text-[10px] font-medium">About</span>
         </Link>
-        <Link to="/colleges" className={`flex flex-col items-center justify-center w-full h-full ${isActive("/colleges") ? "text-[#6C4DF6]" : "text-gray-500 hover:text-[#6C4DF6]"}`}>
+        <Link
+          to="/colleges"
+          className={`flex flex-col items-center justify-center w-full h-full ${isActive("/colleges") ? "text-[#6C4DF6]" : "text-gray-500 hover:text-[#6C4DF6]"}`}
+        >
           <FaGraduationCap className="text-xl mb-1" />
           <span className="text-[10px] font-medium">College</span>
         </Link>
-        <Link to="/course" className={`flex flex-col items-center justify-center w-full h-full ${isActive("/course") ? "text-[#6C4DF6]" : "text-gray-500 hover:text-[#6C4DF6]"}`}>
+        <Link
+          to="/course"
+          className={`flex flex-col items-center justify-center w-full h-full ${isActive("/course") ? "text-[#6C4DF6]" : "text-gray-500 hover:text-[#6C4DF6]"}`}
+        >
           <FaBook className="text-xl mb-1" />
           <span className="text-[10px] font-medium">Course</span>
         </Link>
-        <Link to="/wishlist" className={`flex flex-col items-center justify-center w-full h-full relative ${isActive("/wishlist") ? "text-[#6C4DF6]" : "text-gray-500 hover:text-[#6C4DF6]"}`}>
+        <Link
+          to="/wishlist"
+          className={`flex flex-col items-center justify-center w-full h-full relative ${isActive("/wishlist") ? "text-[#6C4DF6]" : "text-gray-500 hover:text-[#6C4DF6]"}`}
+        >
           <div className="relative">
             <FaHeart className="text-xl mb-1" />
             {token && wishlist?.length > 0 && (
