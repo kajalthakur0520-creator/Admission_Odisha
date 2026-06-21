@@ -115,7 +115,14 @@ const AppRoutes = () => {
           </MainLayout>
         }
       />{" "}
-      <Route path="/verify-otp" element={<VerifyOtp />} />
+      <Route
+        path="/verify-otp"
+        element={
+          <MainLayout>
+            <VerifyOtp />
+          </MainLayout>
+        }
+      />
       {/* Fields */}
       <Route
         path="/field"
@@ -151,7 +158,14 @@ const AppRoutes = () => {
         }
       />
       {/* Dashboard */}
-      <Route path="/dashboard" element={<Dashboard />} />
+      <Route
+        path="/dashboard"
+        element={
+          <MainLayout>
+            <Dashboard />
+          </MainLayout>
+        }
+      />
     </Routes>
   );
 };

@@ -371,51 +371,59 @@ const CollegeDetail = () => {
       </div>
 
       {/* Hero Banner Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
-        <div className="relative rounded-3xl overflow-hidden shadow-xl bg-white border border-gray-100">
-          <div className="h-64 md:h-96 w-full relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-4 md:pt-6">
+        <div className="relative rounded-3xl overflow-hidden shadow-sm md:shadow-xl bg-white border border-gray-100 flex flex-col">
+          {/* Banner Image */}
+          <div className="h-40 sm:h-56 md:h-96 w-full relative shrink-0">
             <img src={getImageUrl(college.banner_image, true)} alt={college.name} className="w-full h-full object-cover"/>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent md:from-black/80 md:via-black/20"></div>
           </div>
-          <div className="absolute bottom-0 left-0 right-0 p-6 md:p-10 flex flex-col md:flex-row items-start md:items-end gap-6">
-            <div className="bg-white p-4 rounded-2xl shadow-2xl relative z-10 w-24 h-24 md:w-32 md:h-32 flex items-center justify-center border-4 border-white">
-              <img src={getImageUrl(college.image)} alt="logo" className="w-full h-full object-contain"/>
+          
+          {/* Content */}
+          <div className="p-5 md:p-10 md:absolute md:bottom-0 md:left-0 md:right-0 flex flex-col md:flex-row items-center md:items-end gap-4 md:gap-6 relative bg-white md:bg-transparent rounded-b-3xl text-center md:text-left">
+            
+            {/* Logo */}
+            <div className="-mt-16 md:mt-0 bg-white p-2 md:p-4 rounded-2xl shadow-lg md:shadow-2xl relative z-10 w-24 h-24 md:w-32 md:h-32 flex shrink-0 items-center justify-center border-4 border-white md:border-white/20">
+              <img src={getImageUrl(college.image)} alt="logo" className="w-full h-full object-contain rounded-xl"/>
             </div>
-            <div className="flex-1 text-white">
-              <div className="flex flex-wrap items-center gap-3 mb-2">
-                <span className="bg-indigo-600/90 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+            
+            {/* Details */}
+            <div className="flex-1 w-full flex flex-col items-center md:items-start text-[#071B52] md:text-white">
+              <div className="mb-2">
+                <span className="bg-indigo-50 md:bg-indigo-600/90 text-indigo-600 md:text-white border border-indigo-100 md:border-none text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                   {college.type || 'University'}
                 </span>
               </div>
-              <h1 className="text-3xl md:text-5xl font-bold mb-3 drop-shadow-md">{college.name}</h1>
-              <div className="flex flex-wrap items-center gap-4 text-gray-200">
-                <div className="flex items-center gap-1.5 bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
-                  <MapPin size={16} className="text-indigo-400" />
-                  <span className="text-sm font-medium">{college.location}, Odisha</span>
+              <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-3 md:drop-shadow-md leading-tight">{college.name}</h1>
+              
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 sm:gap-4 text-gray-500 md:text-gray-200">
+                <div className="flex items-center gap-1.5 bg-gray-50 md:bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-gray-100 md:border-white/10">
+                  <MapPin size={14} className="text-indigo-500 md:text-indigo-400" />
+                  <span className="text-xs sm:text-sm font-medium">{college.location}, Odisha</span>
                 </div>
-                <div className="flex items-center gap-1.5 bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
-                  <Star size={16} className="text-yellow-400 fill-yellow-400" />
-                  <span className="text-sm font-bold">{college.rating} <span className="text-gray-300 font-normal">(1280 Reviews)</span></span>
+                <div className="flex items-center gap-1.5 bg-gray-50 md:bg-black/20 backdrop-blur-md px-3 py-1.5 rounded-full border border-gray-100 md:border-white/10">
+                  <Star size={14} className="text-yellow-500 md:text-yellow-400 fill-yellow-500 md:fill-yellow-400" />
+                  <span className="text-xs sm:text-sm font-bold">{college.rating} <span className="text-gray-400 md:text-gray-300 font-normal">(1280 Reviews)</span></span>
                 </div>
               </div>
             </div>
+            
             {/* Action Buttons */}
-            <div className="flex items-center gap-3 w-full md:w-auto">
+            <div className="flex flex-col sm:flex-row items-stretch md:items-center gap-3 w-full md:w-auto mt-2 md:mt-0 shrink-0">
               <button 
                 onClick={() => toggleWishlist(college.id)}
-                className={`flex-1 md:flex-none flex items-center justify-center gap-2 font-bold px-6 py-3 rounded-xl transition-all shadow-lg active:scale-95 ${
+                className={`flex items-center justify-center gap-2 font-bold px-6 py-3 rounded-xl transition-all shadow-md active:scale-95 ${
                   wishlist?.includes(parseInt(college.id, 10))
-                    ? 'bg-red-50 text-red-500 hover:bg-red-100'
-                    : 'bg-white text-[#071B52] hover:bg-gray-100'
+                    ? 'bg-red-50 text-red-500 hover:bg-red-100 border-red-100 border md:border-none'
+                    : 'bg-white text-[#071B52] border border-gray-200 md:border-none hover:bg-gray-50'
                 }`}
               >
                 <Heart size={20} className={wishlist?.includes(parseInt(college.id, 10)) ? 'fill-current' : ''} />
-                <span>{wishlist?.includes(parseInt(college.id, 10)) ? 'Wishlisted' : 'Add to Wishlist'}</span>
+                <span>{wishlist?.includes(parseInt(college.id, 10)) ? 'Wishlisted' : 'Wishlist'}</span>
               </button>
-              {/* ✅ Opens enquiry form → on success shows thank you modal */}
               <button
                 onClick={openEnquiry}
-                className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-indigo-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-indigo-700 transition-all shadow-lg active:scale-95"
+                className="flex items-center justify-center gap-2 bg-indigo-600 text-white font-bold px-8 py-3 rounded-xl hover:bg-indigo-700 transition-all shadow-md active:scale-95"
               >
                 Enquire Now
               </button>
@@ -424,18 +432,18 @@ const CollegeDetail = () => {
         </div>
 
         {/* Quick Highlights Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-6 md:mt-8">
           {[
-            { label: 'Established', value: college.established_year || '1992', icon: <Calendar size={20} />, bg: 'bg-blue-50', color: 'text-blue-600' },
-            { label: 'Type', value: college.type || 'Deemed University', icon: <Building size={20} />, bg: 'bg-indigo-50', color: 'text-indigo-600' },
-            { label: 'Approved By', value: college.approved_by || 'UGC, AICTE', icon: <Award size={20} />, bg: 'bg-teal-50', color: 'text-teal-600' },
-            { label: 'Campus Size', value: college.campus_size || '100+ Acres', icon: <Maximize size={20} />, bg: 'bg-amber-50', color: 'text-amber-600' },
+            { label: 'Established', value: college.established_year || '1992', icon: <Calendar size={18} className="md:w-5 md:h-5" />, bg: 'bg-blue-50', color: 'text-blue-600' },
+            { label: 'Type', value: college.type || 'Deemed University', icon: <Building size={18} className="md:w-5 md:h-5" />, bg: 'bg-indigo-50', color: 'text-indigo-600' },
+            { label: 'Approved By', value: college.approved_by || 'UGC, AICTE', icon: <Award size={18} className="md:w-5 md:h-5" />, bg: 'bg-teal-50', color: 'text-teal-600' },
+            { label: 'Campus Size', value: college.campus_size || '100+ Acres', icon: <Maximize size={18} className="md:w-5 md:h-5" />, bg: 'bg-amber-50', color: 'text-amber-600' },
           ].map((item, index) => (
-            <div key={index} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition">
-              <div className={`${item.bg} ${item.color} p-3 rounded-xl`}>{item.icon}</div>
-              <div>
-                <p className="text-xs text-gray-500 font-medium">{item.label}</p>
-                <p className="text-sm font-bold text-[#071B52]">{item.value}</p>
+            <div key={index} className="bg-white p-3 sm:p-4 md:p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row items-start sm:items-center gap-3 hover:shadow-md transition">
+              <div className={`${item.bg} ${item.color} p-2 md:p-3 rounded-xl shrink-0`}>{item.icon}</div>
+              <div className="overflow-hidden">
+                <p className="text-[10px] sm:text-xs text-gray-500 font-medium truncate">{item.label}</p>
+                <p className="text-xs sm:text-sm font-bold text-[#071B52] truncate">{item.value}</p>
               </div>
             </div>
           ))}
@@ -447,87 +455,87 @@ const CollegeDetail = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
           {/* Left Column */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6 md:space-y-8">
 
             {/* About Section */}
-            <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
-              <h2 className="text-2xl font-bold text-[#071B52] mb-6 flex items-center gap-3">
-                <span className="w-1.5 h-8 bg-indigo-600 rounded-full"></span>
+            <div className="bg-white rounded-2xl md:rounded-3xl p-5 sm:p-6 md:p-8 border border-gray-100 shadow-sm">
+              <h2 className="text-xl md:text-2xl font-bold text-[#071B52] mb-4 md:mb-6 flex items-center gap-2 md:gap-3">
+                <span className="w-1.5 h-6 md:h-8 bg-indigo-600 rounded-full"></span>
                 About {college.name}
               </h2>
-              <div className="prose prose-indigo max-w-none text-gray-600 leading-relaxed">
+              <div className="prose prose-sm md:prose-indigo max-w-none text-gray-600 leading-relaxed text-sm md:text-base">
                 <p>{college.description}</p>
               </div>
-              <button className="mt-6 text-indigo-600 font-bold flex items-center gap-1 hover:gap-2 transition-all group">
-                Read More <TrendingUp size={18} className="group-hover:translate-x-1 transition-transform" />
+              <button className="mt-4 md:mt-6 text-indigo-600 font-bold flex items-center gap-1 hover:gap-2 transition-all group text-sm md:text-base">
+                Read More <TrendingUp size={16} className="md:w-[18px] md:h-[18px] group-hover:translate-x-1 transition-transform" />
               </button>
               <button
                   onClick={() => setGalleryOpen(true)}
-                  className="mt-4 inline-flex items-center gap-2 rounded-lg border border-indigo-500 px-4 py-2 text-sm font-bold text-indigo-600 hover:bg-indigo-50 transition-colors"
+                  className="mt-3 md:mt-4 inline-flex items-center gap-2 rounded-lg border border-indigo-500 px-4 py-2 text-xs md:text-sm font-bold text-indigo-600 hover:bg-indigo-50 transition-colors"
               >
                   <Images size={16} />
                   <span>Campus Gallery</span>
               </button>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-10 pt-10 border-t border-gray-50">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mt-6 md:mt-10 pt-6 md:pt-10 border-t border-gray-50">
                 {[
-                  { label: 'Accredited', value: 'NAAC A++', icon: <Award className="text-indigo-500" /> },
-                  { label: 'Students', value: '10000+', icon: <Users className="text-blue-500" /> },
-                  { label: 'Faculty', value: '1000+', icon: <Building className="text-amber-500" /> },
-                  { label: 'Countries', value: '50+', icon: <Globe className="text-teal-500" /> },
-                  { label: 'Programs', value: '100+', icon: <BookOpen className="text-purple-500" /> },
-                  { label: 'Placement', value: 'Top Records', icon: <TrendingUp className="text-green-500" /> },
-                  { label: 'Collaboration', value: 'Global', icon: <Globe className="text-orange-500" /> },
-                  { label: 'Research', value: '24+', icon: <Maximize className="text-red-500" /> },
+                  { label: 'Accredited', value: 'NAAC A++', icon: <Award className="text-indigo-500 w-5 h-5 md:w-6 md:h-6" /> },
+                  { label: 'Students', value: '10000+', icon: <Users className="text-blue-500 w-5 h-5 md:w-6 md:h-6" /> },
+                  { label: 'Faculty', value: '1000+', icon: <Building className="text-amber-500 w-5 h-5 md:w-6 md:h-6" /> },
+                  { label: 'Countries', value: '50+', icon: <Globe className="text-teal-500 w-5 h-5 md:w-6 md:h-6" /> },
+                  { label: 'Programs', value: '100+', icon: <BookOpen className="text-purple-500 w-5 h-5 md:w-6 md:h-6" /> },
+                  { label: 'Placement', value: 'Top Records', icon: <TrendingUp className="text-green-500 w-5 h-5 md:w-6 md:h-6" /> },
+                  { label: 'Collaboration', value: 'Global', icon: <Globe className="text-orange-500 w-5 h-5 md:w-6 md:h-6" /> },
+                  { label: 'Research', value: '24+', icon: <Maximize className="text-red-500 w-5 h-5 md:w-6 md:h-6" /> },
                 ].map((highlight, idx) => (
-                  <div key={idx} className="bg-gray-50 p-4 rounded-2xl flex flex-col items-center text-center group hover:bg-white hover:shadow-md border border-transparent hover:border-indigo-100 transition duration-300">
-                    <div className="p-2 bg-white rounded-xl shadow-sm mb-3 group-hover:scale-110 transition duration-300">{highlight.icon}</div>
-                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">{highlight.label}</p>
-                    <p className="text-sm font-bold text-[#071B52]">{highlight.value}</p>
+                  <div key={idx} className="bg-gray-50 p-3 md:p-4 rounded-xl md:rounded-2xl flex flex-col items-center text-center group hover:bg-white hover:shadow-md border border-transparent hover:border-indigo-100 transition duration-300">
+                    <div className="p-1.5 md:p-2 bg-white rounded-lg md:rounded-xl shadow-sm mb-2 md:mb-3 group-hover:scale-110 transition duration-300">{highlight.icon}</div>
+                    <p className="text-[9px] md:text-[10px] text-gray-500 font-bold uppercase tracking-wider">{highlight.label}</p>
+                    <p className="text-xs md:text-sm font-bold text-[#071B52]">{highlight.value}</p>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Courses Offered */}
-            <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm">
-              <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+            <div className="bg-white rounded-2xl md:rounded-3xl p-5 sm:p-6 md:p-8 border border-gray-100 shadow-sm">
+              <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-8 gap-3 md:gap-4">
                 <div>
-                  <h2 className="text-2xl font-bold text-[#071B52] flex items-center gap-3">
-                    <span className="w-1.5 h-8 bg-indigo-600 rounded-full"></span>
+                  <h2 className="text-xl md:text-2xl font-bold text-[#071B52] flex items-center gap-2 md:gap-3">
+                    <span className="w-1.5 h-6 md:h-8 bg-indigo-600 rounded-full"></span>
                     Courses Offered
                   </h2>
-                  <p className="text-gray-500 text-sm mt-1 ml-4">Explore popular programs offered by {college.name}</p>
+                  <p className="text-gray-500 text-xs md:text-sm mt-1 ml-3 md:ml-4">Explore popular programs offered by {college.name}</p>
                 </div>
-                <button className="bg-indigo-50 text-indigo-600 px-5 py-2.5 rounded-xl font-bold hover:bg-indigo-600 hover:text-white transition duration-300 text-sm">
+                <button className="bg-indigo-50 text-indigo-600 px-4 py-2 md:px-5 md:py-2.5 rounded-xl font-bold hover:bg-indigo-600 hover:text-white transition duration-300 text-xs md:text-sm self-start md:self-auto">
                   View All Courses
                 </button>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                 {college.courses && college.courses.length > 0 ? college.courses.map((course, idx) => (
                   <Link key={idx} to={`/colleges/${college.id}/courses/${course.name}`}
-                    className="p-6 border border-gray-100 rounded-2xl hover:border-indigo-200 hover:bg-indigo-50/30 transition-all group cursor-pointer block">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="p-3 bg-white rounded-2xl shadow-sm text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
-                        <GraduationCap size={24} />
+                    className="p-4 md:p-6 border border-gray-100 rounded-xl md:rounded-2xl hover:border-indigo-200 hover:bg-indigo-50/30 transition-all group cursor-pointer block">
+                    <div className="flex items-start justify-between mb-3 md:mb-4">
+                      <div className="p-2 md:p-3 bg-white rounded-xl md:rounded-2xl shadow-sm text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors duration-300">
+                        <GraduationCap size={20} className="md:w-6 md:h-6" />
                       </div>
-                      <div className="text-right"><span className="text-xs font-medium text-gray-600">{course.duration}</span></div>
+                      <div className="text-right"><span className="text-[10px] md:text-xs font-medium text-gray-600 bg-gray-50 px-2 py-1 rounded-md">{course.duration}</span></div>
                     </div>
-                    <h3 className="text-lg font-bold text-[#071B52] mb-2 group-hover:text-indigo-600 transition-colors">{course.name}</h3>
-                    <p className="text-sm text-gray-500 line-clamp-2">Click to view available specializations and detailed curriculum.</p>
+                    <h3 className="text-base md:text-lg font-bold text-[#071B52] mb-1 md:mb-2 group-hover:text-indigo-600 transition-colors">{course.name}</h3>
+                    <p className="text-xs md:text-sm text-gray-500 line-clamp-2">Click to view available specializations and curriculum.</p>
                   </Link>
                 )) : (
-                  <div className="col-span-full py-10 text-center bg-gray-50 rounded-2xl">
-                    <p className="text-gray-500">No courses listed for this college yet.</p>
+                  <div className="col-span-full py-8 md:py-10 text-center bg-gray-50 rounded-xl md:rounded-2xl">
+                    <p className="text-xs md:text-sm text-gray-500">No courses listed for this college yet.</p>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Why Choose Us */}
-            <div className="bg-indigo-900 rounded-3xl p-8 md:p-10 text-white relative overflow-hidden shadow-2xl">
+            <div className="bg-indigo-900 rounded-2xl md:rounded-3xl p-6 sm:p-8 md:p-10 text-white relative overflow-hidden shadow-xl md:shadow-2xl">
               <div className="relative z-10">
-                <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">Why Choose {college.name}?</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <h2 className="text-xl md:text-2xl font-bold mb-6 md:mb-8 flex items-center gap-2 md:gap-3">Why Choose {college.name}?</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
                   {[
                     'NAAC A++ accredited with world-class infrastructure',
                     'Global exposure with 50+ international partnerships',
@@ -536,59 +544,58 @@ const CollegeDetail = () => {
                     'Excellent placement record with top recruiters',
                     'Industry-oriented programs and innovation hub'
                   ].map((item, idx) => (
-                    <div key={idx} className="flex items-start gap-3">
-                      <div className="mt-1 bg-green-500 rounded-full p-0.5"><CheckCircle size={14} className="text-white" /></div>
-                      <p className="text-indigo-100 text-sm font-medium leading-relaxed">{item}</p>
+                    <div key={idx} className="flex items-start gap-2 md:gap-3">
+                      <div className="mt-1 bg-green-500 rounded-full p-0.5 shrink-0"><CheckCircle size={12} className="text-white md:w-3.5 md:h-3.5" /></div>
+                      <p className="text-indigo-100 text-xs md:text-sm font-medium leading-relaxed">{item}</p>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-800 rounded-full -mr-32 -mt-32 opacity-20"></div>
-              <div className="absolute bottom-0 left-0 w-32 h-32 bg-white rounded-full -ml-16 -mb-16 opacity-5"></div>
+              <div className="absolute top-0 right-0 w-48 md:w-64 h-48 md:h-64 bg-indigo-800 rounded-full -mr-24 -mt-24 md:-mr-32 md:-mt-32 opacity-20"></div>
+              <div className="absolute bottom-0 left-0 w-24 md:w-32 h-24 md:w-32 bg-white rounded-full -ml-12 -mb-12 md:-ml-16 md:-mb-16 opacity-5"></div>
             </div>
           </div>
 
           {/* Right Sidebar */}
-          <div className="space-y-8">
-            <div className="bg-white rounded-3xl p-8 border border-gray-100 shadow-sm sticky top-8">
-              <h3 className="text-xl font-bold text-[#071B52] mb-8 flex items-center gap-3">
-                <Info size={24} className="text-indigo-600" />
+          <div className="space-y-6 md:space-y-8">
+            <div className="bg-white rounded-2xl md:rounded-3xl p-5 sm:p-6 md:p-8 border border-gray-100 shadow-sm sticky top-8">
+              <h3 className="text-lg md:text-xl font-bold text-[#071B52] mb-6 md:mb-8 flex items-center gap-2 md:gap-3">
+                <Info size={20} className="text-indigo-600 md:w-6 md:h-6" />
                 Quick Information
               </h3>
-              <div className="space-y-6">
+              <div className="space-y-5 md:space-y-6">
                 {[
-                  { label: 'University Type', value: college.type || 'Deemed University', icon: <School size={18} /> },
-                  { label: 'Established', value: college.established_year || '1992', icon: <Calendar size={18} /> },
-                  { label: 'Approved By', value: college.approved_by || 'UGC, AICTE, NAAC A++', icon: <Award size={18} /> },
-                  { label: 'Rankings', value: college.rankings || 'Among Top 20 Universities in India', icon: <Star size={18} /> },
-                  { label: 'Website', value: college.website || 'www.college.ac.in', icon: <Globe size={18} />, isLink: true },
-                  { label: 'Address', value: college.address || 'Patia, Bhubaneswar, Odisha', icon: <MapPin size={18} /> },
+                  { label: 'University Type', value: college.type || 'Deemed University', icon: <School size={16} className="md:w-[18px] md:h-[18px]" /> },
+                  { label: 'Established', value: college.established_year || '1992', icon: <Calendar size={16} className="md:w-[18px] md:h-[18px]" /> },
+                  { label: 'Approved By', value: college.approved_by || 'UGC, AICTE, NAAC A++', icon: <Award size={16} className="md:w-[18px] md:h-[18px]" /> },
+                  { label: 'Rankings', value: college.rankings || 'Among Top 20 Universities', icon: <Star size={16} className="md:w-[18px] md:h-[18px]" /> },
+                  { label: 'Website', value: college.website || 'www.college.ac.in', icon: <Globe size={16} className="md:w-[18px] md:h-[18px]" />, isLink: true },
+                  { label: 'Address', value: college.address || 'Patia, Bhubaneswar, Odisha', icon: <MapPin size={16} className="md:w-[18px] md:h-[18px]" /> },
                 ].map((info, idx) => (
-                  <div key={idx} className="flex items-start gap-4 group">
-                    <div className="mt-0.5 text-indigo-400 group-hover:text-indigo-600 transition-colors">{info.icon}</div>
-                    <div className="flex-1">
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{info.label}</p>
+                  <div key={idx} className="flex items-start gap-3 md:gap-4 group">
+                    <div className="mt-0.5 text-indigo-400 group-hover:text-indigo-600 transition-colors shrink-0">{info.icon}</div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase tracking-widest">{info.label}</p>
                       {info.isLink ? (
-                        <a href={`https://${info.value}`} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-indigo-600 hover:underline flex items-center gap-1">
-                          {info.value}<ExternalLink size={12} />
+                        <a href={`https://${info.value}`} target="_blank" rel="noopener noreferrer" className="text-xs md:text-sm font-bold text-indigo-600 hover:underline flex items-center gap-1 truncate">
+                          <span className="truncate">{info.value}</span><ExternalLink size={10} className="md:w-3 md:h-3 shrink-0" />
                         </a>
                       ) : (
-                        <p className="text-sm font-bold text-[#071B52] leading-tight mt-1">{info.value}</p>
+                        <p className="text-xs md:text-sm font-bold text-[#071B52] leading-tight mt-1">{info.value}</p>
                       )}
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="mt-10 pt-8 border-t border-gray-50 text-center">
-                <p className="text-sm font-bold text-[#071B52] mb-4">Have Questions? We're here to help!</p>
-                <div className="flex flex-col gap-3">
-                  {/* Call Now — dials phone */}
-                  <a href="tel:+919114422555" className="flex items-center justify-center gap-2 bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition shadow-md active:scale-95">
-                    <Phone size={18} />
+              <div className="mt-8 md:mt-10 pt-6 md:pt-8 border-t border-gray-50 text-center">
+                <p className="text-xs md:text-sm font-bold text-[#071B52] mb-3 md:mb-4">Have Questions? We're here to help!</p>
+                <div className="flex flex-col sm:flex-row lg:flex-col gap-3">
+                  <a href="tel:+919114422555" className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 text-white py-2.5 md:py-3 rounded-xl text-sm md:text-base font-bold hover:bg-indigo-700 transition shadow-md active:scale-95">
+                    <Phone size={16} className="md:w-[18px] md:h-[18px]" />
                     Call Now
                   </a>
-                  <a href="mailto:contact@admissionodisha.in" className="flex items-center justify-center gap-2 bg-white text-[#071B52] py-3 rounded-xl font-bold border border-gray-100 hover:bg-gray-50 transition active:scale-95">
-                    <Mail size={18} />
+                  <a href="mailto:contact@admissionodisha.in" className="flex-1 flex items-center justify-center gap-2 bg-white text-[#071B52] py-2.5 md:py-3 rounded-xl text-sm md:text-base font-bold border border-gray-100 hover:bg-gray-50 transition active:scale-95">
+                    <Mail size={16} className="md:w-[18px] md:h-[18px]" />
                     Email Us
                   </a>
                 </div>

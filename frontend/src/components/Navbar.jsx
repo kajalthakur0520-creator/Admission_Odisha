@@ -164,18 +164,18 @@ const Navbar = () => {
               </Link>
             )}
             {/* Language */}
-            <div className="hidden md:block relative">
+            <div className="relative">
               <button
                 onClick={() => setOpen(!open)}
-                className="flex items-center gap-2 border border-gray-300 px-3 py-1.5 rounded-md text-sm font-medium bg-white/50 hover:bg-white transition-all duration-300"
+                className="flex items-center gap-1 sm:gap-2 border border-gray-300 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md text-xs sm:text-sm font-medium bg-white/50 hover:bg-white transition-all duration-300"
               >
-                <FaGlobe className="text-gray-500 text-xs" />
-                {lang}
-                <span className="text-xs">▾</span>
+                <FaGlobe className="text-gray-500 text-[10px] sm:text-xs" />
+                <span className="uppercase">{lang}</span>
+                <span className="text-[10px] sm:text-xs">▾</span>
               </button>
 
               {open && (
-                <div className="absolute right-0 mt-2 w-28 bg-white border border-gray-100 rounded-md shadow-lg z-50 overflow-hidden">
+                <div className="absolute right-0 mt-2 w-24 sm:w-28 bg-white border border-gray-100 rounded-md shadow-lg z-50 overflow-hidden">
                   {["EN", "Hindi", "Odia"].map((item) => (
                     <div
                       key={item}
@@ -188,7 +188,7 @@ const Navbar = () => {
                         localStorage.setItem("language", selected);
                         setOpen(false);
                       }}
-                      className="px-3 py-2 text-sm hover:bg-gradient-to-r hover:from-[#F5F3FF] hover:to-[#F3E8FF] cursor-pointer transition-all duration-200"
+                      className="px-3 py-2 text-xs sm:text-sm hover:bg-gradient-to-r hover:from-[#F5F3FF] hover:to-[#F3E8FF] cursor-pointer transition-all duration-200"
                     >
                       {item}
                     </div>

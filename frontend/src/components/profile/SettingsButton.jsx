@@ -114,21 +114,29 @@ const SettingsButton = ({ onClick, variant = "desktop" }) => {
       {isOpen && createPortal(
         <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
           {/* Modal Container */}
-          <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row h-[500px]">
+          <div className="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[95vh] md:h-[500px]">
             {/* Sidebar / Tabs */}
-            <div className="w-full md:w-1/3 bg-gray-50 border-r border-gray-100 p-6 flex flex-col justify-between">
+            <div className="w-full md:w-1/3 bg-gray-50 border-b md:border-b-0 md:border-r border-gray-100 p-4 sm:p-6 flex flex-col justify-between flex-shrink-0">
               <div>
-                <h3 className="text-lg font-bold text-gray-800 mb-6">Settings</h3>
-                <div className="space-y-2">
+                <div className="flex items-center justify-between mb-3 md:mb-6">
+                  <h3 className="text-lg font-bold text-gray-800">Settings</h3>
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="md:hidden text-gray-400 hover:text-gray-600 transition-colors p-1"
+                  >
+                    <FaTimes className="text-lg" />
+                  </button>
+                </div>
+                <div className="flex overflow-x-auto space-x-2 md:space-x-0 md:space-y-2 pb-1 md:pb-0 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
                   <button
                     onClick={() => {
                       setSettingsTab("password");
                       setPasswordError("");
                       setPasswordSuccess("");
                     }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-semibold transition-all duration-200 ${settingsTab === "password"
+                    className={`whitespace-nowrap flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2 md:py-3 rounded-xl md:text-left text-xs md:text-sm font-semibold transition-all duration-200 ${settingsTab === "password"
                         ? "bg-[#6C4DF6] text-white shadow-md"
-                        : "text-gray-600 hover:bg-gray-100"
+                        : "text-gray-600 bg-gray-200 md:bg-transparent hover:bg-gray-100"
                       }`}
                   >
                     <FaLock className="text-sm" />
@@ -136,9 +144,9 @@ const SettingsButton = ({ onClick, variant = "desktop" }) => {
                   </button>
                   <button
                     onClick={() => setSettingsTab("language")}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-semibold transition-all duration-200 ${settingsTab === "language"
+                    className={`whitespace-nowrap flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2 md:py-3 rounded-xl md:text-left text-xs md:text-sm font-semibold transition-all duration-200 ${settingsTab === "language"
                         ? "bg-[#6C4DF6] text-white shadow-md"
-                        : "text-gray-600 hover:bg-gray-100"
+                        : "text-gray-600 bg-gray-200 md:bg-transparent hover:bg-gray-100"
                       }`}
                   >
                     <FaGlobe className="text-sm" />
@@ -146,9 +154,9 @@ const SettingsButton = ({ onClick, variant = "desktop" }) => {
                   </button>
                   <button
                     onClick={() => setSettingsTab("support")}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-sm font-semibold transition-all duration-200 ${settingsTab === "support"
+                    className={`whitespace-nowrap flex-shrink-0 w-auto md:w-full flex items-center gap-2 md:gap-3 px-3 md:px-4 py-2 md:py-3 rounded-xl md:text-left text-xs md:text-sm font-semibold transition-all duration-200 ${settingsTab === "support"
                         ? "bg-[#6C4DF6] text-white shadow-md"
-                        : "text-gray-600 hover:bg-gray-100"
+                        : "text-gray-600 bg-gray-200 md:bg-transparent hover:bg-gray-100"
                       }`}
                   >
                     <FaHeadset className="text-sm" />
@@ -159,29 +167,29 @@ const SettingsButton = ({ onClick, variant = "desktop" }) => {
 
               <button
                 onClick={() => setIsOpen(false)}
-                className="mt-6 md:mt-0 w-full text-center text-sm font-medium text-gray-400 hover:text-gray-600 py-2 border border-gray-200 rounded-xl hover:bg-gray-100 transition-all duration-200"
+                className="hidden md:block mt-6 w-full text-center text-sm font-medium text-gray-400 hover:text-gray-600 py-2 border border-gray-200 rounded-xl hover:bg-gray-100 transition-all duration-200"
               >
                 Close
               </button>
             </div>
 
             {/* Content Panel */}
-            <div className="flex-1 p-8 overflow-y-auto relative">
+            <div className="flex-1 p-5 md:p-8 overflow-y-auto relative">
               <button
                 onClick={() => setIsOpen(false)}
-                className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
+                className="hidden md:block absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors"
               >
                 <FaTimes className="text-lg" />
               </button>
 
               {settingsTab === "password" && (
                 <div>
-                  <h4 className="text-xl font-bold text-gray-800 mb-2">Change Password</h4>
-                  <p className="text-sm text-gray-500 mb-6">Update your password to keep your account secure.</p>
+                  <h4 className="text-lg md:text-xl font-bold text-gray-800 mb-1 md:mb-2">Change Password</h4>
+                  <p className="text-xs md:text-sm text-gray-500 mb-5 md:mb-6">Update your password to keep your account secure.</p>
 
-                  <form onSubmit={handlePasswordChange} className="space-y-4">
+                  <form onSubmit={handlePasswordChange} className="space-y-3 md:space-y-4">
                     <div>
-                      <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">
+                      <label className="block text-[10px] md:text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">
                         Current Password
                       </label>
                       <input
@@ -190,12 +198,12 @@ const SettingsButton = ({ onClick, variant = "desktop" }) => {
                         value={currentPassword}
                         onChange={(e) => setCurrentPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#6C4DF6] focus:ring-2 focus:ring-[#6C4DF6]/20 transition-all duration-200 text-sm focus:outline-none"
+                        className="w-full px-3 md:px-4 py-2 md:py-2.5 rounded-xl border border-gray-200 focus:border-[#6C4DF6] focus:ring-2 focus:ring-[#6C4DF6]/20 transition-all duration-200 text-sm focus:outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">
+                      <label className="block text-[10px] md:text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">
                         New Password
                       </label>
                       <input
@@ -204,12 +212,12 @@ const SettingsButton = ({ onClick, variant = "desktop" }) => {
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#6C4DF6] focus:ring-2 focus:ring-[#6C4DF6]/20 transition-all duration-200 text-sm focus:outline-none"
+                        className="w-full px-3 md:px-4 py-2 md:py-2.5 rounded-xl border border-gray-200 focus:border-[#6C4DF6] focus:ring-2 focus:ring-[#6C4DF6]/20 transition-all duration-200 text-sm focus:outline-none"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">
+                      <label className="block text-[10px] md:text-xs font-semibold text-gray-600 uppercase tracking-wider mb-1">
                         Confirm New Password
                       </label>
                       <input
@@ -218,18 +226,18 @@ const SettingsButton = ({ onClick, variant = "desktop" }) => {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="••••••••"
-                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-[#6C4DF6] focus:ring-2 focus:ring-[#6C4DF6]/20 transition-all duration-200 text-sm focus:outline-none"
+                        className="w-full px-3 md:px-4 py-2 md:py-2.5 rounded-xl border border-gray-200 focus:border-[#6C4DF6] focus:ring-2 focus:ring-[#6C4DF6]/20 transition-all duration-200 text-sm focus:outline-none"
                       />
                     </div>
 
                     {passwordError && (
-                      <p className="text-xs text-red-600 font-semibold bg-red-50 p-2.5 rounded-lg border border-red-100">
+                      <p className="text-xs text-red-600 font-semibold bg-red-50 p-2 md:p-2.5 rounded-lg border border-red-100">
                         {passwordError}
                       </p>
                     )}
 
                     {passwordSuccess && (
-                      <p className="text-xs text-green-600 font-semibold bg-green-50 p-2.5 rounded-lg border border-green-100">
+                      <p className="text-xs text-green-600 font-semibold bg-green-50 p-2 md:p-2.5 rounded-lg border border-green-100">
                         {passwordSuccess}
                       </p>
                     )}
@@ -237,7 +245,7 @@ const SettingsButton = ({ onClick, variant = "desktop" }) => {
                     <button
                       type="submit"
                       disabled={passwordLoading}
-                      className="w-full bg-[#6C4DF6] hover:bg-[#5B3EE0] text-white py-2.5 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50"
+                      className="w-full bg-[#6C4DF6] hover:bg-[#5B3EE0] text-white py-2.5 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50 mt-2"
                     >
                       {passwordLoading ? "Saving Changes..." : "Save Password"}
                     </button>
@@ -247,10 +255,10 @@ const SettingsButton = ({ onClick, variant = "desktop" }) => {
 
               {settingsTab === "language" && (
                 <div>
-                  <h4 className="text-xl font-bold text-gray-800 mb-2">Language Preference</h4>
-                  <p className="text-sm text-gray-500 mb-6">Choose your preferred language for the interface.</p>
+                  <h4 className="text-lg md:text-xl font-bold text-gray-800 mb-1 md:mb-2">Language Preference</h4>
+                  <p className="text-xs md:text-sm text-gray-500 mb-5 md:mb-6">Choose your preferred language for the interface.</p>
 
-                  <div className="space-y-3">
+                  <div className="space-y-2 md:space-y-3">
                     {[
                       { code: "en", label: "English", native: "English" },
                       { code: "hi", label: "Hindi", native: "हिन्दी" },
@@ -263,18 +271,18 @@ const SettingsButton = ({ onClick, variant = "desktop" }) => {
                           i18n.changeLanguage(item.code);
                           localStorage.setItem("language", item.code);
                         }}
-                        className={`w-full flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-200 ${lang === item.code
+                        className={`w-full flex items-center justify-between p-3 md:p-4 rounded-xl border-2 transition-all duration-200 ${lang === item.code
                             ? "border-[#6C4DF6] bg-[#F5F3FF]"
                             : "border-gray-100 hover:border-gray-200 bg-white"
                           }`}
                       >
                         <div className="text-left">
-                          <p className="font-semibold text-gray-800 text-sm">{item.label}</p>
-                          <p className="text-xs text-gray-400">{item.native}</p>
+                          <p className="font-semibold text-gray-800 text-xs md:text-sm">{item.label}</p>
+                          <p className="text-[10px] md:text-xs text-gray-400">{item.native}</p>
                         </div>
                         {lang === item.code && (
-                          <div className="w-5 h-5 rounded-full bg-[#6C4DF6] flex items-center justify-center">
-                            <span className="text-white text-xs">✓</span>
+                          <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-[#6C4DF6] flex items-center justify-center">
+                            <span className="text-white text-[10px] md:text-xs">✓</span>
                           </div>
                         )}
                       </button>
@@ -285,39 +293,39 @@ const SettingsButton = ({ onClick, variant = "desktop" }) => {
 
               {settingsTab === "support" && (
                 <div>
-                  <h4 className="text-xl font-bold text-gray-800 mb-2">Help & Support</h4>
-                  <p className="text-sm text-gray-500 mb-6">Get in touch with us if you have any questions or issues.</p>
+                  <h4 className="text-lg md:text-xl font-bold text-gray-800 mb-1 md:mb-2">Help & Support</h4>
+                  <p className="text-xs md:text-sm text-gray-500 mb-5 md:mb-6">Get in touch with us if you have any questions or issues.</p>
 
-                  <div className="space-y-4">
-                    <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
-                      <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 flex-shrink-0">
-                        <FaEnvelope className="text-sm" />
+                  <div className="space-y-3 md:space-y-4">
+                    <div className="flex items-start gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-gray-50 border border-gray-100">
+                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600 flex-shrink-0">
+                        <FaEnvelope className="text-xs md:text-sm" />
                       </div>
                       <div>
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Email Us</p>
-                        <a href="mailto:support@admissionodisha.in" className="text-sm font-bold text-[#6C4DF6] hover:underline">
+                        <p className="text-[10px] md:text-xs font-semibold text-gray-400 uppercase tracking-wider">Email Us</p>
+                        <a href="mailto:support@admissionodisha.in" className="text-xs md:text-sm font-bold text-[#6C4DF6] hover:underline">
                           support@admissionodisha.in
                         </a>
-                        <p className="text-xs text-gray-500 mt-0.5">We usually reply within 24 hours.</p>
+                        <p className="text-[10px] md:text-xs text-gray-500 mt-0.5">We usually reply within 24 hours.</p>
                       </div>
                     </div>
 
-                    <div className="flex items-start gap-4 p-4 rounded-xl bg-gray-50 border border-gray-100">
-                      <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center text-green-600 flex-shrink-0">
-                        <FaPhoneAlt className="text-sm" />
+                    <div className="flex items-start gap-3 md:gap-4 p-3 md:p-4 rounded-xl bg-gray-50 border border-gray-100">
+                      <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-green-100 flex items-center justify-center text-green-600 flex-shrink-0">
+                        <FaPhoneAlt className="text-xs md:text-sm" />
                       </div>
                       <div>
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Call Us</p>
-                        <a href="tel:+919114422555" className="text-sm font-bold text-gray-800 hover:text-[#6C4DF6] transition-colors">
+                        <p className="text-[10px] md:text-xs font-semibold text-gray-400 uppercase tracking-wider">Call Us</p>
+                        <a href="tel:+919114422555" className="text-xs md:text-sm font-bold text-gray-800 hover:text-[#6C4DF6] transition-colors">
                           +91 91144 22555
                         </a>
-                        <p className="text-xs text-gray-500 mt-0.5">Mon - Sat (9:00 AM - 6:00 PM)</p>
+                        <p className="text-[10px] md:text-xs text-gray-500 mt-0.5">Mon - Sat (9:00 AM - 6:00 PM)</p>
                       </div>
                     </div>
 
-                    <div className="p-4 rounded-xl bg-blue-50 border border-blue-100 text-blue-800">
-                      <p className="text-xs font-semibold uppercase tracking-wider mb-1">Need immediate guidance?</p>
-                      <p className="text-xs leading-relaxed">
+                    <div className="p-3 md:p-4 rounded-xl bg-blue-50 border border-blue-100 text-blue-800">
+                      <p className="text-[10px] md:text-xs font-semibold uppercase tracking-wider mb-1">Need immediate guidance?</p>
+                      <p className="text-[10px] md:text-xs leading-relaxed">
                         You can fill out the contact form or use the guidance popup helper on the homepage to register a query and receive custom support.
                       </p>
                     </div>
@@ -338,6 +346,13 @@ const SettingsButton = ({ onClick, variant = "desktop" }) => {
         }
         .animate-fadeIn {
           animation: fadeIn 0.2s ease-out;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
       `}</style>
     </>

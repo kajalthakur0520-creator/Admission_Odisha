@@ -213,26 +213,26 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
     }
   };
 
-  return (
+    return (
     <>
       {renderButton()}
 
       {/* Profile Modal */}
       {isOpen && createPortal(
-        <div style={{ fontFamily: "'Segoe UI', sans-serif" }} className="fixed inset-0 z-[1000] flex min-h-screen bg-gray-50 overflow-y-auto animate-fadeIn">
+        <div style={{ fontFamily: "'Segoe UI', sans-serif" }} className="fixed inset-0 z-[1000] flex flex-col md:flex-row bg-gray-50 overflow-y-auto md:overflow-hidden animate-fadeIn">
           
-          {/* ── SIDEBAR ── */}
-          <aside className="w-52 flex-shrink-0 flex flex-col" style={{ backgroundColor: "#1a2744", minHeight: "100vh" }}>
+          {/* ── SIDEBAR (Hidden on Mobile) ── */}
+          <aside className="hidden md:flex w-52 flex-shrink-0 flex-col bg-[#1a2744] min-h-screen overflow-y-auto">
             {/* Logo */}
             <div className="flex items-center gap-2 px-4 py-5">
-              <div style={{ backgroundColor: "#2563eb" }} className="w-9 h-9 rounded flex items-center justify-center">
+              <div className="bg-blue-600 w-9 h-9 rounded flex items-center justify-center">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
                   <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/>
                 </svg>
               </div>
               <div>
                 <div className="text-white font-black text-sm leading-tight">ADMISSION</div>
-                <div className="font-black text-sm leading-tight" style={{ color: "#f97316" }}>ODISHA</div>
+                <div className="font-black text-sm leading-tight text-orange-500">ODISHA</div>
               </div>
             </div>
 
@@ -258,18 +258,17 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
             </nav>
 
             {/* Help Box */}
-            <div className="m-3 p-4 rounded-xl" style={{ backgroundColor: "#243156" }}>
+            <div className="m-3 p-4 rounded-xl bg-[#243156]">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-base">🎧</span>
                 <span className="text-white font-semibold text-sm">Need Help?</span>
               </div>
-              <p className="text-xs mb-3" style={{ color: "#94a3b8" }}>
+              <p className="text-xs mb-3 text-slate-400">
                 Our admission experts are here to help you!
               </p>
               <a
                 href="mailto:support@admissionodisha.in"
-                className="w-full py-2 rounded-lg text-xs font-semibold text-white flex items-center justify-center gap-1"
-                style={{ backgroundColor: "#1e3a6e", border: "1px solid #334d7e" }}
+                className="w-full py-2 rounded-lg text-xs font-semibold text-white flex items-center justify-center gap-1 bg-[#1e3a6e] border border-[#334d7e]"
               >
                 🎧 Contact Support
               </a>
@@ -277,26 +276,37 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
           </aside>
 
           {/* ── MAIN AREA ── */}
-          <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex-1 flex flex-col min-w-0 md:h-screen md:overflow-y-auto">
 
             {/* ── TOPBAR ── */}
-            <header className="flex items-center px-6 py-3 bg-white border-b border-gray-200 gap-4">
-              <div className="flex-1"></div>
+            <header className="flex items-center justify-between md:justify-end px-4 md:px-6 py-3 bg-white border-b border-gray-200 sticky top-0 z-10 gap-4">
+              {/* Mobile Logo */}
+              <div className="flex md:hidden items-center gap-2">
+                <div className="bg-blue-600 w-8 h-8 rounded flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                    <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/>
+                  </svg>
+                </div>
+                <div>
+                  <div className="text-gray-900 font-black text-xs leading-tight">ADMISSION</div>
+                  <div className="font-black text-xs leading-tight text-orange-500">ODISHA</div>
+                </div>
+              </div>
 
-              <div className="ml-auto flex items-center gap-4">
+              <div className="flex items-center gap-4">
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 transition"
+                  className="flex items-center gap-2 px-3 md:px-4 py-2 rounded-xl text-sm font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 transition"
                 >
-                  <FaTimes className="text-xs" /> Close Profile
+                  <FaTimes className="text-xs" /> <span className="hidden sm:inline">Close Profile</span>
                 </button>
               </div>
             </header>
 
             {/* ── PAGE CONTENT ── */}
-            <main className="flex-1 px-8 py-6">
+            <main className="flex-1 px-4 sm:px-6 md:px-8 py-6">
               {/* Breadcrumb */}
-              <div className="flex items-center gap-1 text-sm text-gray-400 mb-4">
+              <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-400 mb-4">
                 <span className="hover:text-blue-600 cursor-pointer" onClick={() => setIsOpen(false)}>Home</span>
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
@@ -304,24 +314,24 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
                 <span className="text-gray-600">My Profile</span>
               </div>
 
-              <h1 className="text-2xl font-bold text-gray-900 mb-1">My Profile</h1>
-              <p className="text-sm text-gray-400 mb-6">Manage your personal information and account details.</p>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">My Profile</h1>
+              <p className="text-xs sm:text-sm text-gray-400 mb-6">Manage your personal information and account details.</p>
 
               {/* ── ROW 1: Profile Card + Personal Info ── */}
-              <div className="flex flex-col lg:flex-row gap-5 mb-5">
+              <div className="flex flex-col lg:flex-row gap-4 sm:gap-5 mb-5">
 
                 {/* Profile Card */}
-                <div className="bg-white rounded-2xl p-6 flex flex-col items-center border border-gray-100 shadow-sm w-full lg:w-[280px] flex-shrink-0">
+                <div className="bg-white rounded-2xl p-4 sm:p-6 flex flex-col items-center border border-gray-100 shadow-sm w-full lg:w-[280px] flex-shrink-0">
                   {/* Avatar */}
                   <div className="relative mb-3 group">
                     {user?.profile_photo ? (
                       <img
                         src={`${ASSETS_BASE}/${user.profile_photo}`}
                         alt="profile"
-                        className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md"
+                        className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-white shadow-md"
                       />
                     ) : (
-                      <div className="w-24 h-24 rounded-full bg-blue-200 flex items-center justify-center font-bold text-3xl text-blue-700 shadow-md">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-blue-200 flex items-center justify-center font-bold text-2xl sm:text-3xl text-blue-700 shadow-md">
                         {user?.name
                           ? user.name.split(" ").map((word) => word.charAt(0)).join("").slice(0, 2).toUpperCase()
                           : "U"}
@@ -329,7 +339,7 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
                     )}
                     <button
                       onClick={() => setShowAvatarPicker(true)}
-                      className="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-full shadow-lg border-2 border-white transition-all duration-200"
+                      className="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 text-white p-1.5 sm:p-2 rounded-full shadow-lg border-2 border-white transition-all duration-200"
                       title="Change Profile Picture"
                     >
                       <svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
@@ -338,18 +348,17 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
                     </button>
                   </div>
 
-                  <h2 className="font-bold text-gray-900 text-lg text-center">{user?.name || "User"}</h2>
+                  <h2 className="font-bold text-gray-900 text-base sm:text-lg text-center">{user?.name || "User"}</h2>
                   <span
-                    className="text-xs font-medium px-4 py-0.5 rounded-full mt-1 mb-5"
-                    style={{ backgroundColor: "#eff6ff", color: "#3b82f6" }}
+                    className="text-[10px] sm:text-xs font-medium px-3 sm:px-4 py-0.5 rounded-full mt-1 mb-4 sm:mb-5 bg-blue-50 text-blue-500"
                   >
                     {user?.is_admin === 1 ? "Administrator" : "Student"}
                   </span>
 
                   {/* Contact info */}
-                  <div className="w-full space-y-3 mb-6">
-                    <div className="flex items-center gap-3 text-sm text-gray-500 truncate">
-                      <span className="text-gray-400">
+                  <div className="w-full space-y-2.5 sm:space-y-3 mb-4 sm:mb-6">
+                    <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-500 truncate">
+                      <span className="text-gray-400 flex-shrink-0">
                         <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                           <rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/>
                         </svg>
@@ -357,8 +366,8 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
                       <span className="truncate">{user?.email || "N/A"}</span>
                     </div>
 
-                    <div className="flex items-center gap-3 text-sm text-gray-500">
-                      <span className="text-gray-400">
+                    <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-500">
+                      <span className="text-gray-400 flex-shrink-0">
                         <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
                         </svg>
@@ -366,8 +375,8 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
                       {user?.phone || "Not Provided"}
                     </div>
 
-                    <div className="flex items-center gap-3 text-sm text-gray-500">
-                      <span className="text-gray-400">
+                    <div className="flex items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-500">
+                      <span className="text-gray-400 flex-shrink-0">
                         <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
@@ -378,22 +387,22 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
                 </div>
 
                 {/* Personal Information */}
-                <div className="flex-1 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                  <div className="flex items-center justify-between mb-5">
-                    <h3 className="font-bold text-gray-900 text-base">Personal Information</h3>
+                <div className="flex-1 bg-white rounded-2xl p-4 sm:p-6 border border-gray-100 shadow-sm overflow-hidden">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                    <h3 className="font-bold text-gray-900 text-sm sm:text-base">Personal Information</h3>
                     {!isEditing ? (
                       <button
                         onClick={() => setIsEditing(true)}
-                        className="text-sm font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1.5 px-3 py-1 rounded-lg hover:bg-blue-50 transition"
+                        className="text-xs sm:text-sm font-semibold text-blue-600 hover:text-blue-700 flex items-center justify-center gap-1.5 px-3 py-1.5 sm:py-1 rounded-lg bg-blue-50 hover:bg-blue-100 transition w-full sm:w-auto"
                       >
                         ✏️ Edit Profile
                       </button>
                     ) : (
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 w-full sm:w-auto">
                         <button
                           onClick={handleSave}
                           disabled={loading}
-                          className="text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 flex items-center gap-1 px-3 py-1.5 rounded-lg transition disabled:opacity-50"
+                          className="flex-1 sm:flex-none justify-center text-xs sm:text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 flex items-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg transition disabled:opacity-50"
                         >
                           {loading ? "Saving..." : "Save"}
                         </button>
@@ -414,7 +423,7 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
                             }
                           }}
                           disabled={loading}
-                          className="text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 flex items-center gap-1 px-3 py-1.5 rounded-lg transition disabled:opacity-50"
+                          className="flex-1 sm:flex-none justify-center text-xs sm:text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 flex items-center gap-1 px-3 py-2 sm:py-1.5 rounded-lg transition disabled:opacity-50"
                         >
                           Cancel
                         </button>
@@ -424,13 +433,13 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
 
                   {/* Success / Error Messages */}
                   {successMsg && (
-                    <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 text-sm rounded-xl flex items-center gap-2">
+                    <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 text-xs sm:text-sm rounded-xl flex items-center gap-2">
                       <span>✅</span>
                       <span>{successMsg}</span>
                     </div>
                   )}
                   {errorMsg && (
-                    <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl flex items-center gap-2">
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm rounded-xl flex items-center gap-2">
                       <span>⚠️</span>
                       <span>{errorMsg}</span>
                     </div>
@@ -441,28 +450,28 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
                     {
                       icon: <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#6b7280" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>,
                       label: "Full Name", value: user?.name, badge: null, add: false,
-                      input: <input type="text" value={editForm.name} onChange={(e) => setEditForm({...editForm, name: e.target.value})} className="w-full text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
+                      input: <input type="text" value={editForm.name} onChange={(e) => setEditForm({...editForm, name: e.target.value})} className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
                     },
                     {
                       icon: <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#6b7280" strokeWidth={1.8}><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg>,
                       label: "Email Address", value: user?.email, badge: null, add: false,
-                      input: <input type="email" value={editForm.email} onChange={(e) => setEditForm({...editForm, email: e.target.value})} className="w-full text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
+                      input: <input type="email" value={editForm.email} onChange={(e) => setEditForm({...editForm, email: e.target.value})} className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
                     },
                     {
                       icon: <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#6b7280" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>,
                       label: "Mobile Number", value: user?.phone || null, badge: user?.phone ? null : "notadded", add: !user?.phone,
-                      input: <input type="text" value={editForm.phone} onChange={(e) => setEditForm({...editForm, phone: e.target.value})} className="w-full text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
+                      input: <input type="text" value={editForm.phone} onChange={(e) => setEditForm({...editForm, phone: e.target.value})} className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
                     },
                     {
                       icon: <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#6b7280" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>,
                       label: "Location", value: user?.city || null, badge: user?.city ? "added" : "notadded", add: !user?.city,
-                      input: <input type="text" value={editForm.city} onChange={(e) => setEditForm({...editForm, city: e.target.value})} className="w-full text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
+                      input: <input type="text" value={editForm.city} onChange={(e) => setEditForm({...editForm, city: e.target.value})} className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
                     },
                     {
                       icon: <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#6b7280" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197"/></svg>,
                       label: "Gender", value: user?.gender || null, badge: user?.gender ? "added" : "notadded", add: !user?.gender,
                       input: (
-                        <select value={editForm.gender} onChange={(e) => setEditForm({...editForm, gender: e.target.value})} className="w-full text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white">
+                        <select value={editForm.gender} onChange={(e) => setEditForm({...editForm, gender: e.target.value})} className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none bg-white">
                           <option value="">Select Gender</option>
                           <option value="Male">Male</option>
                           <option value="Female">Female</option>
@@ -474,33 +483,37 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
                     {
                       icon: <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#6b7280" strokeWidth={1.8}><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>,
                       label: "Date of Birth", value: user?.dob || null, badge: user?.dob ? "added" : "notadded", add: !user?.dob,
-                      input: <input type="date" value={editForm.dob} onChange={(e) => setEditForm({...editForm, dob: e.target.value})} className="w-full text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
+                      input: <input type="date" value={editForm.dob} onChange={(e) => setEditForm({...editForm, dob: e.target.value})} className="w-full text-sm border border-gray-300 rounded-md px-3 py-2 focus:ring-1 focus:ring-blue-500 focus:outline-none" />
                     },
                   ].map((row, i) => (
-                    <div key={i} className="flex items-center py-4 border-b border-gray-100 last:border-0 min-h-[64px]">
-                      <span className="mr-3 flex-shrink-0">{row.icon}</span>
-                      <span className="text-sm text-gray-500 w-36 flex-shrink-0">{row.label}</span>
+                    <div key={i} className="flex flex-col sm:flex-row sm:items-center py-3 sm:py-4 border-b border-gray-100 last:border-0 min-h-[64px] gap-2 sm:gap-0">
+                      <div className="flex items-center w-full sm:w-auto">
+                        <span className="mr-2 sm:mr-3 flex-shrink-0">{row.icon}</span>
+                        <span className="text-xs sm:text-sm text-gray-500 w-32 sm:w-36 flex-shrink-0">{row.label}</span>
+                      </div>
                       {isEditing ? (
-                        <div className="flex-1 max-w-xs">{row.input}</div>
+                        <div className="flex-1 w-full sm:max-w-xs">{row.input}</div>
                       ) : (
-                        <>
-                          <span className="text-sm font-medium text-gray-800 flex-1">{row.value || "-"}</span>
-                          {row.badge === "notadded" && (
-                            <span className="text-xs font-medium px-3 py-1 rounded-md mr-4 animate-pulse" style={{ backgroundColor: "#fef3c7", color: "#d97706" }}>
-                              Not Added
-                            </span>
-                          )}
-                          {row.badge === "added" && (
-                            <span className="text-xs font-semibold px-3 py-1 rounded-md mr-4" style={{ backgroundColor: "#d1fae5", color: "#059669" }}>
-                              Added
-                            </span>
-                          )}
-                          {row.add && (
-                            <button onClick={() => setIsEditing(true)} className="text-sm font-medium flex items-center gap-1 hover:underline" style={{ color: "#2563eb" }}>
-                              + Add
-                            </button>
-                          )}
-                        </>
+                        <div className="flex flex-1 items-center justify-between w-full sm:w-auto">
+                          <span className="text-xs sm:text-sm font-medium text-gray-800 flex-1 truncate pr-2">{row.value || "-"}</span>
+                          <div className="flex items-center flex-shrink-0">
+                            {row.badge === "notadded" && (
+                              <span className="text-[10px] sm:text-xs font-medium px-2 sm:px-3 py-1 rounded-md animate-pulse bg-yellow-100 text-yellow-600">
+                                Not Added
+                              </span>
+                            )}
+                            {row.badge === "added" && (
+                              <span className="text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1 rounded-md bg-green-100 text-green-600">
+                                Added
+                              </span>
+                            )}
+                            {row.add && (
+                              <button onClick={() => setIsEditing(true)} className="text-[11px] sm:text-sm font-medium flex items-center gap-1 ml-2 hover:underline text-blue-600">
+                                + Add
+                              </button>
+                            )}
+                          </div>
+                        </div>
                       )}
                     </div>
                   ))}
@@ -508,15 +521,15 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
               </div>
 
               {/* ── ROW 2: Profile Completion + Quick Actions ── */}
-              <div className="flex flex-col lg:flex-row gap-5">
+              <div className="flex flex-col lg:flex-row gap-4 sm:gap-5">
 
                 {/* Profile Completion */}
-                <div className="flex-1 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                  <h3 className="font-bold text-gray-900 text-base mb-5">Profile Completion</h3>
-                  <div className="flex items-center gap-6 mb-5">
+                <div className="flex-1 bg-white rounded-2xl p-4 sm:p-6 border border-gray-100 shadow-sm">
+                  <h3 className="font-bold text-gray-900 text-sm sm:text-base mb-4 sm:mb-5">Profile Completion</h3>
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start lg:items-center gap-4 sm:gap-6 mb-2 sm:mb-5">
                     {/* Circle */}
                     <div className="flex-shrink-0">
-                      <svg width="120" height="120" viewBox="0 0 120 120">
+                      <svg width="100" height="100" className="sm:w-[120px] sm:h-[120px]" viewBox="0 0 120 120">
                         <circle cx="60" cy="60" r={r} fill="none" stroke="#e2e8f0" strokeWidth="9"/>
                         <circle
                           cx="60" cy="60" r={r}
@@ -533,19 +546,19 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
                       </svg>
                     </div>
                     {/* Checklist */}
-                    <div className="flex flex-col gap-2.5">
+                    <div className="flex flex-col gap-2 w-full sm:w-auto">
                       {checklist.map((item, i) => (
-                        <div key={i} className="flex items-center gap-2.5">
+                        <div key={i} className="flex items-center gap-2">
                           {item.done ? (
-                            <span className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#2563eb" }}>
-                              <svg width="10" height="10" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={3}>
+                            <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center flex-shrink-0 bg-blue-600">
+                              <svg width="8" height="8" className="sm:w-2.5 sm:h-2.5" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={3}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
                               </svg>
                             </span>
                           ) : (
-                            <span className="w-5 h-5 rounded-full border-2 border-gray-300 flex-shrink-0"/>
+                            <span className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-gray-300 flex-shrink-0"/>
                           )}
-                          <span className="text-sm text-gray-600">{item.label}</span>
+                          <span className="text-xs sm:text-sm text-gray-600">{item.label}</span>
                         </div>
                       ))}
                     </div>
@@ -553,23 +566,23 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
                 </div>
 
                 {/* Quick Actions */}
-                <div className="flex-1 bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
-                  <h3 className="font-bold text-gray-900 text-base mb-5">Quick Actions</h3>
+                <div className="flex-1 bg-white rounded-2xl p-4 sm:p-6 border border-gray-100 shadow-sm">
+                  <h3 className="font-bold text-gray-900 text-sm sm:text-base mb-4 sm:mb-5">Quick Actions</h3>
                   <div className="flex flex-col gap-2">
                     {[
                       {
                         bg: "#fef2f2",
-                        icon: <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#ef4444" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>,
+                        icon: <svg width="14" height="14" className="sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="#ef4444" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>,
                         label: "My Wishlist", sub: "View your saved colleges", path: "/wishlist"
                       },
                       {
                         bg: "#eff6ff",
-                        icon: <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#3b82f6" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>,
+                        icon: <svg width="14" height="14" className="sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="#3b82f6" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>,
                         label: "Explore Colleges", sub: "Discover and compare colleges", path: "/colleges"
                       },
                       {
                         bg: "#f0fdf4",
-                        icon: <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#22c55e" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>,
+                        icon: <svg width="14" height="14" className="sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="#22c55e" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/></svg>,
                         label: "Contact Support", sub: "Get help from our experts", path: "/contact"
                       },
                     ].map((item, i) => (
@@ -579,18 +592,18 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
                           setIsOpen(false);
                           navigate(item.path);
                         }}
-                        className="flex items-center justify-between px-4 py-3.5 rounded-xl border border-gray-100 hover:border-blue-100 hover:bg-blue-50 cursor-pointer transition-all"
+                        className="flex items-center justify-between px-3 sm:px-4 py-3 sm:py-3.5 rounded-xl border border-gray-100 hover:border-blue-100 hover:bg-blue-50 cursor-pointer transition-all"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ backgroundColor: item.bg }}>
+                          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: item.bg }}>
                             {item.icon}
                           </div>
                           <div>
-                            <p className="text-sm font-semibold text-gray-800">{item.label}</p>
-                            <p className="text-xs text-gray-400">{item.sub}</p>
+                            <p className="text-xs sm:text-sm font-semibold text-gray-800">{item.label}</p>
+                            <p className="text-[10px] sm:text-xs text-gray-400">{item.sub}</p>
                           </div>
                         </div>
-                        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="#d1d5db" strokeWidth={2}>
+                        <svg width="14" height="14" className="sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="#d1d5db" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/>
                         </svg>
                       </div>
@@ -608,9 +621,9 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
       {/* Avatar Picker Modal */}
       {showAvatarPicker && createPortal(
         <div className="fixed inset-0 z-[2000] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fadeIn">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 transform scale-100 transition-all duration-300">
-            <div className="flex justify-between items-center mb-5">
-              <h3 className="text-lg font-bold text-gray-900">Choose Your Avatar</h3>
+          <div className="bg-white rounded-2xl max-w-md w-full p-5 sm:p-6 shadow-2xl border border-gray-100 transform scale-100 transition-all duration-300">
+            <div className="flex justify-between items-center mb-4 sm:mb-5">
+              <h3 className="text-base sm:text-lg font-bold text-gray-900">Choose Your Avatar</h3>
               <button
                 onClick={() => setShowAvatarPicker(false)}
                 className="text-gray-400 hover:text-gray-600 transition"
@@ -619,16 +632,16 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
               </button>
             </div>
             
-            <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 sm:gap-4 mb-5 sm:mb-6">
               {avatars.map((av, index) => {
                 const isSelected = user?.profile_photo === av;
                 return (
                   <button
                     key={av}
                     onClick={() => handleSelectAvatar(av)}
-                    className={`relative rounded-full overflow-hidden p-1 transition-all duration-300 hover:scale-110 ${
+                    className={`relative rounded-full overflow-hidden p-1 transition-all duration-300 hover:scale-105 ${
                       isSelected 
-                        ? "ring-4 ring-blue-500 ring-offset-2 scale-105" 
+                        ? "ring-2 sm:ring-4 ring-blue-500 ring-offset-1 sm:ring-offset-2 scale-105" 
                         : "hover:ring-2 hover:ring-gray-300"
                     }`}
                   >
@@ -638,7 +651,7 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
                       className="w-full h-full object-cover rounded-full aspect-square bg-gray-50"
                     />
                     {isSelected && (
-                      <span className="absolute bottom-1 right-1 w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white border-2 border-white text-[10px] font-bold">
+                      <span className="absolute bottom-0 right-0 sm:bottom-1 sm:right-1 w-4 h-4 sm:w-5 sm:h-5 bg-blue-500 rounded-full flex items-center justify-center text-white border-2 border-white text-[8px] sm:text-[10px] font-bold">
                         ✓
                       </span>
                     )}
@@ -647,14 +660,14 @@ const MyProfileButton = ({ onClick, variant = "desktop" }) => {
               })}
             </div>
             
-            <div className="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
-              <div className="text-xs text-gray-400">
+            <div className="flex flex-col sm:flex-row justify-between items-center mt-5 sm:mt-6 pt-4 border-t border-gray-100 gap-3 sm:gap-0">
+              <div className="text-[10px] sm:text-xs text-gray-400 text-center sm:text-left">
                 Select any avatar to update your profile.
               </div>
               {user?.profile_photo && (
                 <button
                   onClick={() => handleSelectAvatar("")}
-                  className="text-sm font-semibold text-red-500 hover:text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg transition"
+                  className="text-xs sm:text-sm font-semibold text-red-500 hover:text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg transition"
                 >
                   Remove Avatar
                 </button>
