@@ -160,11 +160,7 @@ const AppRoutes = () => {
       {/* Dashboard */}
       <Route
         path="/dashboard"
-        element={
-          <MainLayout>
-            <Dashboard />
-          </MainLayout>
-        }
+        element={<Dashboard />}
       />
     </Routes>
   );

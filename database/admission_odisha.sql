@@ -8307,6 +8307,7 @@ CREATE TABLE `otp_verification` (
     `otp` varchar(6) DEFAULT NULL,
     `expires_at` datetime DEFAULT NULL,
     `is_used` tinyint(4) DEFAULT 0,
+    `failed_attempts` int(11) DEFAULT 0,
     `created_at` datetime DEFAULT NULL,
     `created_by` int(11) DEFAULT NULL,
     `updated_at` datetime DEFAULT NULL,
