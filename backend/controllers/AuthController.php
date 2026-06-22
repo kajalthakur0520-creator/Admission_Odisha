@@ -108,8 +108,23 @@ class AuthController extends Controller
             ];
         }
 
+        // RATE LIMITING
+        $recentOtp = Yii::$app->db->createCommand(
+            "SELECT * FROM otp_verification WHERE contact = :email AND created_at >= :timeLimit"
+        )
+            ->bindValue(':email', $email)
+            ->bindValue(':timeLimit', date('Y-m-d H:i:s', strtotime('-1 minute')))
+            ->queryOne();
+
+        if ($recentOtp) {
+            return [
+                "status" => "error",
+                "message" => "Please wait 60 seconds before requesting a new OTP"
+            ];
+        }
+
         // GENERATE OTP
-        $otp = rand(100000, 999999);
+        $otp = random_int(100000, 999999);
 
         // SAVE OTP
         Yii::$app->db->createCommand()->insert('otp_verification', [
@@ -132,8 +147,8 @@ class AuthController extends Controller
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
 
-            $mail->Username = 'kajalthakur0520@gmail.com';
-            $mail->Password = 'jnwt fmwa enrz hfsb';
+            $mail->Username = getenv('SMTP_USERNAME') ?: 'kajalthakur0520@gmail.com'; // TODO: Move to .env
+            $mail->Password = getenv('SMTP_PASSWORD') ?: 'jnwt fmwa enrz hfsb';       // TODO: Move to .env
 
             $mail->SMTPSecure = 'tls';
             $mail->Port = 587;
@@ -162,12 +177,9 @@ class AuthController extends Controller
             ];
         }
 
-        // TEMPORARY RETURN OTP
-        // REMOVE OTP IN PRODUCTION
         return [
             "status" => "needs_verification",
-            "message" => "OTP sent successfully",
-            "otp" => $otp
+            "message" => "OTP sent successfully"
         ];
     }
 
@@ -185,20 +197,17 @@ class AuthController extends Controller
         $otpData = Yii::$app->db->createCommand(
             "SELECT * FROM otp_verification
              WHERE contact = :email
-             AND otp = :otp
              AND is_used = 0
              ORDER BY id DESC
              LIMIT 1"
         )
             ->bindValue(':email', $email)
-            ->bindValue(':otp', $otp)
             ->queryOne();
 
-        // INVALID OTP
         if (!$otpData) {
             return [
                 "status" => "error",
-                "message" => "Invalid OTP"
+                "message" => "No active OTP found"
             ];
         }
 
@@ -207,6 +216,44 @@ class AuthController extends Controller
             return [
                 "status" => "error",
                 "message" => "OTP expired"
+            ];
+        }
+
+        // COOLDOWN CHECK
+        if (isset($otpData['failed_attempts']) && $otpData['failed_attempts'] >= 3) {
+            $updatedAt = $otpData['updated_at'] ? strtotime($otpData['updated_at']) : strtotime($otpData['created_at']);
+            $timeSinceLastFail = time() - $updatedAt;
+            if ($timeSinceLastFail < 30) {
+                $timeLeft = 30 - $timeSinceLastFail;
+                return [
+                    "status" => "error",
+                    "message" => "Too many failed attempts. Please wait $timeLeft seconds."
+                ];
+            }
+        }
+
+        // INVALID OTP
+        if (!hash_equals((string)$otpData['otp'], (string)$otp)) {
+            $failedAttempts = (isset($otpData['failed_attempts']) ? $otpData['failed_attempts'] : 0);
+            $failedAttempts = $failedAttempts >= 3 ? 1 : $failedAttempts + 1;
+            
+            Yii::$app->db->createCommand()->update(
+                'otp_verification',
+                ['failed_attempts' => $failedAttempts, 'updated_at' => date('Y-m-d H:i:s')],
+                ['id' => $otpData['id']]
+            )->execute();
+
+            if ($failedAttempts >= 3) {
+                return [
+                    "status" => "error",
+                    "message" => "Too many failed attempts. You are on a 30 second cooldown."
+                ];
+            }
+
+            $triesLeft = 3 - $failedAttempts;
+            return [
+                "status" => "error",
+                "message" => "Invalid OTP. $triesLeft attempts remaining."
             ];
         }
 
@@ -574,8 +621,23 @@ class AuthController extends Controller
             ];
         }
 
+        // RATE LIMITING
+        $recentOtp = Yii::$app->db->createCommand(
+            "SELECT * FROM otp_verification WHERE contact = :email AND created_at >= :timeLimit"
+        )
+            ->bindValue(':email', $email)
+            ->bindValue(':timeLimit', date('Y-m-d H:i:s', strtotime('-1 minute')))
+            ->queryOne();
+
+        if ($recentOtp) {
+            return [
+                "status" => "error",
+                "message" => "Please wait 60 seconds before requesting a new OTP"
+            ];
+        }
+
         // GENERATE OTP
-        $otp = rand(100000, 999999);
+        $otp = random_int(100000, 999999);
 
         // SAVE OTP
         Yii::$app->db->createCommand()->insert('otp_verification', [
@@ -598,8 +660,8 @@ class AuthController extends Controller
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
 
-            $mail->Username = 'kajalthakur0520@gmail.com';
-            $mail->Password = 'jnwt fmwa enrz hfsb';
+            $mail->Username = getenv('SMTP_USERNAME') ?: 'kajalthakur0520@gmail.com'; // TODO: Move to .env
+            $mail->Password = getenv('SMTP_PASSWORD') ?: 'jnwt fmwa enrz hfsb';       // TODO: Move to .env
 
             $mail->SMTPSecure = 'tls';
             $mail->Port = 587;
@@ -656,20 +718,17 @@ class AuthController extends Controller
         $otpData = Yii::$app->db->createCommand(
             "SELECT * FROM otp_verification
              WHERE contact = :email
-             AND otp = :otp
              AND is_used = 0
              ORDER BY id DESC
              LIMIT 1"
         )
             ->bindValue(':email', $email)
-            ->bindValue(':otp', $otp)
             ->queryOne();
 
-        // INVALID OTP
         if (!$otpData) {
             return [
                 "status" => "error",
-                "message" => "Invalid OTP"
+                "message" => "No active OTP found"
             ];
         }
 
@@ -678,6 +737,44 @@ class AuthController extends Controller
             return [
                 "status" => "error",
                 "message" => "OTP expired"
+            ];
+        }
+
+        // COOLDOWN CHECK
+        if (isset($otpData['failed_attempts']) && $otpData['failed_attempts'] >= 3) {
+            $updatedAt = $otpData['updated_at'] ? strtotime($otpData['updated_at']) : strtotime($otpData['created_at']);
+            $timeSinceLastFail = time() - $updatedAt;
+            if ($timeSinceLastFail < 30) {
+                $timeLeft = 30 - $timeSinceLastFail;
+                return [
+                    "status" => "error",
+                    "message" => "Too many failed attempts. Please wait $timeLeft seconds."
+                ];
+            }
+        }
+
+        // INVALID OTP
+        if (!hash_equals((string)$otpData['otp'], (string)$otp)) {
+            $failedAttempts = (isset($otpData['failed_attempts']) ? $otpData['failed_attempts'] : 0);
+            $failedAttempts = $failedAttempts >= 3 ? 1 : $failedAttempts + 1;
+            
+            Yii::$app->db->createCommand()->update(
+                'otp_verification',
+                ['failed_attempts' => $failedAttempts, 'updated_at' => date('Y-m-d H:i:s')],
+                ['id' => $otpData['id']]
+            )->execute();
+
+            if ($failedAttempts >= 3) {
+                return [
+                    "status" => "error",
+                    "message" => "Too many failed attempts. You are on a 30 second cooldown."
+                ];
+            }
+
+            $triesLeft = 3 - $failedAttempts;
+            return [
+                "status" => "error",
+                "message" => "Invalid OTP. $triesLeft attempts remaining."
             ];
         }
 
