@@ -131,6 +131,32 @@ const Login = () => {
     }
   };
 
+  const handleResendOtp = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}?r=auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+
+      if (data.status === "needs_verification") {
+        setTimer(120);
+        alert("OTP resent successfully!");
+      } else {
+        alert(data.message || "Failed to resend OTP");
+      }
+    } catch (err) {
+      alert("Something went wrong while resending OTP.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleForgotPasswordRequest = async (e) => {
     e.preventDefault();
     if (!forgotEmail) return alert("Please enter your email");
