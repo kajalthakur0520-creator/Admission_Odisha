@@ -93,7 +93,7 @@ const PopularCourses = () => {
               <Link
                 key={index}
                 to={`/course-detail/${slug}`}
-                className="group relative bg-white rounded-2xl p-5 shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer overflow-hidden block"
+                className={`group relative bg-white rounded-2xl p-5 shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 cursor-pointer overflow-hidden ${index >= 4 ? 'hidden lg:block' : 'block'}`}
                 style={{
                   animationDelay: `${index * 0.05}s`,
                 }}
