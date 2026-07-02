@@ -366,6 +366,36 @@ class DashboardController extends Controller
         }
     }
 
+    public function actionCreateCourse()
+    {
+        $data = Yii::$app->request->getBodyParams();
+        $name = $data['name'] ?? '';
+        $field_id = $data['field_id'] ?? null;
+        $specialization_id = $data['specialization_id'] ?? null;
+        $duration = $data['duration'] ?? '';
+        $degree_level = $data['degree_level'] ?? 'Undergraduate';
+        $status = $data['status'] ?? 'Active';
+
+        if (empty($name)) {
+            Yii::$app->response->statusCode = 400;
+            return ['status' => 'error', 'message' => 'Course name is required.'];
+        }
+
+        $is_status = ($status === 'Active') ? 1 : 0;
+
+        Yii::$app->db->createCommand()->insert('courses', [
+            'name' => $name,
+            'field_id' => $field_id ?: null,
+            'specialization_id' => $specialization_id ?: null,
+            'duration' => $duration,
+            'degree_level' => $degree_level,
+            'is_status' => $is_status,
+            'created_at' => date('Y-m-d H:i:s'),
+        ])->execute();
+
+        return ['status' => 'success', 'message' => 'Course created successfully.'];
+    }
+
     public function actionGetCourses()
     {
         $courses = Yii::$app->db->createCommand("
