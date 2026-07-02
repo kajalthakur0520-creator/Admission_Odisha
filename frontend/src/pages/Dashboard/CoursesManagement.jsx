@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import API_BASE from "../../config/api";
+import AddCourseModel from "../../components/admin/AddCourseModel";
 
 const levelColors = {
   undergraduate: "bg-blue-100 text-blue-800",
@@ -46,6 +47,7 @@ const formatDateTime = (dateStr) => {
 };
 
 export default function CoursesManagement() {
+  const [showAddModal, setShowAddModal] = useState(false);
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -125,10 +127,22 @@ export default function CoursesManagement() {
             <span className="text-slate-400">Courses</span>
           </nav>
         </div>
-        <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm shadow-blue-200 transition-all">
+        <button
+          onClick={() => setShowAddModal(true)}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-sm shadow-blue-200 transition-all"
+        >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Add Course
         </button>
+        {showAddModal && (
+          <AddCourseModel
+            onClose={() => setShowAddModal(false)}
+            onCreated={() => {
+              setShowAddModal(false);
+              fetchCourses();
+            }}
+          />
+        )}
       </div>
 
       {/* Stats */}
